@@ -1,0 +1,68 @@
+import { Comment } from "@/components/dashboard/CommentCard";
+
+export const mockComments: Comment[] = [
+  {
+    id: "1",
+    customerName: "Maria Santos",
+    customerEmail: "maria.santos@email.com",
+    content: "The pizza was absolutely amazing! Best I've ever had in Baguio. The crust was perfectly crispy and the toppings were fresh. Will definitely order again!",
+    timestamp: "2 hours ago",
+    sentiment: "positive",
+  },
+  {
+    id: "2",
+    customerName: "Juan dela Cruz",
+    customerEmail: "juan.delacruz@email.com",
+    content: "Delivery took way too long. Pizza arrived cold and the box was damaged. Very disappointed with the service this time.",
+    timestamp: "4 hours ago",
+    sentiment: "negative",
+  },
+  {
+    id: "3",
+    customerName: "Ana Reyes",
+    customerEmail: "ana.reyes@email.com",
+    content: "The pizza was okay, nothing special. Average taste and portion size. Might try other menu items next time.",
+    timestamp: "6 hours ago",
+    sentiment: "neutral",
+  },
+  {
+    id: "4",
+    customerName: "Carlos Mendoza",
+    customerEmail: "carlos.m@email.com",
+    content: "Love the Hawaiian pizza! The pineapple was so fresh and the ham was generous. Great value for money. The staff was also very friendly.",
+    timestamp: "8 hours ago",
+    sentiment: "positive",
+  },
+  {
+    id: "5",
+    customerName: "Sofia Garcia",
+    customerEmail: "sofia.g@email.com",
+    content: "Ordered the pepperoni pizza. It was good but a bit too oily for my taste. The cheese was nice though.",
+    timestamp: "1 day ago",
+    sentiment: "neutral",
+  },
+  {
+    id: "6",
+    customerName: "Miguel Torres",
+    customerEmail: "miguel.t@email.com",
+    content: "Terrible experience! Wrong order delivered twice. Customer service was unhelpful. Won't be ordering from here again.",
+    timestamp: "1 day ago",
+    sentiment: "negative",
+  },
+  {
+    id: "7",
+    customerName: "Isabella Cruz",
+    customerEmail: "isabella.c@email.com",
+    content: "First time trying Pizza Volante and I'm impressed! The quattro formaggi was divine. Already recommended to all my friends!",
+    timestamp: "2 days ago",
+    sentiment: "positive",
+  },
+  {
+    id: "8",
+    customerName: "Diego Aquino",
+    customerEmail: "diego.a@email.com",
+    content: "The margherita pizza reminded me of authentic Italian pizza. Simple but delicious. The basil was so aromatic!",
+    timestamp: "2 days ago",
+    sentiment: "positive",
+  },
+];
