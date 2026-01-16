@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MessageSquare, Users, Clock, Search, Filter } from "lucide-react";
+import { MessageSquare, Users, Clock, Search, Filter, LogOut } from "lucide-react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import StatsCard from "@/components/dashboard/StatsCard";
 import CommentCard, { Comment } from "@/components/dashboard/CommentCard";
@@ -8,17 +8,32 @@ import StatsDetail from "@/components/dashboard/StatsDetail";
 import { mockComments } from "@/data/mockComments";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 type ViewState = 
   | { type: "dashboard" }
   | { type: "sentiment"; comment: Comment }
   | { type: "stats"; statsType: "comments" | "customers" | "response" };
 
-const Index = () => {
+const Dashboard = () => {
   const [view, setView] = useState<ViewState>({ type: "dashboard" });
   const [comments, setComments] = useState<Comment[]>(mockComments);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSentiment, setFilterSentiment] = useState<string | null>(null);
+  const { signOut, user } = useAuthContext();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast.error("Failed to sign out");
+    } else {
+      toast.success("Signed out successfully");
+      navigate("/login");
+    }
+  };
 
   const handleAnalyze = (comment: Comment) => {
     // Simulate AI analysis - in real app, this would call an AI API
@@ -59,6 +74,19 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <DashboardHeader />
+      
+      {/* User bar */}
+      <div className="border-b border-border bg-card/30">
+        <div className="container mx-auto px-6 py-3 flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Logged in as <span className="text-foreground font-medium">{user?.email}</span>
+          </p>
+          <Button variant="ghost" size="sm" onClick={handleLogout}>
+            <LogOut className="w-4 h-4 mr-2" />
+            Sign Out
+          </Button>
+        </div>
+      </div>
       
       <main className="container mx-auto px-6 py-8">
         {/* Stats Section */}
@@ -190,4 +218,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Dashboard;
