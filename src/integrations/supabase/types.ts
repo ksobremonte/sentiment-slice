@@ -14,13 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      reviews: {
+        Row: {
+          created_at: string
+          email: string
+          feedback: string
+          id: string
+          name: string
+          rating: number
+          sentiment: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          feedback: string
+          id?: string
+          name: string
+          rating: number
+          sentiment?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          feedback?: string
+          id?: string
+          name?: string
+          rating?: number
+          sentiment?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_authenticated_user: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
