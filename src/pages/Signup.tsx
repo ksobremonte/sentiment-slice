@@ -65,7 +65,7 @@ const Signup = () => {
       setCaptchaToken(null);
     } else {
       toast.success("Account created successfully!");
-      navigate("/dashboard");
+      navigate("/");
     }
   };
 
