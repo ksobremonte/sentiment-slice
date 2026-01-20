@@ -51,7 +51,7 @@ const ReviewCard = ({ review, onAnalyze }: ReviewCardProps) => {
                 </span>
               )}
             </div>
-            <p className="text-xs text-muted-foreground mb-2">{review.email}</p>
+            {/* Email removed for privacy - only visible in secure admin view */}
             
             {/* Star Rating */}
             <div className="flex gap-0.5 mb-2">
