@@ -40,7 +40,7 @@ const Login = () => {
     }
 
     setLoading(true);
-    const { error } = await signIn(email, password);
+    const { error } = await signIn(email, password, captchaToken);
     setLoading(false);
 
     if (error) {
@@ -136,13 +136,19 @@ const Login = () => {
             {/* hCaptcha */}
             <div className="flex justify-center overflow-hidden rounded-lg">
               <div className="scale-[0.85] origin-center">
-                <HCaptcha
-                  ref={captchaRef}
-                  sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY || "10000000-ffff-ffff-ffff-000000000001"}
-                  onVerify={(token) => setCaptchaToken(token)}
-                  onExpire={() => setCaptchaToken(null)}
-                  theme="dark"
-                />
+                {import.meta.env.VITE_HCAPTCHA_SITE_KEY ? (
+                  <HCaptcha
+                    ref={captchaRef}
+                    sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY}
+                    onVerify={(token) => setCaptchaToken(token)}
+                    onExpire={() => setCaptchaToken(null)}
+                    theme="dark"
+                  />
+                ) : (
+                  <p className="text-xs text-muted-foreground text-center">
+                    Captcha is not configured.
+                  </p>
+                )}
               </div>
             </div>
 
@@ -150,7 +156,7 @@ const Login = () => {
               type="submit"
               className="w-full"
               size="lg"
-              disabled={loading}
+              disabled={loading || !import.meta.env.VITE_HCAPTCHA_SITE_KEY}
             >
               {loading ? (
                 <>

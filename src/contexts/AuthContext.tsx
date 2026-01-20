@@ -6,10 +6,18 @@ interface AuthContextType {
   session: Session | null;
   user: User | null;
   loading: boolean;
-  signUp: (email: string, password: string) => Promise<{ data: any; error: any }>;
-  signIn: (email: string, password: string) => Promise<{ data: any; error: any }>;
+  signUp: (
+    email: string,
+    password: string,
+    captchaToken: string
+  ) => Promise<{ data: any; error: any }>;
+  signIn: (
+    email: string,
+    password: string,
+    captchaToken: string
+  ) => Promise<{ data: any; error: any }>;
   signOut: () => Promise<{ error: any }>;
-  resetPassword: (email: string) => Promise<{ data: any; error: any }>;
+  resetPassword: (email: string, captchaToken: string) => Promise<{ data: any; error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
