@@ -35,7 +35,7 @@ const ForgotPassword = () => {
     }
 
     setLoading(true);
-    const { error } = await resetPassword(email);
+    const { error } = await resetPassword(email, captchaToken);
     setLoading(false);
 
     if (error) {
@@ -113,20 +113,26 @@ const ForgotPassword = () => {
 
             {/* hCaptcha */}
             <div className="flex justify-center">
-              <HCaptcha
-                ref={captchaRef}
-                sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY || "10000000-ffff-ffff-ffff-000000000001"}
-                onVerify={(token) => setCaptchaToken(token)}
-                onExpire={() => setCaptchaToken(null)}
-                theme="dark"
-              />
+              {import.meta.env.VITE_HCAPTCHA_SITE_KEY ? (
+                <HCaptcha
+                  ref={captchaRef}
+                  sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY}
+                  onVerify={(token) => setCaptchaToken(token)}
+                  onExpire={() => setCaptchaToken(null)}
+                  theme="dark"
+                />
+              ) : (
+                <p className="text-xs text-muted-foreground text-center">
+                  Captcha is not configured.
+                </p>
+              )}
             </div>
 
             <Button
               type="submit"
               className="w-full"
               size="lg"
-              disabled={loading}
+              disabled={loading || !import.meta.env.VITE_HCAPTCHA_SITE_KEY}
             >
               {loading ? (
                 <>

@@ -27,7 +27,24 @@ export const useAuth = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string) => {
+  const verifyCaptcha = async (captchaToken: string) => {
+    const { data, error } = await supabase.functions.invoke("verify-captcha", {
+      body: { token: captchaToken },
+    });
+
+    if (error) return { ok: false as const };
+    if (!data || typeof data !== "object") return { ok: false as const };
+
+    // supabase-js types `data` as `any`
+    return { ok: Boolean((data as any).success) as boolean };
+  };
+
+  const signUp = async (email: string, password: string, captchaToken: string) => {
+    const verify = await verifyCaptcha(captchaToken);
+    if (!verify.ok) {
+      return { data: null, error: { message: "Captcha verification failed" } };
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -38,7 +55,12 @@ export const useAuth = () => {
     return { data, error };
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string, captchaToken: string) => {
+    const verify = await verifyCaptcha(captchaToken);
+    if (!verify.ok) {
+      return { data: null, error: { message: "Captcha verification failed" } };
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -51,7 +73,12 @@ export const useAuth = () => {
     return { error };
   };
 
-  const resetPassword = async (email: string) => {
+  const resetPassword = async (email: string, captchaToken: string) => {
+    const verify = await verifyCaptcha(captchaToken);
+    if (!verify.ok) {
+      return { data: null, error: { message: "Captcha verification failed" } };
+    }
+
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
