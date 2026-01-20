@@ -11,6 +11,7 @@ const navItems = [
   { name: "Menu", path: "/menu" },
   { name: "Reviews", path: "/reviews" },
   { name: "Contact", path: "/contact" },
+  { name: "Admin Login", path: "/login" },
 ];
 
 const PublicHeader = () => {
