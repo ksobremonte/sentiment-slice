@@ -46,7 +46,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      reviews_public: {
+        Row: {
+          created_at: string | null
+          feedback: string | null
+          id: string | null
+          name: string | null
+          rating: number | null
+          sentiment: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          feedback?: string | null
+          id?: string | null
+          name?: string | null
+          rating?: number | null
+          sentiment?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          feedback?: string | null
+          id?: string | null
+          name?: string | null
+          rating?: number | null
+          sentiment?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       is_authenticated_user: { Args: never; Returns: boolean }

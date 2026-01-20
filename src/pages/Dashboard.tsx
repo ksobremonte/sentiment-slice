@@ -69,13 +69,13 @@ const Dashboard = () => {
     return matchesSearch && matchesFilter;
   });
 
-  const uniqueCustomers = new Set(reviews.map(r => r.email)).size;
+  const uniqueCustomers = new Set(reviews.map(r => r.name)).size;
 
   if (view.type === "sentiment") {
     return <SentimentResult comment={{
       id: view.review.id,
       customerName: view.review.name,
-      customerEmail: view.review.email,
+      customerEmail: "", // Email hidden for privacy
       content: view.review.feedback,
       timestamp: view.review.created_at,
       sentiment: view.review.sentiment as "positive" | "negative" | "neutral" | undefined
@@ -86,7 +86,7 @@ const Dashboard = () => {
     const commentsForStats = reviews.map(r => ({
       id: r.id,
       customerName: r.name,
-      customerEmail: r.email,
+      customerEmail: "", // Email hidden for privacy
       content: r.feedback,
       timestamp: r.created_at,
       sentiment: r.sentiment as "positive" | "negative" | "neutral" | undefined
