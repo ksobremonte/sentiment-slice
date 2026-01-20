@@ -177,14 +177,16 @@ const Signup = () => {
             </div>
 
             {/* hCaptcha */}
-            <div className="flex justify-center">
-              <HCaptcha
-                ref={captchaRef}
-                sitekey="10000000-ffff-ffff-ffff-000000000001"
-                onVerify={(token) => setCaptchaToken(token)}
-                onExpire={() => setCaptchaToken(null)}
-                theme="dark"
-              />
+            <div className="flex justify-center overflow-hidden rounded-lg">
+              <div className="scale-[0.85] origin-center">
+                <HCaptcha
+                  ref={captchaRef}
+                  sitekey="10000000-ffff-ffff-ffff-000000000001"
+                  onVerify={(token) => setCaptchaToken(token)}
+                  onExpire={() => setCaptchaToken(null)}
+                  theme="dark"
+                />
+              </div>
             </div>
 
             <Button
