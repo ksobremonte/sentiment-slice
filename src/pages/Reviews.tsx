@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Star, Send, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,6 @@ import PublicLayout from "@/components/layout/PublicLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { z } from "zod";
-import HCaptcha from "@hcaptcha/react-hcaptcha";
 
 const reviewSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
@@ -25,18 +24,6 @@ const Reviews = () => {
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const captchaRef = useRef<HCaptcha>(null);
-
-  const verifyCaptcha = async (token: string) => {
-    const { data, error } = await supabase.functions.invoke("verify-captcha", {
-      body: { token },
-    });
-
-    if (error) return false;
-    if (!data || typeof data !== "object") return false;
-    return Boolean((data as { success?: boolean }).success);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,24 +36,9 @@ const Reviews = () => {
       return;
     }
 
-    if (!captchaToken) {
-      toast.error("Please complete the captcha");
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
-      // Verify captcha server-side first
-      const captchaValid = await verifyCaptcha(captchaToken);
-      if (!captchaValid) {
-        toast.error("Captcha verification failed. Please try again.");
-        captchaRef.current?.resetCaptcha();
-        setCaptchaToken(null);
-        setIsSubmitting(false);
-        return;
-      }
-
       const { error } = await supabase.from("reviews").insert({
         name: validation.data.name,
         email: validation.data.email,
@@ -81,8 +53,6 @@ const Reviews = () => {
     } catch (error) {
       console.error("Error submitting review:", error);
       toast.error("Failed to submit review. Please try again.");
-      captchaRef.current?.resetCaptcha();
-      setCaptchaToken(null);
     } finally {
       setIsSubmitting(false);
     }
@@ -94,8 +64,6 @@ const Reviews = () => {
     setRating(0);
     setFeedback("");
     setIsSubmitted(false);
-    setCaptchaToken(null);
-    captchaRef.current?.resetCaptcha();
   };
 
   return (
@@ -194,27 +162,10 @@ const Reviews = () => {
                   />
                 </div>
 
-                {/* hCaptcha */}
-                <div className="flex justify-center">
-                  {import.meta.env.VITE_HCAPTCHA_SITE_KEY ? (
-                    <HCaptcha
-                      ref={captchaRef}
-                      sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY}
-                      onVerify={(token) => setCaptchaToken(token)}
-                      onExpire={() => setCaptchaToken(null)}
-                      theme="dark"
-                    />
-                  ) : (
-                    <p className="text-xs text-muted-foreground text-center">
-                      Captcha is not configured.
-                    </p>
-                  )}
-                </div>
-
                 {/* Submit */}
                 <Button
                   type="submit"
-                  disabled={isSubmitting || !import.meta.env.VITE_HCAPTCHA_SITE_KEY}
+                  disabled={isSubmitting}
                   className="w-full bg-gradient-primary text-primary-foreground"
                   size="lg"
                 >
