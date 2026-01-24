@@ -8,6 +8,7 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { z } from "zod";
+import { useHcaptchaSiteKey } from "@/hooks/useHcaptchaSiteKey";
 
 const loginSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }),
@@ -21,6 +22,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const captchaRef = useRef<HCaptcha>(null);
+  const { siteKey: hcaptchaSiteKey, loading: hcaptchaKeyLoading } = useHcaptchaSiteKey();
   const navigate = useNavigate();
   const { signIn } = useAuthContext();
 
@@ -136,10 +138,14 @@ const Login = () => {
             {/* hCaptcha */}
             <div className="flex justify-center overflow-hidden rounded-lg">
               <div className="scale-[0.85] origin-center">
-                {import.meta.env.VITE_HCAPTCHA_SITE_KEY ? (
+                {hcaptchaKeyLoading ? (
+                  <p className="text-xs text-muted-foreground text-center">
+                    Loading captcha...
+                  </p>
+                ) : hcaptchaSiteKey ? (
                   <HCaptcha
                     ref={captchaRef}
-                    sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY}
+                    sitekey={hcaptchaSiteKey}
                     onVerify={(token) => setCaptchaToken(token)}
                     onExpire={() => setCaptchaToken(null)}
                     theme="dark"
@@ -156,7 +162,7 @@ const Login = () => {
               type="submit"
               className="w-full"
               size="lg"
-              disabled={loading || !import.meta.env.VITE_HCAPTCHA_SITE_KEY}
+                disabled={loading || hcaptchaKeyLoading || !hcaptchaSiteKey}
             >
               {loading ? (
                 <>
