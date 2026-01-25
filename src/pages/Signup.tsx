@@ -215,7 +215,7 @@ const Signup = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link to="/login" className="text-primary hover:underline font-medium">
+              <Link to="/wp-admin" className="text-primary hover:underline font-medium">
                 Sign in
               </Link>
             </p>
