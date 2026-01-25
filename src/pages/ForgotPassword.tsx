@@ -58,7 +58,7 @@ const ForgotPassword = () => {
           <p className="text-muted-foreground mb-6">
             We've sent a password reset link to <span className="text-foreground font-medium">{email}</span>
           </p>
-          <Link to="/login">
+          <Link to="/wp-admin">
             <Button variant="outline">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Login
@@ -146,7 +146,7 @@ const ForgotPassword = () => {
           </form>
 
           <div className="mt-6 text-center">
-            <Link to="/login" className="text-sm text-primary hover:underline font-medium inline-flex items-center gap-1">
+            <Link to="/wp-admin" className="text-sm text-primary hover:underline font-medium inline-flex items-center gap-1">
               <ArrowLeft className="w-4 h-4" />
               Back to Login
             </Link>

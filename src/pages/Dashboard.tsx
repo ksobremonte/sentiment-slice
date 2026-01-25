@@ -32,7 +32,7 @@ const Dashboard = () => {
       toast.error("Failed to sign out");
     } else {
       toast.success("Signed out successfully");
-      navigate("/login");
+      navigate("/wp-admin");
     }
   };
 
