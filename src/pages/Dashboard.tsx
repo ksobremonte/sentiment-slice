@@ -1,11 +1,13 @@
-import { useState } from "react";
-import { MessageSquare, Users, Clock, Search, Filter, LogOut } from "lucide-react";
+import { useState, useEffect } from "react";
+import { MessageSquare, Users, Clock, Search, Filter, LogOut, Sparkles, Loader2 } from "lucide-react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import StatsCard from "@/components/dashboard/StatsCard";
 import ReviewCard from "@/components/dashboard/ReviewCard";
 import SentimentResult from "@/components/dashboard/SentimentResult";
 import StatsDetail from "@/components/dashboard/StatsDetail";
+import ReviewChat from "@/components/dashboard/ReviewChat";
 import { useReviews, Review } from "@/hooks/useReviews";
+import { useAIReviewSort } from "@/hooks/useAIReviewSort";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/contexts/AuthContext";
@@ -22,9 +24,34 @@ const Dashboard = () => {
   const [view, setView] = useState<ViewState>({ type: "dashboard" });
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSentiment, setFilterSentiment] = useState<string | null>(null);
+  const [sortedReviews, setSortedReviews] = useState<Review[]>([]);
+  const [isAISorted, setIsAISorted] = useState(false);
   const { signOut, user } = useAuthContext();
   const navigate = useNavigate();
   const { data: reviews = [], refetch } = useReviews();
+  const { sortReviewsByRelevance, isSorting, error: sortError } = useAIReviewSort();
+
+  // Update sorted reviews when reviews change
+  useEffect(() => {
+    if (reviews.length > 0 && !isAISorted) {
+      setSortedReviews(reviews);
+    }
+  }, [reviews, isAISorted]);
+
+  const handleAISort = async () => {
+    if (reviews.length === 0) return;
+    const sorted = await sortReviewsByRelevance(reviews);
+    setSortedReviews(sorted);
+    setIsAISorted(true);
+    if (!sortError) {
+      toast.success("Reviews sorted by AI relevance");
+    }
+  };
+
+  const resetSort = () => {
+    setSortedReviews(reviews);
+    setIsAISorted(false);
+  };
 
   const handleLogout = async () => {
     const { error } = await signOut();
@@ -62,7 +89,9 @@ const Dashboard = () => {
     setView({ type: "stats", statsType });
   };
 
-  const filteredReviews = reviews.filter(review => {
+  // Use sorted reviews for filtering
+  const reviewsToFilter = isAISorted ? sortedReviews : reviews;
+  const filteredReviews = reviewsToFilter.filter(review => {
     const matchesSearch = review.feedback.toLowerCase().includes(searchQuery.toLowerCase()) ||
       review.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = !filterSentiment || review.sentiment === filterSentiment;
@@ -200,8 +229,29 @@ const Dashboard = () => {
         {/* Reviews Section */}
         <section>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <h2 className="text-lg font-semibold text-foreground">Customer Reviews</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="text-lg font-semibold text-foreground">Customer Reviews</h2>
+              {isAISorted && (
+                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full flex items-center gap-1">
+                  <Sparkles className="w-3 h-3" />
+                  AI Sorted
+                </span>
+              )}
+            </div>
             <div className="flex items-center gap-3 w-full sm:w-auto">
+              <Button
+                variant={isAISorted ? "secondary" : "outline"}
+                size="sm"
+                onClick={isAISorted ? resetSort : handleAISort}
+                disabled={isSorting || reviews.length === 0}
+              >
+                {isSorting ? (
+                  <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                ) : (
+                  <Sparkles className="w-4 h-4 mr-1" />
+                )}
+                {isAISorted ? "Reset Sort" : "AI Sort"}
+              </Button>
               <div className="relative flex-1 sm:flex-initial">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
@@ -237,6 +287,9 @@ const Dashboard = () => {
           </div>
         </section>
       </main>
+      
+      {/* AI Chat Widget */}
+      <ReviewChat reviews={reviews} />
     </div>
   );
 };
