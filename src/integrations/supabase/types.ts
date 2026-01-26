@@ -21,7 +21,9 @@ export type Database = {
           feedback: string
           id: string
           name: string
+          photo_url: string | null
           rating: number
+          receipt_number: string | null
           sentiment: string | null
         }
         Insert: {
@@ -30,7 +32,9 @@ export type Database = {
           feedback: string
           id?: string
           name: string
+          photo_url?: string | null
           rating: number
+          receipt_number?: string | null
           sentiment?: string | null
         }
         Update: {
@@ -39,7 +43,9 @@ export type Database = {
           feedback?: string
           id?: string
           name?: string
+          photo_url?: string | null
           rating?: number
+          receipt_number?: string | null
           sentiment?: string | null
         }
         Relationships: []
@@ -52,7 +58,9 @@ export type Database = {
           feedback: string | null
           id: string | null
           name: string | null
+          photo_url: string | null
           rating: number | null
+          receipt_number: string | null
           sentiment: string | null
         }
         Insert: {
@@ -60,7 +68,9 @@ export type Database = {
           feedback?: string | null
           id?: string | null
           name?: string | null
+          photo_url?: string | null
           rating?: number | null
+          receipt_number?: string | null
           sentiment?: string | null
         }
         Update: {
@@ -68,7 +78,9 @@ export type Database = {
           feedback?: string | null
           id?: string | null
           name?: string | null
+          photo_url?: string | null
           rating?: number | null
+          receipt_number?: string | null
           sentiment?: string | null
         }
         Relationships: []
