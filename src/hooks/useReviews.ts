@@ -9,6 +9,8 @@ export interface Review {
   feedback: string;
   sentiment: string | null;
   created_at: string;
+  receipt_number: string | null;
+  photo_url: string | null;
 }
 
 export const useReviews = () => {

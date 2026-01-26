@@ -1,8 +1,14 @@
-import { Send, User, Star } from "lucide-react";
+import { Send, User, Star, Receipt, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Review } from "@/hooks/useReviews";
 import { formatDistanceToNow } from "date-fns";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface ReviewCardProps {
   review: Review;
@@ -67,6 +73,34 @@ const ReviewCard = ({ review, onAnalyze }: ReviewCardProps) => {
             </div>
             
             <p className="text-sm text-foreground/90 leading-relaxed">{review.feedback}</p>
+            
+            {/* Receipt Number */}
+            {review.receipt_number && (
+              <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
+                <Receipt className="w-3.5 h-3.5" />
+                <span>Receipt: {review.receipt_number}</span>
+              </div>
+            )}
+            
+            {/* Photo Preview */}
+            {review.photo_url && (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button className="mt-3 flex items-center gap-2 text-xs text-primary hover:underline">
+                    <ImageIcon className="w-3.5 h-3.5" />
+                    View attached photo
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl">
+                  <img
+                    src={review.photo_url}
+                    alt="Review attachment"
+                    className="w-full rounded-lg"
+                  />
+                </DialogContent>
+              </Dialog>
+            )}
+            
             <p className="text-xs text-muted-foreground/70 mt-3">{timeAgo}</p>
           </div>
         </div>
