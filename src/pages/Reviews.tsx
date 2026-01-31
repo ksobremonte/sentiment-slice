@@ -73,22 +73,23 @@ const Reviews = () => {
     try {
       let photoUrl: string | null = null;
 
-      // Upload photo if provided
+      // Upload photo via secure edge function if provided
       if (photoFile) {
-        const fileExt = photoFile.name.split('.').pop();
-        const fileName = `${crypto.randomUUID()}.${fileExt}`;
+        const formData = new FormData();
+        formData.append("file", photoFile);
         
-        const { error: uploadError } = await supabase.storage
-          .from('review-photos')
-          .upload(fileName, photoFile);
+        const uploadResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/upload-review-photo`, {
+          method: "POST",
+          body: formData,
+        });
 
-        if (uploadError) throw uploadError;
+        if (!uploadResponse.ok) {
+          const errorData = await uploadResponse.json();
+          throw new Error(errorData.error || "Failed to upload photo");
+        }
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('review-photos')
-          .getPublicUrl(fileName);
-
-        photoUrl = publicUrl;
+        const { url } = await uploadResponse.json();
+        photoUrl = url;
       }
 
       const { data: insertedReview, error } = await supabase.from("reviews").insert({

@@ -42,10 +42,10 @@ export const useReviews = () => {
   return useQuery({
     queryKey: ["reviews"],
     queryFn: async () => {
-      // Fetch directly from the reviews table (authenticated users only via RLS)
+      // Fetch from the reviews_public view (excludes email and receipt_number for security)
       const { data, error } = await supabase
-        .from("reviews")
-        .select("id, name, rating, feedback, sentiment, created_at, receipt_number, photo_url")
+        .from("reviews_public")
+        .select("id, name, rating, feedback, sentiment, created_at, photo_url")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
