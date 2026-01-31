@@ -60,7 +60,6 @@ export type Database = {
           name: string | null
           photo_url: string | null
           rating: number | null
-          receipt_number: string | null
           sentiment: string | null
         }
         Insert: {
@@ -70,7 +69,6 @@ export type Database = {
           name?: string | null
           photo_url?: string | null
           rating?: number | null
-          receipt_number?: string | null
           sentiment?: string | null
         }
         Update: {
@@ -80,7 +78,6 @@ export type Database = {
           name?: string | null
           photo_url?: string | null
           rating?: number | null
-          receipt_number?: string | null
           sentiment?: string | null
         }
         Relationships: []
