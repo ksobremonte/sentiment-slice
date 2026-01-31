@@ -1,7 +1,8 @@
-import { Pizza, Star, Clock, Truck, ChefHat, Flame } from "lucide-react";
+import { Star, Clock, Truck, ChefHat, Flame } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import PublicLayout from "@/components/layout/PublicLayout";
+import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 
 const Home = () => {
   return (
@@ -32,7 +33,6 @@ const Home = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-lg rounded-xl shadow-warm">
                 <Link to="/menu">
-                  <Pizza className="w-5 h-5 mr-2" />
                   View Our Menu
                 </Link>
               </Button>
@@ -102,7 +102,7 @@ const Home = () => {
             <div className="absolute bottom-4 right-4 w-32 h-32 rounded-full border-2 border-secondary-foreground/10 opacity-50" />
             
             <div className="relative">
-              <Pizza className="w-16 h-16 text-primary mx-auto mb-6" />
+              <img src={pizzaVolanteLogo} alt="Pizza Volante" className="h-16 w-auto mx-auto mb-6" />
               <h2 className="text-3xl md:text-4xl font-display font-bold text-secondary-foreground mb-6">
                 Love Our Pizza? Share Your Experience!
               </h2>

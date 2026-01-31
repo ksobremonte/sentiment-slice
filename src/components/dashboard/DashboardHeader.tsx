@@ -1,4 +1,4 @@
-import { Pizza } from "lucide-react";
+import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 
 const DashboardHeader = () => {
   return (
@@ -7,9 +7,11 @@ const DashboardHeader = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="relative">
-              <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-warm">
-                <Pizza className="w-8 h-8 text-primary-foreground" />
-              </div>
+              <img 
+                src={pizzaVolanteLogo} 
+                alt="Pizza Volante Logo" 
+                className="h-14 w-auto"
+              />
               <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-success rounded-full border-3 border-card shadow-subtle" />
             </div>
             <div>

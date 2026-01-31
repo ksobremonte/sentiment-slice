@@ -1,9 +1,10 @@
-import { Pizza, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 
 const navItems = [
   { name: "Home", path: "/" },
@@ -23,9 +24,11 @@ const PublicHeader = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-warm transition-transform group-hover:scale-105">
-              <Pizza className="w-8 h-8 text-primary-foreground" />
-            </div>
+            <img 
+              src={pizzaVolanteLogo} 
+              alt="Pizza Volante Logo" 
+              className="h-14 w-auto transition-transform group-hover:scale-105"
+            />
             <div>
               <h1 className="text-2xl font-display font-bold text-foreground">
                 Pizza <span className="text-primary">Volante</span>
@@ -61,9 +64,11 @@ const PublicHeader = () => {
             </SheetTrigger>
             <SheetContent side="right" className="w-72 bg-cream-warm">
               <div className="flex items-center gap-3 mb-8 mt-4">
-                <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
-                  <Pizza className="w-6 h-6 text-primary-foreground" />
-                </div>
+                <img 
+                  src={pizzaVolanteLogo} 
+                  alt="Pizza Volante Logo" 
+                  className="h-12 w-auto"
+                />
                 <div>
                   <h2 className="font-display font-bold text-foreground">Pizza Volante</h2>
                   <p className="text-xs text-muted-foreground">Baguio City</p>
