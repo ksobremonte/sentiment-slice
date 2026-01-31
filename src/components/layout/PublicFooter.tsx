@@ -9,14 +9,14 @@ const PublicFooter = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <img 
                 src={pizzaVolanteLogo} 
                 alt="Pizza Volante Logo" 
-                className="h-12 w-auto"
+                className="h-16 w-auto"
               />
               <div>
-                <h3 className="font-display font-bold text-lg text-secondary-foreground">Pizza Volante</h3>
+                <h3 className="font-brand font-bold text-2xl text-secondary-foreground">Pizza VolantƐ</h3>
                 <p className="text-xs text-secondary-foreground/70">Baguio City</p>
               </div>
             </div>

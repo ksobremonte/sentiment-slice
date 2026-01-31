@@ -102,7 +102,7 @@ const Home = () => {
             <div className="absolute bottom-4 right-4 w-32 h-32 rounded-full border-2 border-secondary-foreground/10 opacity-50" />
             
             <div className="relative">
-              <img src={pizzaVolanteLogo} alt="Pizza Volante" className="h-16 w-auto mx-auto mb-6" />
+              <img src={pizzaVolanteLogo} alt="Pizza Volante" className="h-24 w-auto mx-auto mb-6" />
               <h2 className="text-3xl md:text-4xl font-display font-bold text-secondary-foreground mb-6">
                 Love Our Pizza? Share Your Experience!
               </h2>
