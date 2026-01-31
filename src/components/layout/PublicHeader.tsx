@@ -23,15 +23,15 @@ const PublicHeader = () => {
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/" className="flex items-center gap-4 group">
             <img 
               src={pizzaVolanteLogo} 
               alt="Pizza Volante Logo" 
-              className="h-14 w-auto transition-transform group-hover:scale-105"
+              className="h-16 md:h-20 w-auto transition-transform group-hover:scale-105"
             />
-            <div>
-              <h1 className="text-2xl font-display font-bold text-foreground">
-                Pizza <span className="text-primary">Volante</span>
+            <div className="hidden sm:block">
+              <h1 className="font-brand font-bold text-3xl md:text-4xl text-foreground leading-tight">
+                Pizza VolantƐ
               </h1>
               <p className="text-xs text-muted-foreground font-medium tracking-wide">Baguio City</p>
             </div>
@@ -63,14 +63,14 @@ const PublicHeader = () => {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-72 bg-cream-warm">
-              <div className="flex items-center gap-3 mb-8 mt-4">
+              <div className="flex items-center gap-4 mb-8 mt-4">
                 <img 
                   src={pizzaVolanteLogo} 
                   alt="Pizza Volante Logo" 
-                  className="h-12 w-auto"
+                  className="h-14 w-auto"
                 />
                 <div>
-                  <h2 className="font-display font-bold text-foreground">Pizza Volante</h2>
+                  <h2 className="font-brand font-bold text-2xl text-foreground">Pizza VolantƐ</h2>
                   <p className="text-xs text-muted-foreground">Baguio City</p>
                 </div>
               </div>

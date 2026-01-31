@@ -10,7 +10,7 @@ const NotFound = () => {
         <img 
           src={pizzaVolanteLogo} 
           alt="Pizza Volante Logo" 
-          className="h-20 w-auto mx-auto mb-6"
+          className="h-28 w-auto mx-auto mb-6"
         />
         <h1 className="text-6xl font-bold text-foreground mb-4">404</h1>
         <p className="text-xl text-muted-foreground mb-8">
