@@ -28,23 +28,24 @@ const SentimentChart = ({ sentimentData, filterSentiment, onFilterChange }: Sent
 
   return (
     <section className="mb-10">
-      <div className="bg-card border border-border rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Sentiment Distribution</h3>
+      <div className="bg-card border-2 border-border rounded-2xl p-8 shadow-card">
+        <h3 className="text-xl font-display font-bold text-foreground mb-6">Sentiment Distribution</h3>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Pie Chart */}
-          <div className="flex items-center justify-center min-h-[200px]">
+          <div className="flex items-center justify-center min-h-[220px]">
             {hasData ? (
-              <ResponsiveContainer width="100%" height={200}>
+              <ResponsiveContainer width="100%" height={220}>
                 <PieChart>
                   <Pie
                     data={chartData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={50}
-                    outerRadius={80}
-                    paddingAngle={2}
+                    innerRadius={55}
+                    outerRadius={90}
+                    paddingAngle={3}
                     dataKey="value"
+                    stroke="none"
                   >
                     {chartData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
@@ -55,8 +56,8 @@ const SentimentChart = ({ sentimentData, filterSentiment, onFilterChange }: Sent
                       if (active && payload && payload.length) {
                         const data = payload[0].payload;
                         return (
-                          <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-lg">
-                            <p className="text-sm font-medium text-foreground">{data.name}</p>
+                          <div className="bg-popover border-2 border-border rounded-xl px-4 py-3 shadow-warm">
+                            <p className="text-sm font-display font-semibold text-foreground">{data.name}</p>
                             <p className="text-xs text-muted-foreground">
                               {data.value} reviews ({((data.value / total) * 100).toFixed(1)}%)
                             </p>
@@ -70,65 +71,65 @@ const SentimentChart = ({ sentimentData, filterSentiment, onFilterChange }: Sent
               </ResponsiveContainer>
             ) : (
               <div className="text-center text-muted-foreground">
-                <p>No reviews yet</p>
+                <p className="font-display text-lg">No reviews yet</p>
               </div>
             )}
           </div>
 
           {/* Filter Buttons */}
-          <div className="flex flex-wrap gap-3 content-center">
+          <div className="flex flex-wrap gap-4 content-center">
             <button
               onClick={() => onFilterChange(filterSentiment === "positive" ? null : "positive")}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg border transition-all ${
+              className={`flex items-center gap-3 px-5 py-4 rounded-2xl border-2 transition-all hover:-translate-y-0.5 ${
                 filterSentiment === "positive" 
-                  ? "border-success bg-success/10" 
+                  ? "border-success bg-success/10 shadow-card" 
                   : "border-border hover:border-success/50"
               }`}
             >
-              <div className="w-3 h-3 rounded-full bg-success" />
-              <span className="text-sm font-medium text-foreground">Positive</span>
-              <span className="text-lg font-bold text-success">{positive}</span>
+              <div className="w-4 h-4 rounded-full bg-success" />
+              <span className="text-sm font-semibold text-foreground">Positive</span>
+              <span className="text-xl font-display font-bold text-success">{positive}</span>
             </button>
             
             <button
               onClick={() => onFilterChange(filterSentiment === "negative" ? null : "negative")}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg border transition-all ${
+              className={`flex items-center gap-3 px-5 py-4 rounded-2xl border-2 transition-all hover:-translate-y-0.5 ${
                 filterSentiment === "negative" 
-                  ? "border-destructive bg-destructive/10" 
+                  ? "border-destructive bg-destructive/10 shadow-card" 
                   : "border-border hover:border-destructive/50"
               }`}
             >
-              <div className="w-3 h-3 rounded-full bg-destructive" />
-              <span className="text-sm font-medium text-foreground">Negative</span>
-              <span className="text-lg font-bold text-destructive">{negative}</span>
+              <div className="w-4 h-4 rounded-full bg-destructive" />
+              <span className="text-sm font-semibold text-foreground">Negative</span>
+              <span className="text-xl font-display font-bold text-destructive">{negative}</span>
             </button>
             
             <button
               onClick={() => onFilterChange(filterSentiment === "neutral" ? null : "neutral")}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg border transition-all ${
+              className={`flex items-center gap-3 px-5 py-4 rounded-2xl border-2 transition-all hover:-translate-y-0.5 ${
                 filterSentiment === "neutral" 
-                  ? "border-warning bg-warning/10" 
+                  ? "border-warning bg-warning/10 shadow-card" 
                   : "border-border hover:border-warning/50"
               }`}
             >
-              <div className="w-3 h-3 rounded-full bg-warning" />
-              <span className="text-sm font-medium text-foreground">Neutral</span>
-              <span className="text-lg font-bold text-warning">{neutral}</span>
+              <div className="w-4 h-4 rounded-full bg-warning" />
+              <span className="text-sm font-semibold text-foreground">Neutral</span>
+              <span className="text-xl font-display font-bold text-warning">{neutral}</span>
             </button>
 
             {unanalyzed > 0 && (
-              <div className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border bg-muted/30">
-                <div className="w-3 h-3 rounded-full bg-muted-foreground" />
-                <span className="text-sm font-medium text-foreground">Unanalyzed</span>
-                <span className="text-lg font-bold text-muted-foreground">{unanalyzed}</span>
+              <div className="flex items-center gap-3 px-5 py-4 rounded-2xl border-2 border-border bg-muted/30">
+                <div className="w-4 h-4 rounded-full bg-muted-foreground" />
+                <span className="text-sm font-semibold text-foreground">Unanalyzed</span>
+                <span className="text-xl font-display font-bold text-muted-foreground">{unanalyzed}</span>
               </div>
             )}
           </div>
         </div>
 
         {unanalyzed > 0 && (
-          <p className="text-xs text-muted-foreground mt-4">
-            {unanalyzed} review{unanalyzed !== 1 ? 's' : ''} pending sentiment analysis. Click "Analyze" on individual reviews to process them.
+          <p className="text-sm text-muted-foreground mt-6 bg-muted/50 rounded-xl p-4">
+            💡 {unanalyzed} review{unanalyzed !== 1 ? 's' : ''} pending sentiment analysis. Click "Analyze" on individual reviews to process them.
           </p>
         )}
       </div>

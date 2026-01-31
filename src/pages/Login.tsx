@@ -29,7 +29,6 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate inputs
     const result = loginSchema.safeParse({ email, password });
     if (!result.success) {
       toast.error(result.error.errors[0].message);
@@ -56,11 +55,11 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+    <div className="min-h-screen bg-cream-warm brick-overlay flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         {/* Back Button */}
         <div className="mb-6">
-          <Link to="/" className="text-sm text-primary hover:underline font-medium inline-flex items-center gap-1">
+          <Link to="/" className="text-sm text-primary hover:underline font-semibold inline-flex items-center gap-2">
             <ArrowLeft className="w-4 h-4" />
             Back to Website
           </Link>
@@ -68,35 +67,35 @@ const Login = () => {
 
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-primary shadow-glow mb-4">
-            <Pizza className="w-9 h-9 text-primary-foreground" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary shadow-warm mb-4">
+            <Pizza className="w-10 h-10 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">
-            Pizza <span className="text-gradient">Volante</span>
+          <h1 className="text-3xl font-display font-bold text-foreground">
+            Pizza <span className="text-primary">Volante</span>
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">Baguio City</p>
+          <p className="text-sm text-muted-foreground mt-1 font-medium">Baguio City</p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-card border border-border rounded-2xl p-8 shadow-card animate-fade-in">
-          <h2 className="text-xl font-semibold text-foreground mb-6 text-center">
+        <div className="bg-card border-2 border-border rounded-3xl p-8 shadow-warm animate-fade-in">
+          <h2 className="text-2xl font-display font-bold text-foreground mb-8 text-center">
             Sign in to Dashboard
           </h2>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-foreground">
+              <Label htmlFor="email" className="text-foreground font-medium">
                 Email
               </Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-11"
+                  className="pl-12 py-6 rounded-xl border-2 bg-background"
                   required
                 />
               </div>
@@ -104,31 +103,31 @@ const Login = () => {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-foreground">
+                <Label htmlFor="password" className="text-foreground font-medium">
                   Password
                 </Label>
                 <Link
                   to="/forgot-password"
-                  className="text-sm text-primary hover:underline"
+                  className="text-sm text-primary hover:underline font-medium"
                 >
                   Forgot password?
                 </Link>
               </div>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-11 pr-11"
+                  className="pl-12 pr-12 py-6 rounded-xl border-2 bg-background"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -136,10 +135,10 @@ const Login = () => {
             </div>
 
             {/* hCaptcha */}
-            <div className="flex justify-center overflow-hidden rounded-lg">
-              <div className="scale-[0.85] origin-center">
+            <div className="flex justify-center overflow-hidden rounded-xl bg-muted/30 p-4">
+              <div className="scale-[0.9] origin-center">
                 {hcaptchaKeyLoading ? (
-                  <p className="text-xs text-muted-foreground text-center">
+                  <p className="text-sm text-muted-foreground text-center py-4">
                     Loading captcha...
                   </p>
                 ) : hcaptchaSiteKey ? (
@@ -148,10 +147,10 @@ const Login = () => {
                     sitekey={hcaptchaSiteKey}
                     onVerify={(token) => setCaptchaToken(token)}
                     onExpire={() => setCaptchaToken(null)}
-                    theme="dark"
+                    theme="light"
                   />
                 ) : (
-                  <p className="text-xs text-muted-foreground text-center">
+                  <p className="text-sm text-muted-foreground text-center py-4">
                     Captcha is not configured.
                   </p>
                 )}
@@ -160,13 +159,13 @@ const Login = () => {
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-6 text-lg rounded-xl shadow-warm"
               size="lg"
-                disabled={loading || hcaptchaKeyLoading || !hcaptchaSiteKey}
+              disabled={loading || hcaptchaKeyLoading || !hcaptchaSiteKey}
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                   Signing in...
                 </>
               ) : (
@@ -175,10 +174,10 @@ const Login = () => {
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-muted-foreground">
+          <div className="mt-8 text-center">
+            <p className="text-muted-foreground">
               Don't have an account?{" "}
-              <Link to="/signup" className="text-primary hover:underline font-medium">
+              <Link to="/signup" className="text-primary hover:underline font-semibold">
                 Sign up
               </Link>
             </p>

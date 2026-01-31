@@ -14,7 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Poppins', 'sans-serif'],
+        sans: ['Source Sans 3', 'sans-serif'],
+        display: ['Playfair Display', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -68,11 +69,44 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Custom pizzeria colors
+        brick: {
+          DEFAULT: "hsl(8 65% 40%)",
+          light: "hsl(8 60% 55%)",
+          dark: "hsl(8 70% 30%)",
+        },
+        chalkboard: {
+          DEFAULT: "hsl(150 25% 25%)",
+          light: "hsl(150 20% 35%)",
+          dark: "hsl(150 30% 18%)",
+        },
+        terracotta: {
+          DEFAULT: "hsl(18 60% 50%)",
+          light: "hsl(18 55% 60%)",
+          dark: "hsl(18 65% 40%)",
+        },
+        wood: {
+          DEFAULT: "hsl(30 30% 35%)",
+          light: "hsl(30 25% 50%)",
+          dark: "hsl(30 35% 25%)",
+        },
+        cream: {
+          DEFAULT: "hsl(35 40% 97%)",
+          warm: "hsl(35 35% 94%)",
+          dark: "hsl(35 30% 88%)",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        xl: "calc(var(--radius) + 4px)",
+        "2xl": "calc(var(--radius) + 8px)",
+      },
+      boxShadow: {
+        'warm': '0 8px 30px -8px hsl(25 30% 20% / 0.15)',
+        'card': '0 4px 20px -4px hsl(25 30% 20% / 0.12)',
+        'subtle': '0 2px 8px -2px hsl(25 30% 20% / 0.08)',
       },
       keyframes: {
         "accordion-down": {

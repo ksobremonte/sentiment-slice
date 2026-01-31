@@ -8,9 +8,9 @@ interface PublicLayoutProps {
 
 const PublicLayout = ({ children }: PublicLayoutProps) => {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-cream-warm flex flex-col">
       <PublicHeader />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 brick-overlay">{children}</main>
       <PublicFooter />
     </div>
   );

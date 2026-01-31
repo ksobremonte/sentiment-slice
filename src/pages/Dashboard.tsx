@@ -66,7 +66,6 @@ const Dashboard = () => {
 
   const handleAnalyze = async (review: Review) => {
     try {
-      // Call AI to analyze sentiment
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-reviews`, {
         method: "POST",
         headers: {
@@ -86,7 +85,6 @@ const Dashboard = () => {
 
       const { sentiment } = await response.json();
       
-      // Update the review in the database
       const { error } = await supabase
         .from("reviews")
         .update({ sentiment })
@@ -110,7 +108,6 @@ const Dashboard = () => {
     setView({ type: "stats", statsType });
   };
 
-  // Use sorted reviews for filtering
   const reviewsToFilter = isAISorted ? sortedReviews : reviews;
   const filteredReviews = reviewsToFilter.filter(review => {
     const matchesSearch = review.feedback.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -121,7 +118,6 @@ const Dashboard = () => {
 
   const uniqueCustomers = new Set(reviews.map(r => r.name)).size;
 
-  // Compute sentiment distribution from real data
   const sentimentData = useMemo(() => {
     const positive = reviews.filter(r => r.sentiment === "positive").length;
     const negative = reviews.filter(r => r.sentiment === "negative").length;
@@ -134,7 +130,7 @@ const Dashboard = () => {
     return <SentimentResult comment={{
       id: view.review.id,
       customerName: view.review.name,
-      customerEmail: "", // Email hidden for privacy
+      customerEmail: "",
       content: view.review.feedback,
       timestamp: view.review.created_at,
       sentiment: view.review.sentiment as "positive" | "negative" | "neutral" | undefined
@@ -145,7 +141,7 @@ const Dashboard = () => {
     const commentsForStats = reviews.map(r => ({
       id: r.id,
       customerName: r.name,
-      customerEmail: "", // Email hidden for privacy
+      customerEmail: "",
       content: r.feedback,
       timestamp: r.created_at,
       sentiment: r.sentiment as "positive" | "negative" | "neutral" | undefined
@@ -154,26 +150,26 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-cream-warm brick-overlay">
       <DashboardHeader />
       
       {/* User bar */}
-      <div className="border-b border-border bg-card/30">
-        <div className="container mx-auto px-6 py-3 flex items-center justify-between">
+      <div className="border-b-2 border-border bg-card/80">
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            Logged in as <span className="text-foreground font-medium">{user?.email}</span>
+            Logged in as <span className="text-foreground font-semibold">{user?.email}</span>
           </p>
-          <Button variant="ghost" size="sm" onClick={handleLogout}>
+          <Button variant="outline" size="sm" onClick={handleLogout} className="rounded-xl border-2 font-semibold">
             <LogOut className="w-4 h-4 mr-2" />
             Sign Out
           </Button>
         </div>
       </div>
       
-      <main className="container mx-auto px-6 py-8">
+      <main className="container mx-auto px-6 py-10">
         {/* Stats Section */}
-        <section className="mb-10">
-          <h2 className="text-lg font-semibold text-muted-foreground mb-4">Overview</h2>
+        <section className="mb-12">
+          <h2 className="text-xl font-display font-bold text-foreground mb-6">Overview</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <StatsCard
               title="Total Reviews"
@@ -214,12 +210,12 @@ const Dashboard = () => {
 
         {/* Reviews Section */}
         <section>
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
-              <h2 className="text-lg font-semibold text-foreground">Customer Reviews</h2>
+              <h2 className="text-xl font-display font-bold text-foreground">Customer Reviews</h2>
               {isAISorted && (
-                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" />
+                <span className="text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full flex items-center gap-1.5 font-semibold">
+                  <Sparkles className="w-3.5 h-3.5" />
                   AI Sorted
                 </span>
               )}
@@ -230,26 +226,27 @@ const Dashboard = () => {
                 size="sm"
                 onClick={isAISorted ? resetSort : handleAISort}
                 disabled={isSorting || reviews.length === 0}
+                className="rounded-xl border-2 font-semibold"
               >
                 {isSorting ? (
-                  <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                  <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
                 ) : (
-                  <Sparkles className="w-4 h-4 mr-1" />
+                  <Sparkles className="w-4 h-4 mr-1.5" />
                 )}
                 {isAISorted ? "Reset Sort" : "AI Sort"}
               </Button>
               <div className="relative flex-1 sm:flex-initial">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   placeholder="Search reviews..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 w-full sm:w-64"
+                  className="pl-11 w-full sm:w-72 rounded-xl border-2"
                 />
               </div>
               {filterSentiment && (
-                <Button variant="ghost" size="sm" onClick={() => setFilterSentiment(null)}>
-                  <Filter className="w-4 h-4 mr-1" />
+                <Button variant="ghost" size="sm" onClick={() => setFilterSentiment(null)} className="rounded-xl font-semibold">
+                  <Filter className="w-4 h-4 mr-1.5" />
                   Clear
                 </Button>
               )}
@@ -266,8 +263,9 @@ const Dashboard = () => {
                 />
               ))
             ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">No reviews found matching your criteria.</p>
+              <div className="text-center py-16 bg-card rounded-2xl border-2 border-border shadow-subtle">
+                <MessageSquare className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground font-display text-lg">No reviews found matching your criteria.</p>
               </div>
             )}
           </div>

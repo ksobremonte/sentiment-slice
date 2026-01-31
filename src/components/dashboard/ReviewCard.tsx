@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Review } from "@/hooks/useReviews";
 import { formatDistanceToNow } from "date-fns";
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +16,7 @@ interface ReviewCardProps {
 
 const ReviewCard = ({ review, onAnalyze }: ReviewCardProps) => {
   const getSentimentStyles = () => {
-    if (!review.sentiment) return "";
+    if (!review.sentiment) return "border-l-4 border-l-muted";
     
     switch (review.sentiment) {
       case "positive":
@@ -27,7 +26,7 @@ const ReviewCard = ({ review, onAnalyze }: ReviewCardProps) => {
       case "neutral":
         return "border-l-4 border-l-warning";
       default:
-        return "";
+        return "border-l-4 border-l-muted";
     }
   };
 
@@ -35,20 +34,20 @@ const ReviewCard = ({ review, onAnalyze }: ReviewCardProps) => {
 
   return (
     <div className={cn(
-      "bg-card border border-border rounded-xl p-5 transition-all duration-300 hover:border-primary/30 animate-fade-in",
+      "bg-card border-2 border-border rounded-2xl p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-card animate-fade-in",
       getSentimentStyles()
     )}>
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-4 flex-1">
-          <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
-            <User className="w-5 h-5 text-muted-foreground" />
+          <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
+            <User className="w-6 h-6 text-secondary-foreground" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h4 className="font-semibold text-foreground">{review.name}</h4>
+            <div className="flex items-center gap-2 flex-wrap mb-2">
+              <h4 className="font-display font-semibold text-lg text-foreground">{review.name}</h4>
               {review.sentiment && (
                 <span className={cn(
-                  "text-xs font-medium px-2 py-0.5 rounded-full",
+                  "text-xs font-semibold px-3 py-1 rounded-full",
                   review.sentiment === "positive" && "bg-success/10 text-success",
                   review.sentiment === "negative" && "bg-destructive/10 text-destructive",
                   review.sentiment === "neutral" && "bg-warning/10 text-warning"
@@ -57,60 +56,51 @@ const ReviewCard = ({ review, onAnalyze }: ReviewCardProps) => {
                 </span>
               )}
             </div>
-            {/* Email removed for privacy - only visible in secure admin view */}
             
             {/* Star Rating */}
-            <div className="flex gap-0.5 mb-2">
+            <div className="flex gap-1 mb-3">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
                   key={star}
                   className={cn(
-                    "w-4 h-4",
+                    "w-5 h-5",
                     star <= review.rating ? "fill-warning text-warning" : "text-muted-foreground/30"
                   )}
                 />
               ))}
             </div>
             
-            <p className="text-sm text-foreground/90 leading-relaxed">{review.feedback}</p>
-            
-            {/* Receipt Number */}
-            {review.receipt_number && (
-              <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
-                <Receipt className="w-3.5 h-3.5" />
-                <span>Receipt: {review.receipt_number}</span>
-              </div>
-            )}
+            <p className="text-foreground leading-relaxed">{review.feedback}</p>
             
             {/* Photo Preview */}
             {review.photo_url && (
               <Dialog>
                 <DialogTrigger asChild>
-                  <button className="mt-3 flex items-center gap-2 text-xs text-primary hover:underline">
-                    <ImageIcon className="w-3.5 h-3.5" />
+                  <button className="mt-4 flex items-center gap-2 text-sm text-primary hover:underline font-medium">
+                    <ImageIcon className="w-4 h-4" />
                     View attached photo
                   </button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-2xl bg-card">
                   <img
                     src={review.photo_url}
                     alt="Review attachment"
-                    className="w-full rounded-lg"
+                    className="w-full rounded-xl"
                   />
                 </DialogContent>
               </Dialog>
             )}
             
-            <p className="text-xs text-muted-foreground/70 mt-3">{timeAgo}</p>
+            <p className="text-xs text-muted-foreground mt-4">{timeAgo}</p>
           </div>
         </div>
         <Button
           variant="outline"
           size="sm"
           onClick={() => onAnalyze(review)}
-          className="flex-shrink-0"
+          className="flex-shrink-0 rounded-xl border-2 font-semibold hover:bg-primary hover:text-primary-foreground hover:border-primary"
         >
-          <Send className="w-4 h-4 mr-1" />
+          <Send className="w-4 h-4 mr-2" />
           Analyze
         </Button>
       </div>

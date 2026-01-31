@@ -1,8 +1,10 @@
 import PublicLayout from "@/components/layout/PublicLayout";
+import { Pizza } from "lucide-react";
 
 const menuItems = [
   {
     category: "Classic Pizzas",
+    icon: "🍕",
     items: [
       { name: "Margherita", price: 299, description: "Fresh tomatoes, mozzarella, basil, olive oil" },
       { name: "Pepperoni", price: 349, description: "Classic pepperoni with mozzarella cheese" },
@@ -12,6 +14,7 @@ const menuItems = [
   },
   {
     category: "Specialty Pizzas",
+    icon: "⭐",
     items: [
       { name: "Volcano Special", price: 449, description: "Spicy chorizo, jalapeños, bell peppers, sriracha drizzle" },
       { name: "Baguio Garden", price: 399, description: "Fresh vegetables from Benguet farms" },
@@ -21,6 +24,7 @@ const menuItems = [
   },
   {
     category: "Sides & Drinks",
+    icon: "🥤",
     items: [
       { name: "Garlic Breadsticks", price: 129, description: "6 pieces with marinara dip" },
       { name: "Caesar Salad", price: 159, description: "Romaine, croutons, parmesan, caesar dressing" },
@@ -37,8 +41,11 @@ const MenuPage = () => {
         <div className="container mx-auto px-6">
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center mb-16">
-            <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-              Our <span className="text-gradient">Menu</span>
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-6">
+              <Pizza className="w-10 h-10 text-primary" />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-6">
+              Our <span className="text-primary">Menu</span>
             </h1>
             <p className="text-lg text-muted-foreground">
               Handcrafted pizzas made with love and the finest ingredients. 
@@ -46,31 +53,44 @@ const MenuPage = () => {
             </p>
           </div>
 
-          {/* Menu Categories */}
+          {/* Menu Categories - Chalkboard Style */}
           <div className="max-w-4xl mx-auto space-y-12">
             {menuItems.map((category) => (
-              <div key={category.category}>
-                <h2 className="text-2xl font-bold text-foreground mb-6 pb-2 border-b border-border">
+              <div key={category.category} className="bg-secondary rounded-3xl p-8 md:p-10 shadow-warm">
+                <h2 className="text-2xl md:text-3xl font-display font-bold text-secondary-foreground mb-8 flex items-center gap-3">
+                  <span className="text-3xl">{category.icon}</span>
                   {category.category}
                 </h2>
-                <div className="grid gap-4">
+                
+                <div className="space-y-4">
                   {category.items.map((item) => (
                     <div
                       key={item.name}
-                      className="bg-card border border-border rounded-xl p-5 flex justify-between items-start gap-4 hover:border-primary/30 transition-colors"
+                      className="bg-secondary-foreground/5 backdrop-blur-sm rounded-2xl p-5 flex justify-between items-start gap-4 hover:bg-secondary-foreground/10 transition-colors border border-secondary-foreground/10"
                     >
                       <div>
-                        <h3 className="font-semibold text-foreground">{item.name}</h3>
-                        <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
+                        <h3 className="font-display font-semibold text-lg text-secondary-foreground">{item.name}</h3>
+                        <p className="text-sm text-secondary-foreground/70 mt-1">{item.description}</p>
                       </div>
-                      <span className="text-lg font-bold text-primary whitespace-nowrap">
-                        ₱{item.price}
-                      </span>
+                      <div className="bg-primary rounded-xl px-4 py-2 shadow-subtle">
+                        <span className="text-lg font-bold text-primary-foreground whitespace-nowrap">
+                          ₱{item.price}
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Note */}
+          <div className="max-w-2xl mx-auto text-center mt-12">
+            <p className="text-muted-foreground text-sm bg-card rounded-2xl p-6 shadow-subtle border border-border">
+              📞 For orders and reservations, call us at <span className="font-semibold text-primary">+63 912 345 6789</span>
+              <br />
+              <span className="text-xs mt-2 block">Prices may vary. Ask about our daily specials!</span>
+            </p>
           </div>
         </div>
       </section>

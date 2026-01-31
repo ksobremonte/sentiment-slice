@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Pizza, Mail, Lock, Eye, EyeOff, Loader2, Check } from "lucide-react";
+import { Pizza, Mail, Lock, Eye, EyeOff, Loader2, Check, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,7 +43,6 @@ const Signup = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate inputs
     const result = signupSchema.safeParse({ email, password, confirmPassword });
     if (!result.success) {
       toast.error(result.error.errors[0].message);
@@ -70,63 +69,71 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+    <div className="min-h-screen bg-cream-warm brick-overlay flex items-center justify-center p-6">
       <div className="w-full max-w-md">
+        {/* Back Button */}
+        <div className="mb-6">
+          <Link to="/" className="text-sm text-primary hover:underline font-semibold inline-flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Website
+          </Link>
+        </div>
+
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-primary shadow-glow mb-4">
-            <Pizza className="w-9 h-9 text-primary-foreground" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary shadow-warm mb-4">
+            <Pizza className="w-10 h-10 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">
-            Pizza <span className="text-gradient">Volante</span>
+          <h1 className="text-3xl font-display font-bold text-foreground">
+            Pizza <span className="text-primary">Volante</span>
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">Baguio City</p>
+          <p className="text-sm text-muted-foreground mt-1 font-medium">Baguio City</p>
         </div>
 
         {/* Signup Card */}
-        <div className="bg-card border border-border rounded-2xl p-8 shadow-card animate-fade-in">
-          <h2 className="text-xl font-semibold text-foreground mb-6 text-center">
+        <div className="bg-card border-2 border-border rounded-3xl p-8 shadow-warm animate-fade-in">
+          <h2 className="text-2xl font-display font-bold text-foreground mb-8 text-center">
             Create your account
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-foreground">
+              <Label htmlFor="email" className="text-foreground font-medium">
                 Email
               </Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-11"
+                  className="pl-12 py-6 rounded-xl border-2 bg-background"
                   required
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-foreground">
+              <Label htmlFor="password" className="text-foreground font-medium">
                 Password
               </Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a strong password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-11 pr-11"
+                  className="pl-12 pr-12 py-6 rounded-xl border-2 bg-background"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -134,21 +141,21 @@ const Signup = () => {
               
               {/* Password requirements */}
               {password && (
-                <div className="grid grid-cols-2 gap-2 mt-3">
-                  <div className={`flex items-center gap-2 text-xs ${passwordChecks.length ? 'text-success' : 'text-muted-foreground'}`}>
-                    <Check className="w-3 h-3" />
+                <div className="grid grid-cols-2 gap-2 mt-3 p-3 bg-muted/50 rounded-xl">
+                  <div className={`flex items-center gap-2 text-xs font-medium ${passwordChecks.length ? 'text-success' : 'text-muted-foreground'}`}>
+                    <Check className="w-3.5 h-3.5" />
                     8+ characters
                   </div>
-                  <div className={`flex items-center gap-2 text-xs ${passwordChecks.uppercase ? 'text-success' : 'text-muted-foreground'}`}>
-                    <Check className="w-3 h-3" />
+                  <div className={`flex items-center gap-2 text-xs font-medium ${passwordChecks.uppercase ? 'text-success' : 'text-muted-foreground'}`}>
+                    <Check className="w-3.5 h-3.5" />
                     Uppercase
                   </div>
-                  <div className={`flex items-center gap-2 text-xs ${passwordChecks.lowercase ? 'text-success' : 'text-muted-foreground'}`}>
-                    <Check className="w-3 h-3" />
+                  <div className={`flex items-center gap-2 text-xs font-medium ${passwordChecks.lowercase ? 'text-success' : 'text-muted-foreground'}`}>
+                    <Check className="w-3.5 h-3.5" />
                     Lowercase
                   </div>
-                  <div className={`flex items-center gap-2 text-xs ${passwordChecks.number ? 'text-success' : 'text-muted-foreground'}`}>
-                    <Check className="w-3 h-3" />
+                  <div className={`flex items-center gap-2 text-xs font-medium ${passwordChecks.number ? 'text-success' : 'text-muted-foreground'}`}>
+                    <Check className="w-3.5 h-3.5" />
                     Number
                   </div>
                 </div>
@@ -156,39 +163,39 @@ const Signup = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-foreground">
+              <Label htmlFor="confirmPassword" className="text-foreground font-medium">
                 Confirm Password
               </Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   id="confirmPassword"
                   type={showPassword ? "text" : "password"}
                   placeholder="Confirm your password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pl-11"
+                  className="pl-12 py-6 rounded-xl border-2 bg-background"
                   required
                 />
               </div>
               {confirmPassword && password !== confirmPassword && (
-                <p className="text-xs text-destructive">Passwords don't match</p>
+                <p className="text-xs text-destructive font-medium">Passwords don't match</p>
               )}
             </div>
 
             {/* hCaptcha */}
-            <div className="flex justify-center overflow-hidden rounded-lg">
-              <div className="scale-[0.85] origin-center">
+            <div className="flex justify-center overflow-hidden rounded-xl bg-muted/30 p-4">
+              <div className="scale-[0.9] origin-center">
                 {import.meta.env.VITE_HCAPTCHA_SITE_KEY ? (
                   <HCaptcha
                     ref={captchaRef}
                     sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY}
                     onVerify={(token) => setCaptchaToken(token)}
                     onExpire={() => setCaptchaToken(null)}
-                    theme="dark"
+                    theme="light"
                   />
                 ) : (
-                  <p className="text-xs text-muted-foreground text-center">
+                  <p className="text-sm text-muted-foreground text-center py-4">
                     Captcha is not configured.
                   </p>
                 )}
@@ -197,13 +204,13 @@ const Signup = () => {
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-6 text-lg rounded-xl shadow-warm"
               size="lg"
               disabled={loading || !import.meta.env.VITE_HCAPTCHA_SITE_KEY}
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                   Creating account...
                 </>
               ) : (
@@ -212,10 +219,10 @@ const Signup = () => {
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-muted-foreground">
+          <div className="mt-8 text-center">
+            <p className="text-muted-foreground">
               Already have an account?{" "}
-              <Link to="/wp-admin" className="text-primary hover:underline font-medium">
+              <Link to="/wp-admin" className="text-primary hover:underline font-semibold">
                 Sign in
               </Link>
             </p>
