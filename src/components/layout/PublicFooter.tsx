@@ -1,5 +1,6 @@
-import { Pizza, Phone, Mail, MapPin } from "lucide-react";
+import { Phone, Mail, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
+import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 
 const PublicFooter = () => {
   return (
@@ -9,9 +10,11 @@ const PublicFooter = () => {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
-                <Pizza className="w-6 h-6 text-primary-foreground" />
-              </div>
+              <img 
+                src={pizzaVolanteLogo} 
+                alt="Pizza Volante Logo" 
+                className="h-12 w-auto"
+              />
               <div>
                 <h3 className="font-display font-bold text-lg text-secondary-foreground">Pizza Volante</h3>
                 <p className="text-xs text-secondary-foreground/70">Baguio City</p>

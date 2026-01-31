@@ -1,5 +1,5 @@
 import PublicLayout from "@/components/layout/PublicLayout";
-import { Pizza } from "lucide-react";
+import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 
 const menuItems = [
   {
@@ -41,9 +41,11 @@ const MenuPage = () => {
         <div className="container mx-auto px-6">
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center mb-16">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-6">
-              <Pizza className="w-10 h-10 text-primary" />
-            </div>
+            <img 
+              src={pizzaVolanteLogo} 
+              alt="Pizza Volante" 
+              className="h-20 w-auto mx-auto mb-6"
+            />
             <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-6">
               Our <span className="text-primary">Menu</span>
             </h1>
