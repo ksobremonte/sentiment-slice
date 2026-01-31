@@ -30,8 +30,8 @@ const PublicHeader = () => {
               className="h-16 md:h-20 w-auto transition-transform group-hover:scale-105"
             />
             <div className="hidden sm:block">
-              <h1 className="font-brand font-bold text-3xl md:text-4xl text-foreground leading-tight">
-                Pizza VolantƐ
+              <h1 className="font-brand text-3xl md:text-4xl text-foreground leading-tight">
+                Pizza Volante
               </h1>
               <p className="text-xs text-muted-foreground font-medium tracking-wide">Baguio City</p>
             </div>
@@ -70,7 +70,7 @@ const PublicHeader = () => {
                   className="h-14 w-auto"
                 />
                 <div>
-                  <h2 className="font-brand font-bold text-2xl text-foreground">Pizza VolantƐ</h2>
+                  <h2 className="font-brand text-2xl text-foreground">Pizza Volante</h2>
                   <p className="text-xs text-muted-foreground">Baguio City</p>
                 </div>
               </div>

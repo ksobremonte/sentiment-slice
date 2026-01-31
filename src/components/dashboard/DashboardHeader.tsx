@@ -15,8 +15,8 @@ const DashboardHeader = () => {
               <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-success rounded-full border-3 border-card shadow-subtle" />
             </div>
             <div className="hidden sm:block">
-              <h1 className="font-brand font-bold text-3xl md:text-4xl text-foreground leading-tight">
-                Pizza VolantƐ
+              <h1 className="font-brand text-3xl md:text-4xl text-foreground leading-tight">
+                Pizza Volante
               </h1>
               <p className="text-xs text-muted-foreground font-medium tracking-wide">Baguio City</p>
             </div>

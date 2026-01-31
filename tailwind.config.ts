@@ -16,7 +16,7 @@ export default {
       fontFamily: {
         sans: ['Source Sans 3', 'sans-serif'],
         display: ['Playfair Display', 'serif'],
-        brand: ['Tangerine', 'cursive'],
+        brand: ['Great Vibes', 'cursive'],
       },
       colors: {
         border: "hsl(var(--border))",
