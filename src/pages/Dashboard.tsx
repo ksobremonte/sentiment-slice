@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { MessageSquare, Users, Clock, Search, Filter, LogOut, Sparkles, Loader2 } from "lucide-react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import StatsCard from "@/components/dashboard/StatsCard";
@@ -6,6 +6,7 @@ import ReviewCard from "@/components/dashboard/ReviewCard";
 import SentimentResult from "@/components/dashboard/SentimentResult";
 import StatsDetail from "@/components/dashboard/StatsDetail";
 import ReviewChat from "@/components/dashboard/ReviewChat";
+import SentimentChart from "@/components/dashboard/SentimentChart";
 import { useReviews, Review } from "@/hooks/useReviews";
 import { useAIReviewSort } from "@/hooks/useAIReviewSort";
 import { Input } from "@/components/ui/input";
@@ -100,6 +101,15 @@ const Dashboard = () => {
 
   const uniqueCustomers = new Set(reviews.map(r => r.name)).size;
 
+  // Compute sentiment distribution from real data
+  const sentimentData = useMemo(() => {
+    const positive = reviews.filter(r => r.sentiment === "positive").length;
+    const negative = reviews.filter(r => r.sentiment === "negative").length;
+    const neutral = reviews.filter(r => r.sentiment === "neutral").length;
+    const unanalyzed = reviews.filter(r => !r.sentiment).length;
+    return { positive, negative, neutral, unanalyzed, total: reviews.length };
+  }, [reviews]);
+
   if (view.type === "sentiment") {
     return <SentimentResult comment={{
       id: view.review.id,
@@ -176,55 +186,11 @@ const Dashboard = () => {
         </section>
 
         {/* Sentiment Summary */}
-        <section className="mb-10">
-          <div className="bg-card border border-border rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Sentiment Distribution</h3>
-            <div className="flex flex-wrap gap-4">
-              <button
-                onClick={() => setFilterSentiment(filterSentiment === "positive" ? null : "positive")}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg border transition-all ${
-                  filterSentiment === "positive" 
-                    ? "border-success bg-success/10" 
-                    : "border-border hover:border-success/50"
-                }`}
-              >
-                <div className="w-3 h-3 rounded-full bg-success" />
-                <span className="text-sm font-medium text-foreground">Positive</span>
-                <span className="text-lg font-bold text-success">
-                  {reviews.filter(r => r.sentiment === "positive").length}
-                </span>
-              </button>
-              <button
-                onClick={() => setFilterSentiment(filterSentiment === "negative" ? null : "negative")}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg border transition-all ${
-                  filterSentiment === "negative" 
-                    ? "border-destructive bg-destructive/10" 
-                    : "border-border hover:border-destructive/50"
-                }`}
-              >
-                <div className="w-3 h-3 rounded-full bg-destructive" />
-                <span className="text-sm font-medium text-foreground">Negative</span>
-                <span className="text-lg font-bold text-destructive">
-                  {reviews.filter(r => r.sentiment === "negative").length}
-                </span>
-              </button>
-              <button
-                onClick={() => setFilterSentiment(filterSentiment === "neutral" ? null : "neutral")}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg border transition-all ${
-                  filterSentiment === "neutral" 
-                    ? "border-warning bg-warning/10" 
-                    : "border-border hover:border-warning/50"
-                }`}
-              >
-                <div className="w-3 h-3 rounded-full bg-warning" />
-                <span className="text-sm font-medium text-foreground">Neutral</span>
-                <span className="text-lg font-bold text-warning">
-                  {reviews.filter(r => r.sentiment === "neutral").length}
-                </span>
-              </button>
-            </div>
-          </div>
-        </section>
+        <SentimentChart 
+          sentimentData={sentimentData}
+          filterSentiment={filterSentiment}
+          onFilterChange={setFilterSentiment}
+        />
 
         {/* Reviews Section */}
         <section>
