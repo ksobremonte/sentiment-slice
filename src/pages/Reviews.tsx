@@ -91,16 +91,39 @@ const Reviews = () => {
         photoUrl = publicUrl;
       }
 
-      const { error } = await supabase.from("reviews").insert({
+      const { data: insertedReview, error } = await supabase.from("reviews").insert({
         name: validation.data.name,
         email: validation.data.email,
         rating: validation.data.rating,
         feedback: validation.data.feedback,
         receipt_number: validation.data.receipt_number,
         photo_url: photoUrl,
-      });
+      }).select().single();
 
       if (error) throw error;
+
+      // Auto-analyze sentiment
+      try {
+        const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-reviews`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            reviews: [{ ...insertedReview, rating: validation.data.rating, feedback: validation.data.feedback }],
+            action: "analyze-sentiment",
+          }),
+        });
+
+        if (response.ok) {
+          const { sentiment } = await response.json();
+          await supabase.from("reviews").update({ sentiment }).eq("id", insertedReview.id);
+        }
+      } catch (analyzeError) {
+        console.error("Auto-analyze failed:", analyzeError);
+        // Don't block submission if analysis fails
+      }
 
       setIsSubmitted(true);
       toast.success("Thank you for your feedback!");
