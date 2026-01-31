@@ -65,25 +65,45 @@ const Dashboard = () => {
   };
 
   const handleAnalyze = async (review: Review) => {
-    // Simulate AI analysis - in real app, this would call an AI API
-    const sentiments = ["positive", "negative", "neutral"] as const;
-    const analyzedSentiment = review.sentiment || sentiments[Math.floor(Math.random() * 3)];
-    
-    // Update the review in the database
-    const { error } = await supabase
-      .from("reviews")
-      .update({ sentiment: analyzedSentiment })
-      .eq("id", review.id);
-    
-    if (error) {
-      toast.error("Failed to save analysis");
-      return;
+    try {
+      // Call AI to analyze sentiment
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-reviews`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          reviews: [review],
+          action: "analyze-sentiment",
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to analyze sentiment");
+      }
+
+      const { sentiment } = await response.json();
+      
+      // Update the review in the database
+      const { error } = await supabase
+        .from("reviews")
+        .update({ sentiment })
+        .eq("id", review.id);
+      
+      if (error) {
+        toast.error("Failed to save analysis");
+        return;
+      }
+      
+      refetch();
+      
+      const analyzedReview = { ...review, sentiment };
+      setView({ type: "sentiment", review: analyzedReview });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to analyze review");
     }
-    
-    refetch();
-    
-    const analyzedReview = { ...review, sentiment: analyzedSentiment };
-    setView({ type: "sentiment", review: analyzedReview });
   };
 
   const handleStatsClick = (statsType: "comments" | "customers" | "response") => {

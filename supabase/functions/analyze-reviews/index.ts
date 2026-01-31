@@ -97,6 +97,67 @@ Only return the JSON array, no other text. Format: ["id1", "id2", "id3", ...]`;
       });
     }
 
+    if (action === "analyze-sentiment") {
+      // Analyze sentiment of a single review
+      const review = reviews[0] as Review;
+      const systemPrompt = `You are a sentiment analyzer for a pizza restaurant. Analyze the following customer review and determine if the sentiment is positive, negative, or neutral.
+
+Consider:
+1. The star rating (1-5 stars)
+2. The tone and words used in the feedback
+3. Whether the customer seems satisfied or dissatisfied
+
+A 4-5 star review with positive/neutral language = positive
+A 1-2 star review with negative language = negative
+A 3 star review or mixed feedback = neutral
+
+Return ONLY one word: "positive", "negative", or "neutral"`;
+
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-lite",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: `Rating: ${review.rating}/5 stars\nFeedback: "${review.feedback}"` }
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
+            status: 429,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        if (response.status === 402) {
+          return new Response(JSON.stringify({ error: "AI credits exhausted. Please add credits to continue." }), {
+            status: 402,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        throw new Error(`AI gateway error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content?.toLowerCase().trim() || "neutral";
+      
+      // Extract just the sentiment word
+      let sentiment = "neutral";
+      if (content.includes("positive")) sentiment = "positive";
+      else if (content.includes("negative")) sentiment = "negative";
+      else if (content.includes("neutral")) sentiment = "neutral";
+
+      return new Response(JSON.stringify({ sentiment }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     if (action === "chat") {
       // Chat interface for analyzing reviews
       const systemPrompt = `You are an AI assistant for a pizza restaurant dashboard. You help analyze customer reviews and provide insights.
