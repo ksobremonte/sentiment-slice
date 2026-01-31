@@ -66,7 +66,6 @@ const ReviewChat = ({ reviews }: ReviewChatProps) => {
       const decoder = new TextDecoder();
       let textBuffer = "";
 
-      // Add empty assistant message to start streaming into
       setMessages(prev => [...prev, { role: "assistant", content: "" }]);
 
       while (true) {
@@ -109,7 +108,6 @@ const ReviewChat = ({ reviews }: ReviewChatProps) => {
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to analyze";
       toast.error(message);
-      // Remove the empty assistant message on error
       setMessages(prev => prev.filter((_, i) => i !== prev.length - 1 || prev[prev.length - 1].content !== ""));
     } finally {
       setIsLoading(false);
@@ -127,34 +125,36 @@ const ReviewChat = ({ reviews }: ReviewChatProps) => {
     return (
       <Button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg"
+        className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-warm bg-primary hover:bg-primary/90"
         size="icon"
       >
-        <MessageSquare className="h-6 w-6" />
+        <MessageSquare className="h-7 w-7" />
       </Button>
     );
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-96 h-[500px] bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden z-50">
+    <div className="fixed bottom-6 right-6 w-96 h-[520px] bg-card border-2 border-border rounded-3xl shadow-warm flex flex-col overflow-hidden z-50">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
-        <div className="flex items-center gap-2">
-          <Bot className="h-5 w-5 text-primary" />
-          <span className="font-semibold text-foreground">Review Analyst</span>
+      <div className="flex items-center justify-between px-5 py-4 border-b-2 border-border bg-secondary">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+            <Bot className="h-5 w-5 text-primary" />
+          </div>
+          <span className="font-display font-semibold text-secondary-foreground">Review Analyst</span>
         </div>
-        <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
-          <X className="h-4 w-4" />
+        <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-secondary-foreground hover:bg-secondary-foreground/10">
+          <X className="h-5 w-5" />
         </Button>
       </div>
 
       {/* Messages */}
       <ScrollArea className="flex-1 p-4" ref={scrollRef}>
         {messages.length === 0 && (
-          <div className="text-center text-muted-foreground py-8">
-            <Bot className="h-12 w-12 mx-auto mb-3 opacity-50" />
-            <p className="text-sm">Ask me anything about your reviews!</p>
-            <p className="text-xs mt-2 opacity-70">Try: "Summarize the feedback" or "What are common complaints?"</p>
+          <div className="text-center text-muted-foreground py-10">
+            <Bot className="h-14 w-14 mx-auto mb-4 opacity-50" />
+            <p className="font-display font-semibold">Ask me anything about your reviews!</p>
+            <p className="text-sm mt-2 opacity-70">Try: "Summarize the feedback" or "What are common complaints?"</p>
           </div>
         )}
         <div className="space-y-4">
@@ -164,12 +164,12 @@ const ReviewChat = ({ reviews }: ReviewChatProps) => {
               className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
               {msg.role === "assistant" && (
-                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Bot className="h-4 w-4 text-primary" />
+                <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Bot className="h-5 w-5 text-primary" />
                 </div>
               )}
               <div
-                className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
+                className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
                   msg.role === "user"
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted text-foreground"
@@ -180,8 +180,8 @@ const ReviewChat = ({ reviews }: ReviewChatProps) => {
                 ) : null)}
               </div>
               {msg.role === "user" && (
-                <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
-                  <User className="h-4 w-4 text-secondary-foreground" />
+                <div className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
+                  <User className="h-5 w-5 text-secondary-foreground" />
                 </div>
               )}
             </div>
@@ -190,7 +190,7 @@ const ReviewChat = ({ reviews }: ReviewChatProps) => {
       </ScrollArea>
 
       {/* Input */}
-      <div className="p-3 border-t border-border">
+      <div className="p-4 border-t-2 border-border">
         <div className="flex gap-2">
           <Input
             value={input}
@@ -198,9 +198,9 @@ const ReviewChat = ({ reviews }: ReviewChatProps) => {
             onKeyDown={handleKeyDown}
             placeholder="Ask about your reviews..."
             disabled={isLoading}
-            className="flex-1"
+            className="flex-1 rounded-xl border-2"
           />
-          <Button onClick={sendMessage} disabled={isLoading || !input.trim()} size="icon">
+          <Button onClick={sendMessage} disabled={isLoading || !input.trim()} size="icon" className="rounded-xl h-10 w-10">
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>
         </div>

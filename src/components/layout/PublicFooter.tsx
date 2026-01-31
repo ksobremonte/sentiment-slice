@@ -3,50 +3,60 @@ import { Link } from "react-router-dom";
 
 const PublicFooter = () => {
   return (
-    <footer className="bg-card border-t border-border">
-      <div className="container mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="bg-secondary text-secondary-foreground border-t-4 border-primary/30">
+      <div className="container mx-auto px-6 py-14">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center">
-                <Pizza className="w-5 h-5 text-primary-foreground" />
+              <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
+                <Pizza className="w-6 h-6 text-primary-foreground" />
               </div>
               <div>
-                <h3 className="font-bold text-foreground">Pizza Volante</h3>
-                <p className="text-xs text-muted-foreground">Baguio City</p>
+                <h3 className="font-display font-bold text-lg text-secondary-foreground">Pizza Volante</h3>
+                <p className="text-xs text-secondary-foreground/70">Baguio City</p>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Serving the best artisan pizzas in the City of Pines since 2020.
+            <p className="text-sm text-secondary-foreground/80 leading-relaxed">
+              Serving the best artisan pizzas in the City of Pines since 2020. Made with love and tradition.
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-semibold text-foreground mb-4">Quick Links</h4>
-            <nav className="flex flex-col gap-2">
-              <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Home</Link>
-              <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About</Link>
-              <Link to="/menu" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Menu</Link>
-              <Link to="/reviews" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Reviews</Link>
+            <h4 className="font-display font-semibold text-lg text-secondary-foreground mb-5 border-b border-secondary-foreground/20 pb-2">
+              Quick Links
+            </h4>
+            <nav className="flex flex-col gap-3">
+              <Link to="/" className="text-sm text-secondary-foreground/80 hover:text-primary transition-colors">Home</Link>
+              <Link to="/about" className="text-sm text-secondary-foreground/80 hover:text-primary transition-colors">About Us</Link>
+              <Link to="/menu" className="text-sm text-secondary-foreground/80 hover:text-primary transition-colors">Our Menu</Link>
+              <Link to="/reviews" className="text-sm text-secondary-foreground/80 hover:text-primary transition-colors">Reviews</Link>
             </nav>
           </div>
 
           {/* Contact */}
           <div>
-            <h4 className="font-semibold text-foreground mb-4">Contact Us</h4>
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Phone className="w-4 h-4" />
+            <h4 className="font-display font-semibold text-lg text-secondary-foreground mb-5 border-b border-secondary-foreground/20 pb-2">
+              Contact Us
+            </h4>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 text-sm text-secondary-foreground/80">
+                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                  <Phone className="w-4 h-4 text-primary" />
+                </div>
                 <span>+63 912 345 6789</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Mail className="w-4 h-4" />
+              <div className="flex items-center gap-3 text-sm text-secondary-foreground/80">
+                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-4 h-4 text-primary" />
+                </div>
                 <span>hello@pizzavolante.ph</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <MapPin className="w-4 h-4" />
+              <div className="flex items-center gap-3 text-sm text-secondary-foreground/80">
+                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-4 h-4 text-primary" />
+                </div>
                 <span>Session Road, Baguio City</span>
               </div>
             </div>
@@ -54,18 +64,29 @@ const PublicFooter = () => {
 
           {/* Hours */}
           <div>
-            <h4 className="font-semibold text-foreground mb-4">Hours</h4>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <p>Mon - Thu: 11AM - 9PM</p>
-              <p>Fri - Sat: 11AM - 10PM</p>
-              <p>Sunday: 12PM - 8PM</p>
+            <h4 className="font-display font-semibold text-lg text-secondary-foreground mb-5 border-b border-secondary-foreground/20 pb-2">
+              Opening Hours
+            </h4>
+            <div className="space-y-3 text-sm text-secondary-foreground/80">
+              <div className="flex justify-between">
+                <span>Mon - Thu</span>
+                <span className="text-primary font-medium">11AM - 9PM</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Fri - Sat</span>
+                <span className="text-primary font-medium">11AM - 10PM</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Sunday</span>
+                <span className="text-primary font-medium">12PM - 8PM</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-border mt-8 pt-8 text-center">
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Pizza Volante. All rights reserved.
+        <div className="border-t border-secondary-foreground/20 mt-10 pt-8 text-center">
+          <p className="text-sm text-secondary-foreground/60">
+            © {new Date().getFullYear()} Pizza Volante. All rights reserved. Made with ❤️ in Baguio City
           </p>
         </div>
       </div>

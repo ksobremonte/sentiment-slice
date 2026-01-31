@@ -2,68 +2,102 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 5%;
-    --foreground: 0 0% 98%;
+    /* Warm Italian Pizzeria Theme */
+    /* Warm beige background */
+    --background: 35 35% 94%;
+    --foreground: 20 25% 15%;
 
-    --card: 0 0% 8%;
-    --card-foreground: 0 0% 98%;
+    /* Wood brown cards */
+    --card: 30 30% 96%;
+    --card-foreground: 20 25% 15%;
 
-    --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 98%;
+    /* Cream popover */
+    --popover: 35 40% 97%;
+    --popover-foreground: 20 25% 15%;
 
-    --primary: 25 95% 53%;
-    --primary-foreground: 0 0% 2%;
+    /* Brick red primary */
+    --primary: 8 65% 40%;
+    --primary-foreground: 35 40% 97%;
 
-    --secondary: 0 0% 12%;
-    --secondary-foreground: 0 0% 98%;
+    /* Chalkboard green secondary */
+    --secondary: 150 25% 25%;
+    --secondary-foreground: 35 40% 97%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 60%;
+    /* Warm muted tones */
+    --muted: 30 20% 88%;
+    --muted-foreground: 20 15% 45%;
 
-    --accent: 25 95% 53%;
-    --accent-foreground: 0 0% 2%;
+    /* Terracotta accent */
+    --accent: 18 60% 50%;
+    --accent-foreground: 35 40% 97%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 35 40% 97%;
 
-    --success: 142 76% 36%;
-    --success-foreground: 0 0% 98%;
+    --success: 142 60% 35%;
+    --success-foreground: 35 40% 97%;
 
-    --warning: 45 93% 47%;
-    --warning-foreground: 0 0% 2%;
+    --warning: 40 90% 50%;
+    --warning-foreground: 20 25% 15%;
 
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 25 95% 53%;
+    /* Wood brown border */
+    --border: 30 25% 80%;
+    --input: 30 25% 85%;
+    --ring: 8 65% 40%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    --sidebar-background: 0 0% 6%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 25 95% 53%;
-    --sidebar-primary-foreground: 0 0% 2%;
-    --sidebar-accent: 0 0% 12%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 25 95% 53%;
+    /* Dashboard sidebar - darker wood theme */
+    --sidebar-background: 25 35% 18%;
+    --sidebar-foreground: 35 30% 92%;
+    --sidebar-primary: 18 60% 55%;
+    --sidebar-primary-foreground: 35 40% 97%;
+    --sidebar-accent: 25 30% 25%;
+    --sidebar-accent-foreground: 35 30% 92%;
+    --sidebar-border: 25 25% 25%;
+    --sidebar-ring: 18 60% 55%;
 
-    /* Custom gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(25, 95%, 53%) 0%, hsl(35, 100%, 60%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0, 0%, 10%) 0%, hsl(0, 0%, 6%) 100%);
-    --gradient-glow: radial-gradient(ellipse at center, hsl(25, 95%, 53%, 0.15) 0%, transparent 70%);
+    /* Custom gradients - warm Italian feel */
+    --gradient-primary: linear-gradient(135deg, hsl(8, 65%, 40%) 0%, hsl(18, 60%, 50%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(30, 30%, 98%) 0%, hsl(35, 35%, 94%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(35, 40%, 95%) 0%, hsl(30, 35%, 90%) 100%);
+    --gradient-chalkboard: linear-gradient(180deg, hsl(150, 25%, 22%) 0%, hsl(150, 25%, 18%) 100%);
 
-    /* Shadows */
-    --shadow-card: 0 4px 20px -4px hsl(0 0% 0% / 0.5);
-    --shadow-glow: 0 0 40px -10px hsl(25, 95%, 53%, 0.4);
+    /* Shadows - soft and warm */
+    --shadow-card: 0 4px 20px -4px hsl(25 30% 20% / 0.12);
+    --shadow-warm: 0 8px 30px -8px hsl(25 30% 20% / 0.15);
+    --shadow-subtle: 0 2px 8px -2px hsl(25 30% 20% / 0.08);
   }
 
   .dark {
-    --background: 0 0% 5%;
-    --foreground: 0 0% 98%;
+    /* Dark mode - cozy evening pizzeria */
+    --background: 25 25% 12%;
+    --foreground: 35 30% 92%;
+
+    --card: 25 25% 16%;
+    --card-foreground: 35 30% 92%;
+
+    --popover: 25 25% 14%;
+    --popover-foreground: 35 30% 92%;
+
+    --primary: 18 65% 55%;
+    --primary-foreground: 20 25% 10%;
+
+    --secondary: 150 20% 30%;
+    --secondary-foreground: 35 30% 92%;
+
+    --muted: 25 20% 22%;
+    --muted-foreground: 35 20% 60%;
+
+    --accent: 18 55% 50%;
+    --accent-foreground: 35 40% 97%;
+
+    --border: 25 20% 25%;
+    --input: 25 20% 22%;
   }
 }
 
@@ -73,12 +107,24 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Poppins', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Source Sans 3', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
   }
 }
 
 @layer utilities {
+  .font-display {
+    font-family: 'Playfair Display', serif;
+  }
+
+  .font-body {
+    font-family: 'Source Sans 3', sans-serif;
+  }
+
   .text-gradient {
     @apply bg-clip-text text-transparent;
     background-image: var(--gradient-primary);
@@ -92,25 +138,51 @@
     background-image: var(--gradient-card);
   }
 
-  .shadow-glow {
-    box-shadow: var(--shadow-glow);
+  .bg-gradient-warm {
+    background-image: var(--gradient-warm);
+  }
+
+  .bg-gradient-chalkboard {
+    background-image: var(--gradient-chalkboard);
+  }
+
+  .shadow-warm {
+    box-shadow: var(--shadow-warm);
   }
 
   .shadow-card {
     box-shadow: var(--shadow-card);
   }
 
-  .animate-pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
+  .shadow-subtle {
+    box-shadow: var(--shadow-subtle);
   }
 
-  @keyframes pulse-glow {
-    0%, 100% {
-      box-shadow: 0 0 20px -5px hsl(25, 95%, 53%, 0.3);
-    }
-    50% {
-      box-shadow: 0 0 30px -5px hsl(25, 95%, 53%, 0.5);
-    }
+  /* Chalkboard text effect */
+  .chalkboard-text {
+    font-family: 'Playfair Display', serif;
+    text-shadow: 1px 1px 2px hsl(0 0% 0% / 0.1);
+  }
+
+  /* Menu board style */
+  .menu-board {
+    @apply bg-secondary text-secondary-foreground rounded-2xl p-6;
+    background-image: var(--gradient-chalkboard);
+  }
+
+  /* Terracotta border accent */
+  .border-terracotta {
+    border-color: hsl(18, 60%, 50%);
+  }
+
+  /* Brick texture overlay */
+  .brick-overlay {
+    background-image: 
+      linear-gradient(135deg, hsl(8, 65%, 40%, 0.03) 25%, transparent 25%),
+      linear-gradient(225deg, hsl(8, 65%, 40%, 0.03) 25%, transparent 25%),
+      linear-gradient(45deg, hsl(8, 65%, 40%, 0.03) 25%, transparent 25%),
+      linear-gradient(315deg, hsl(8, 65%, 40%, 0.03) 25%, transparent 25%);
+    background-size: 20px 20px;
   }
 
   .animate-float {
@@ -123,6 +195,21 @@
     }
     50% {
       transform: translateY(-5px);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.4s ease-out;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 }

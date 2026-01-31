@@ -22,7 +22,6 @@ const ForgotPassword = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate email
     const result = emailSchema.safeParse(email);
     if (!result.success) {
       toast.error("Please enter a valid email address");
@@ -49,17 +48,17 @@ const ForgotPassword = () => {
 
   if (sent) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <div className="min-h-screen bg-cream-warm brick-overlay flex items-center justify-center p-6">
         <div className="w-full max-w-md text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success/10 mb-6">
-            <CheckCircle className="w-9 h-9 text-success" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-success/10 mb-6">
+            <CheckCircle className="w-10 h-10 text-success" />
           </div>
-          <h2 className="text-2xl font-bold text-foreground mb-3">Check your email</h2>
-          <p className="text-muted-foreground mb-6">
-            We've sent a password reset link to <span className="text-foreground font-medium">{email}</span>
+          <h2 className="text-3xl font-display font-bold text-foreground mb-4">Check your email</h2>
+          <p className="text-muted-foreground mb-8 text-lg">
+            We've sent a password reset link to <span className="text-foreground font-semibold">{email}</span>
           </p>
           <Link to="/wp-admin">
-            <Button variant="outline">
+            <Button variant="outline" size="lg" className="rounded-xl border-2 font-semibold">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Login
             </Button>
@@ -70,73 +69,83 @@ const ForgotPassword = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+    <div className="min-h-screen bg-cream-warm brick-overlay flex items-center justify-center p-6">
       <div className="w-full max-w-md">
+        {/* Back Button */}
+        <div className="mb-6">
+          <Link to="/wp-admin" className="text-sm text-primary hover:underline font-semibold inline-flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Login
+          </Link>
+        </div>
+
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-primary shadow-glow mb-4">
-            <Pizza className="w-9 h-9 text-primary-foreground" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary shadow-warm mb-4">
+            <Pizza className="w-10 h-10 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">
-            Pizza <span className="text-gradient">Volante</span>
+          <h1 className="text-3xl font-display font-bold text-foreground">
+            Pizza <span className="text-primary">Volante</span>
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">Baguio City</p>
+          <p className="text-sm text-muted-foreground mt-1 font-medium">Baguio City</p>
         </div>
 
         {/* Forgot Password Card */}
-        <div className="bg-card border border-border rounded-2xl p-8 shadow-card animate-fade-in">
-          <h2 className="text-xl font-semibold text-foreground mb-2 text-center">
+        <div className="bg-card border-2 border-border rounded-3xl p-8 shadow-warm animate-fade-in">
+          <h2 className="text-2xl font-display font-bold text-foreground mb-3 text-center">
             Forgot your password?
           </h2>
-          <p className="text-sm text-muted-foreground text-center mb-6">
+          <p className="text-muted-foreground text-center mb-8">
             Enter your email and we'll send you a reset link
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-foreground">
+              <Label htmlFor="email" className="text-foreground font-medium">
                 Email
               </Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-11"
+                  className="pl-12 py-6 rounded-xl border-2 bg-background"
                   required
                 />
               </div>
             </div>
 
             {/* hCaptcha */}
-            <div className="flex justify-center">
-              {import.meta.env.VITE_HCAPTCHA_SITE_KEY ? (
-                <HCaptcha
-                  ref={captchaRef}
-                  sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY}
-                  onVerify={(token) => setCaptchaToken(token)}
-                  onExpire={() => setCaptchaToken(null)}
-                  theme="dark"
-                />
-              ) : (
-                <p className="text-xs text-muted-foreground text-center">
-                  Captcha is not configured.
-                </p>
-              )}
+            <div className="flex justify-center overflow-hidden rounded-xl bg-muted/30 p-4">
+              <div className="scale-[0.9] origin-center">
+                {import.meta.env.VITE_HCAPTCHA_SITE_KEY ? (
+                  <HCaptcha
+                    ref={captchaRef}
+                    sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY}
+                    onVerify={(token) => setCaptchaToken(token)}
+                    onExpire={() => setCaptchaToken(null)}
+                    theme="light"
+                  />
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    Captcha is not configured.
+                  </p>
+                )}
+              </div>
             </div>
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-6 text-lg rounded-xl shadow-warm"
               size="lg"
               disabled={loading || !import.meta.env.VITE_HCAPTCHA_SITE_KEY}
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                   Sending...
                 </>
               ) : (
@@ -144,13 +153,6 @@ const ForgotPassword = () => {
               )}
             </Button>
           </form>
-
-          <div className="mt-6 text-center">
-            <Link to="/wp-admin" className="text-sm text-primary hover:underline font-medium inline-flex items-center gap-1">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Login
-            </Link>
-          </div>
         </div>
       </div>
     </div>

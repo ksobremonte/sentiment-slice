@@ -18,19 +18,19 @@ const PublicHeader = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-50">
+    <header className="border-b-2 border-primary/20 bg-cream-warm/95 backdrop-blur-sm sticky top-0 z-50 shadow-subtle">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center shadow-glow">
-              <Pizza className="w-7 h-7 text-primary-foreground" />
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-warm transition-transform group-hover:scale-105">
+              <Pizza className="w-8 h-8 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">
-                Pizza <span className="text-gradient">Volante</span>
+              <h1 className="text-2xl font-display font-bold text-foreground">
+                Pizza <span className="text-primary">Volante</span>
               </h1>
-              <p className="text-xs text-muted-foreground">Baguio City</p>
+              <p className="text-xs text-muted-foreground font-medium tracking-wide">Baguio City</p>
             </div>
           </Link>
 
@@ -41,10 +41,10 @@ const PublicHeader = () => {
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                  "px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200",
                   location.pathname === item.path
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                    ? "bg-primary text-primary-foreground shadow-card"
+                    : "text-foreground hover:bg-primary/10 hover:text-primary"
                 )}
               >
                 {item.name}
@@ -55,22 +55,31 @@ const PublicHeader = () => {
           {/* Mobile Navigation */}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon">
-                <Menu className="w-5 h-5" />
+              <Button variant="ghost" size="icon" className="text-foreground">
+                <Menu className="w-6 h-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-64">
-              <nav className="flex flex-col gap-2 mt-8">
+            <SheetContent side="right" className="w-72 bg-cream-warm">
+              <div className="flex items-center gap-3 mb-8 mt-4">
+                <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
+                  <Pizza className="w-6 h-6 text-primary-foreground" />
+                </div>
+                <div>
+                  <h2 className="font-display font-bold text-foreground">Pizza Volante</h2>
+                  <p className="text-xs text-muted-foreground">Baguio City</p>
+                </div>
+              </div>
+              <nav className="flex flex-col gap-2">
                 {navItems.map((item) => (
                   <Link
                     key={item.path}
                     to={item.path}
                     onClick={() => setOpen(false)}
                     className={cn(
-                      "px-4 py-3 rounded-lg text-sm font-medium transition-colors",
+                      "px-4 py-3 rounded-xl text-base font-medium transition-all",
                       location.pathname === item.path
                         ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                        : "text-foreground hover:bg-primary/10"
                     )}
                   >
                     {item.name}
