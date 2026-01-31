@@ -72,6 +72,7 @@ const Reviews = () => {
 
     try {
       let photoUrl: string | null = null;
+      let sentiment: string | null = null;
 
       // Upload photo via secure edge function if provided
       if (photoFile) {
@@ -92,19 +93,18 @@ const Reviews = () => {
         photoUrl = url;
       }
 
-      const { data: insertedReview, error } = await supabase.from("reviews").insert({
-        name: validation.data.name,
-        email: validation.data.email,
-        rating: validation.data.rating,
-        feedback: validation.data.feedback,
-        receipt_number: validation.data.receipt_number,
-        photo_url: photoUrl,
-      }).select().single();
-
-      if (error) throw error;
-
-      // Auto-analyze sentiment
+      // Analyze sentiment BEFORE inserting.
+      // This avoids having to read back the inserted row, which is intentionally blocked by RLS.
       try {
+        const reviewForAnalysis = {
+          id: crypto.randomUUID(),
+          name: validation.data.name,
+          rating: validation.data.rating,
+          feedback: validation.data.feedback,
+          sentiment: null,
+          created_at: new Date().toISOString(),
+        };
+
         const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-reviews`, {
           method: "POST",
           headers: {
@@ -112,24 +112,42 @@ const Reviews = () => {
             Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
           body: JSON.stringify({
-            reviews: [{ ...insertedReview, rating: validation.data.rating, feedback: validation.data.feedback }],
+            reviews: [reviewForAnalysis],
             action: "analyze-sentiment",
           }),
         });
 
         if (response.ok) {
-          const { sentiment } = await response.json();
-          await supabase.from("reviews").update({ sentiment }).eq("id", insertedReview.id);
+          const json = await response.json();
+          const s = json && typeof json === "object" ? (json as any).sentiment : null;
+          sentiment = typeof s === "string" ? s : null;
         }
       } catch (analyzeError) {
+        // Sentiment is optional — never block submission.
         console.error("Auto-analyze failed:", analyzeError);
       }
+
+      const { error } = await supabase.from("reviews").insert({
+        name: validation.data.name,
+        email: validation.data.email,
+        rating: validation.data.rating,
+        feedback: validation.data.feedback,
+        receipt_number: validation.data.receipt_number,
+        photo_url: photoUrl,
+        sentiment,
+      });
+
+      if (error) throw error;
 
       setIsSubmitted(true);
       toast.success("Thank you for your feedback!");
     } catch (error) {
       console.error("Error submitting review:", error);
-      toast.error("Failed to submit review. Please try again.");
+      const message =
+        error && typeof error === "object" && "message" in error && typeof (error as any).message === "string"
+          ? (error as any).message
+          : "Failed to submit review. Please try again.";
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }
