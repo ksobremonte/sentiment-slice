@@ -16,7 +16,7 @@ const PublicFooter = () => {
                 className="h-16 w-auto"
               />
               <div>
-                <h3 className="font-brand font-bold text-2xl text-secondary-foreground">Pizza VolantƐ</h3>
+                <h3 className="font-brand text-2xl text-secondary-foreground">Pizza Volante</h3>
                 <p className="text-xs text-secondary-foreground/70">Baguio City</p>
               </div>
             </div>
