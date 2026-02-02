@@ -16,10 +16,12 @@ export type Database = {
     Tables: {
       reviews: {
         Row: {
+          approved: boolean | null
           created_at: string
           email: string
           feedback: string
           id: string
+          language: string | null
           name: string
           photo_url: string | null
           rating: number
@@ -27,10 +29,12 @@ export type Database = {
           sentiment: string | null
         }
         Insert: {
+          approved?: boolean | null
           created_at?: string
           email: string
           feedback: string
           id?: string
+          language?: string | null
           name: string
           photo_url?: string | null
           rating: number
@@ -38,10 +42,12 @@ export type Database = {
           sentiment?: string | null
         }
         Update: {
+          approved?: boolean | null
           created_at?: string
           email?: string
           feedback?: string
           id?: string
+          language?: string | null
           name?: string
           photo_url?: string | null
           rating?: number
@@ -54,27 +60,33 @@ export type Database = {
     Views: {
       reviews_public: {
         Row: {
+          approved: boolean | null
           created_at: string | null
           feedback: string | null
           id: string | null
+          language: string | null
           name: string | null
           photo_url: string | null
           rating: number | null
           sentiment: string | null
         }
         Insert: {
+          approved?: boolean | null
           created_at?: string | null
           feedback?: string | null
           id?: string | null
+          language?: string | null
           name?: string | null
           photo_url?: string | null
           rating?: number | null
           sentiment?: string | null
         }
         Update: {
+          approved?: boolean | null
           created_at?: string | null
           feedback?: string | null
           id?: string | null
+          language?: string | null
           name?: string | null
           photo_url?: string | null
           rating?: number | null
