@@ -22,7 +22,12 @@ export const usePublicReviews = () => {
         .gte("rating", 4)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("[usePublicReviews] Error fetching reviews:", error);
+        throw error;
+      }
+      
+      console.log("[usePublicReviews] Fetched reviews:", data);
       return data as PublicReview[];
     },
   });

@@ -9,6 +9,7 @@ import PublicLayout from "@/components/layout/PublicLayout";
 import PublicReviewsList from "@/components/public/PublicReviewsList";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 
 const reviewSchema = z.object({
@@ -20,6 +21,7 @@ const reviewSchema = z.object({
 });
 
 const Reviews = () => {
+  const queryClient = useQueryClient();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [rating, setRating] = useState(0);
@@ -141,6 +143,9 @@ const Reviews = () => {
 
       if (error) throw error;
 
+      // Immediately refresh the reviews list
+      await queryClient.invalidateQueries({ queryKey: ["public-reviews"] });
+      
       setIsSubmitted(true);
       toast.success("Thank you for your feedback!");
     } catch (error) {
