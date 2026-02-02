@@ -31,7 +31,7 @@ const App = () => (
             <Route path="/menu" element={<MenuPage />} />
             <Route path="/reviews" element={<Reviews />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/wp-admin" element={<Login />} />
+            <Route path="/pv-admin" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route

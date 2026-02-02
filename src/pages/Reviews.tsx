@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PublicLayout from "@/components/layout/PublicLayout";
+import PublicReviewsList from "@/components/public/PublicReviewsList";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -168,20 +170,37 @@ const Reviews = () => {
       <section className="py-16 lg:py-24">
         <div className="container mx-auto px-6">
           {/* Header */}
-          <div className="max-w-3xl mx-auto text-center mb-16">
+          <div className="max-w-3xl mx-auto text-center mb-12">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-6">
               <MessageSquare className="w-10 h-10 text-primary" />
             </div>
             <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-6">
-              Share Your <span className="text-primary">Experience</span>
+              Customer <span className="text-primary">Reviews</span>
             </h1>
             <p className="text-lg text-muted-foreground">
-              We value your opinion! Let us know how we can serve you better.
+              See what our customers are saying about Pizza Volante!
             </p>
           </div>
 
-          {/* Review Form */}
-          <div className="max-w-xl mx-auto">
+          {/* Tabs for Reviews and Submit Form */}
+          <div className="max-w-3xl mx-auto">
+            <Tabs defaultValue="reviews" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-8 h-14 p-1 bg-muted rounded-xl">
+                <TabsTrigger value="reviews" className="rounded-lg text-base font-semibold data-[state=active]:bg-card data-[state=active]:shadow-sm">
+                  <Star className="w-4 h-4 mr-2" />
+                  Read Reviews
+                </TabsTrigger>
+                <TabsTrigger value="submit" className="rounded-lg text-base font-semibold data-[state=active]:bg-card data-[state=active]:shadow-sm">
+                  <Send className="w-4 h-4 mr-2" />
+                  Leave a Review
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="reviews">
+                <PublicReviewsList />
+              </TabsContent>
+              
+              <TabsContent value="submit">
             {isSubmitted ? (
               <div className="bg-card border-2 border-success/30 rounded-3xl p-10 text-center shadow-warm animate-fade-in">
                 <div className="w-20 h-20 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-6">
@@ -344,6 +363,8 @@ const Reviews = () => {
                 </Button>
               </form>
             )}
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </section>
