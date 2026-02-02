@@ -1,4 +1,4 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+// Edge function for customer chat
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
