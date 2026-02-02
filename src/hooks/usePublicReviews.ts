@@ -9,16 +9,19 @@ export interface PublicReview {
   sentiment: string | null;
   created_at: string;
   photo_url: string | null;
+  language: string | null;
+  approved: boolean | null;
 }
 
 export const usePublicReviews = () => {
   return useQuery({
     queryKey: ["public-reviews"],
     queryFn: async () => {
-      // Fetch only 4-star and 5-star reviews for public display
+      // Fetch only 4-star and 5-star approved reviews for public display
+      // The view already filters to approved = true
       const { data, error } = await supabase
         .from("reviews_public")
-        .select("id, name, rating, feedback, sentiment, created_at, photo_url")
+        .select("id, name, rating, feedback, sentiment, created_at, photo_url, language, approved")
         .gte("rating", 4)
         .order("created_at", { ascending: false });
 

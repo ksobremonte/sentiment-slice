@@ -98,11 +98,13 @@ Only return the JSON array, no other text. Format: ["id1", "id2", "id3", ...]`;
     }
 
     if (action === "analyze-sentiment") {
-      // Analyze sentiment of a single review
+      // Analyze sentiment and detect language of a single review
       const review = reviews[0] as Review;
-      const systemPrompt = `You are a sentiment analyzer for a pizza restaurant. Analyze the following customer review and determine if the sentiment is positive, negative, or neutral.
+      const systemPrompt = `You are an analyzer for a pizza restaurant. Analyze the following customer review and determine:
+1. The sentiment: positive, negative, or neutral
+2. The language of the feedback text (use ISO 639-1 code, e.g., "en" for English, "es" for Spanish, "fr" for French)
 
-Consider:
+Consider for sentiment:
 1. The star rating (1-5 stars)
 2. The tone and words used in the feedback
 3. Whether the customer seems satisfied or dissatisfied
@@ -111,7 +113,7 @@ A 4-5 star review with positive/neutral language = positive
 A 1-2 star review with negative language = negative
 A 3 star review or mixed feedback = neutral
 
-Return ONLY one word: "positive", "negative", or "neutral"`;
+Return ONLY a JSON object with two fields: {"sentiment": "positive|negative|neutral", "language": "en|es|fr|etc"}`;
 
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
@@ -145,15 +147,33 @@ Return ONLY one word: "positive", "negative", or "neutral"`;
       }
 
       const data = await response.json();
-      const content = data.choices?.[0]?.message?.content?.toLowerCase().trim() || "neutral";
+      const content = data.choices?.[0]?.message?.content || "{}";
       
-      // Extract just the sentiment word
+      // Parse the JSON response
       let sentiment = "neutral";
-      if (content.includes("positive")) sentiment = "positive";
-      else if (content.includes("negative")) sentiment = "negative";
-      else if (content.includes("neutral")) sentiment = "neutral";
+      let language = "en";
+      let approved = true;
+      
+      try {
+        const parsed = JSON.parse(content.replace(/```json\n?|\n?```/g, '').trim());
+        if (parsed.sentiment) {
+          if (parsed.sentiment.includes("positive")) sentiment = "positive";
+          else if (parsed.sentiment.includes("negative")) sentiment = "negative";
+          else sentiment = "neutral";
+        }
+        if (parsed.language) {
+          language = parsed.language.toLowerCase().substring(0, 5);
+          // Auto-reject non-English reviews for moderation
+          approved = language === "en";
+        }
+      } catch {
+        // Fallback: try to extract sentiment from raw text
+        const lower = content.toLowerCase();
+        if (lower.includes("positive")) sentiment = "positive";
+        else if (lower.includes("negative")) sentiment = "negative";
+      }
 
-      return new Response(JSON.stringify({ sentiment }), {
+      return new Response(JSON.stringify({ sentiment, language, approved }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

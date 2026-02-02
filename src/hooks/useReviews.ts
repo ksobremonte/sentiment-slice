@@ -11,6 +11,8 @@ export interface Review {
   created_at: string;
   receipt_number: string | null;
   photo_url: string | null;
+  language: string | null;
+  approved: boolean | null;
 }
 
 export const useReviews = () => {
@@ -42,10 +44,10 @@ export const useReviews = () => {
   return useQuery({
     queryKey: ["reviews"],
     queryFn: async () => {
-      // Fetch from the reviews_public view (excludes email and receipt_number for security)
+      // Fetch all reviews directly for dashboard (admin view sees all)
       const { data, error } = await supabase
-        .from("reviews_public")
-        .select("id, name, rating, feedback, sentiment, created_at, photo_url")
+        .from("reviews")
+        .select("id, name, rating, feedback, sentiment, created_at, photo_url, language, approved")
         .order("created_at", { ascending: false });
 
       if (error) throw error;

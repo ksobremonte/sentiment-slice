@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
-import { MessageSquare, Users, Clock, Search, Filter, LogOut, Sparkles, Loader2 } from "lucide-react";
+import { MessageSquare, Users, Clock, Search, Filter, LogOut, Sparkles, Loader2, AlertTriangle } from "lucide-react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import StatsCard from "@/components/dashboard/StatsCard";
 import ReviewCard from "@/components/dashboard/ReviewCard";
+import PendingReviewCard from "@/components/dashboard/PendingReviewCard";
 import SentimentResult from "@/components/dashboard/SentimentResult";
 import StatsDetail from "@/components/dashboard/StatsDetail";
 import ReviewChat from "@/components/dashboard/ReviewChat";
@@ -27,21 +28,26 @@ const Dashboard = () => {
   const [filterSentiment, setFilterSentiment] = useState<string | null>(null);
   const [sortedReviews, setSortedReviews] = useState<Review[]>([]);
   const [isAISorted, setIsAISorted] = useState(false);
+  const [processingReviewId, setProcessingReviewId] = useState<string | null>(null);
   const { signOut, user } = useAuthContext();
   const navigate = useNavigate();
   const { data: reviews = [], refetch } = useReviews();
   const { sortReviewsByRelevance, isSorting, error: sortError } = useAIReviewSort();
 
-  // Update sorted reviews when reviews change
+  // Separate approved and pending reviews
+  const approvedReviews = useMemo(() => reviews.filter(r => r.approved === true), [reviews]);
+  const pendingReviews = useMemo(() => reviews.filter(r => r.approved === false), [reviews]);
+
+  // Update sorted reviews when approved reviews change
   useEffect(() => {
-    if (reviews.length > 0 && !isAISorted) {
-      setSortedReviews(reviews);
+    if (approvedReviews.length > 0 && !isAISorted) {
+      setSortedReviews(approvedReviews);
     }
-  }, [reviews, isAISorted]);
+  }, [approvedReviews, isAISorted]);
 
   const handleAISort = async () => {
-    if (reviews.length === 0) return;
-    const sorted = await sortReviewsByRelevance(reviews);
+    if (approvedReviews.length === 0) return;
+    const sorted = await sortReviewsByRelevance(approvedReviews);
     setSortedReviews(sorted);
     setIsAISorted(true);
     if (!sortError) {
@@ -50,9 +56,48 @@ const Dashboard = () => {
   };
 
   const resetSort = () => {
-    setSortedReviews(reviews);
+    setSortedReviews(approvedReviews);
     setIsAISorted(false);
   };
+
+  const handleApproveReview = async (review: Review) => {
+    setProcessingReviewId(review.id);
+    try {
+      const { error } = await supabase
+        .from("reviews")
+        .update({ approved: true })
+        .eq("id", review.id);
+      
+      if (error) throw error;
+      
+      toast.success("Review approved and now visible on public page");
+      refetch();
+    } catch (err) {
+      toast.error("Failed to approve review");
+    } finally {
+      setProcessingReviewId(null);
+    }
+  };
+
+  const handleRejectReview = async (review: Review) => {
+    setProcessingReviewId(review.id);
+    try {
+      const { error } = await supabase
+        .from("reviews")
+        .delete()
+        .eq("id", review.id);
+      
+      if (error) throw error;
+      
+      toast.success("Review deleted");
+      refetch();
+    } catch (err) {
+      toast.error("Failed to delete review");
+    } finally {
+      setProcessingReviewId(null);
+    }
+  };
+
 
   const handleLogout = async () => {
     const { error } = await signOut();
@@ -108,7 +153,7 @@ const Dashboard = () => {
     setView({ type: "stats", statsType });
   };
 
-  const reviewsToFilter = isAISorted ? sortedReviews : reviews;
+  const reviewsToFilter = isAISorted ? sortedReviews : approvedReviews;
   const filteredReviews = reviewsToFilter.filter(review => {
     const matchesSearch = review.feedback.toLowerCase().includes(searchQuery.toLowerCase()) ||
       review.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -208,6 +253,33 @@ const Dashboard = () => {
           onFilterChange={setFilterSentiment}
         />
 
+        {/* Pending Reviews Section */}
+        {pendingReviews.length > 0 && (
+          <section className="mb-12">
+            <div className="flex items-center gap-3 mb-6">
+              <AlertTriangle className="w-5 h-5 text-warning" />
+              <h2 className="text-xl font-display font-bold text-foreground">Pending Moderation</h2>
+              <span className="text-sm bg-warning/10 text-warning px-3 py-1 rounded-full font-semibold">
+                {pendingReviews.length} review{pendingReviews.length !== 1 ? "s" : ""}
+              </span>
+            </div>
+            <p className="text-muted-foreground mb-6 text-sm">
+              These reviews are flagged for moderation (non-English content detected). Review and approve or reject them.
+            </p>
+            <div className="space-y-4">
+              {pendingReviews.map((review) => (
+                <PendingReviewCard
+                  key={review.id}
+                  review={review}
+                  onApprove={handleApproveReview}
+                  onReject={handleRejectReview}
+                  isProcessing={processingReviewId === review.id}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Reviews Section */}
         <section>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
@@ -225,7 +297,7 @@ const Dashboard = () => {
                 variant={isAISorted ? "secondary" : "outline"}
                 size="sm"
                 onClick={isAISorted ? resetSort : handleAISort}
-                disabled={isSorting || reviews.length === 0}
+                disabled={isSorting || approvedReviews.length === 0}
                 className="rounded-xl border-2 font-semibold"
               >
                 {isSorting ? (

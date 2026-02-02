@@ -77,6 +77,8 @@ const Reviews = () => {
     try {
       let photoUrl: string | null = null;
       let sentiment: string | null = null;
+      let language: string | null = null;
+      let approved: boolean = true;
 
       // Upload photo via secure edge function if provided
       if (photoFile) {
@@ -97,7 +99,7 @@ const Reviews = () => {
         photoUrl = url;
       }
 
-      // Analyze sentiment BEFORE inserting.
+      // Analyze sentiment and detect language BEFORE inserting.
       // This avoids having to read back the inserted row, which is intentionally blocked by RLS.
       try {
         const reviewForAnalysis = {
@@ -123,11 +125,12 @@ const Reviews = () => {
 
         if (response.ok) {
           const json = await response.json();
-          const s = json && typeof json === "object" ? (json as any).sentiment : null;
-          sentiment = typeof s === "string" ? s : null;
+          sentiment = json?.sentiment ?? null;
+          language = json?.language ?? null;
+          approved = json?.approved ?? true;
         }
       } catch (analyzeError) {
-        // Sentiment is optional — never block submission.
+        // Analysis is optional — never block submission.
         console.error("Auto-analyze failed:", analyzeError);
       }
 
@@ -139,6 +142,8 @@ const Reviews = () => {
         receipt_number: validation.data.receipt_number,
         photo_url: photoUrl,
         sentiment,
+        language,
+        approved,
       });
 
       if (error) throw error;
