@@ -18,7 +18,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }
 
   if (!user) {
-    return <Navigate to="/pv-admin" replace />;
+    return <Navigate to="/pz-admin" replace />;
   }
 
   return <>{children}</>;
