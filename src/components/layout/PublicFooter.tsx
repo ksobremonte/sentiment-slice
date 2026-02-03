@@ -10,11 +10,7 @@ const PublicFooter = () => {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              <img 
-                src={pizzaVolanteLogo} 
-                alt="Pizza Volante Logo" 
-                className="h-16 w-auto"
-              />
+              <img src={pizzaVolanteLogo} alt="Pizza Volante Logo" className="h-16 w-auto" />
               <div>
                 <h3 className="font-brand text-2xl text-secondary-foreground">Pizza Volante</h3>
                 <p className="text-xs text-secondary-foreground/70">Baguio City</p>
@@ -31,10 +27,18 @@ const PublicFooter = () => {
               Quick Links
             </h4>
             <nav className="flex flex-col gap-3">
-              <Link to="/" className="text-sm text-secondary-foreground/80 hover:text-primary transition-colors">Home</Link>
-              <Link to="/about" className="text-sm text-secondary-foreground/80 hover:text-primary transition-colors">About Us</Link>
-              <Link to="/menu" className="text-sm text-secondary-foreground/80 hover:text-primary transition-colors">Our Menu</Link>
-              <Link to="/reviews" className="text-sm text-secondary-foreground/80 hover:text-primary transition-colors">Reviews</Link>
+              <Link to="/" className="text-sm text-secondary-foreground/80 hover:text-primary transition-colors">
+                Home
+              </Link>
+              <Link to="/about" className="text-sm text-secondary-foreground/80 hover:text-primary transition-colors">
+                About Us
+              </Link>
+              <Link to="/menu" className="text-sm text-secondary-foreground/80 hover:text-primary transition-colors">
+                Our Menu
+              </Link>
+              <Link to="/reviews" className="text-sm text-secondary-foreground/80 hover:text-primary transition-colors">
+                Reviews
+              </Link>
             </nav>
           </div>
 
@@ -48,7 +52,7 @@ const PublicFooter = () => {
                 <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
                   <Phone className="w-4 h-4 text-primary" />
                 </div>
-                <span>+63 912 345 6789</span>
+                <span>+63 (074) 445-0777</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-secondary-foreground/80">
                 <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
