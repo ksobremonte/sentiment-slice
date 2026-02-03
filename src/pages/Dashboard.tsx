@@ -8,8 +8,6 @@ import SentimentResult from "@/components/dashboard/SentimentResult";
 import StatsDetail from "@/components/dashboard/StatsDetail";
 import ReviewChat from "@/components/dashboard/ReviewChat";
 import SentimentChart from "@/components/dashboard/SentimentChart";
-import TrendAnalysisChart from "@/components/dashboard/TrendAnalysisChart";
-import KeywordCloud from "@/components/dashboard/KeywordCloud";
 import { useReviews, Review } from "@/hooks/useReviews";
 import { useAIReviewSort } from "@/hooks/useAIReviewSort";
 import { Input } from "@/components/ui/input";
@@ -254,12 +252,6 @@ const Dashboard = () => {
           filterSentiment={filterSentiment}
           onFilterChange={setFilterSentiment}
         />
-
-        {/* Trend Analysis - from capstone paper requirements */}
-        <TrendAnalysisChart reviews={reviews} />
-
-        {/* Keyword Frequency Visualization - from capstone paper requirements */}
-        <KeywordCloud reviews={reviews} />
 
         {/* Pending Reviews Section */}
         {pendingReviews.length > 0 && (
