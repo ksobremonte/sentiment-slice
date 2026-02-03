@@ -28,7 +28,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h3 className="font-display font-semibold text-xl text-foreground mb-2">Phone</h3>
-                  <p className="text-lg text-primary font-medium">+63 912 345 6789</p>
+                  <p className="text-lg text-primary font-medium">+63 (074) 445-0777</p>
                   <p className="text-sm text-muted-foreground mt-2">For orders & inquiries</p>
                 </div>
               </div>
@@ -68,9 +68,15 @@ const Contact = () => {
                 <div>
                   <h3 className="font-display font-semibold text-xl text-foreground mb-2">Hours</h3>
                   <div className="space-y-1">
-                    <p className="text-foreground"><span className="text-muted-foreground">Mon - Thu:</span> 11AM - 9PM</p>
-                    <p className="text-foreground"><span className="text-muted-foreground">Fri - Sat:</span> 11AM - 10PM</p>
-                    <p className="text-foreground"><span className="text-muted-foreground">Sunday:</span> 12PM - 8PM</p>
+                    <p className="text-foreground">
+                      <span className="text-muted-foreground">Mon - Thu:</span> 11AM - 9PM
+                    </p>
+                    <p className="text-foreground">
+                      <span className="text-muted-foreground">Fri - Sat:</span> 11AM - 10PM
+                    </p>
+                    <p className="text-foreground">
+                      <span className="text-muted-foreground">Sunday:</span> 12PM - 8PM
+                    </p>
                   </div>
                 </div>
               </div>
@@ -82,9 +88,7 @@ const Contact = () => {
             <div className="bg-secondary rounded-3xl p-8 text-center shadow-warm">
               <MapPin className="w-12 h-12 text-primary mx-auto mb-4" />
               <h3 className="font-display font-semibold text-xl text-secondary-foreground mb-2">Visit Our Pizzeria</h3>
-              <p className="text-secondary-foreground/80">
-                Located at the heart of Session Road, Baguio City
-              </p>
+              <p className="text-secondary-foreground/80">Located at the heart of Session Road, Baguio City</p>
             </div>
           </div>
         </div>
