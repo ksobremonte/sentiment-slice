@@ -11,32 +11,39 @@ const Home = () => {
       <section className="relative py-20 lg:py-32 overflow-hidden">
         {/* Warm gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/10" />
-        
+
         <div className="container mx-auto px-6 relative">
           <div className="max-w-4xl mx-auto text-center">
             {/* Decorative badge */}
             <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-semibold mb-8 shadow-subtle">
               <ChefHat className="w-5 h-5" />
-              <span>Baguio's Favorite Pizzeria Since 2020</span>
+              <span>Baguio's Favorite Pizzeria Since 2000</span>
             </div>
-            
+
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-foreground mb-8 leading-tight">
               Authentic Italian Pizza in the
               <span className="block text-primary mt-2">City of Pines</span>
             </h1>
-            
+
             <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
-              Experience the perfect blend of traditional recipes and fresh local ingredients. 
-              Every pizza is handcrafted with love and baked to perfection in our wood-fired oven.
+              Experience the perfect blend of traditional recipes and fresh local ingredients. Every pizza is
+              handcrafted with love and baked to perfection in our wood-fired oven.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-lg rounded-xl shadow-warm">
-                <Link to="/menu">
-                  View Our Menu
-                </Link>
+              <Button
+                asChild
+                size="lg"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-lg rounded-xl shadow-warm"
+              >
+                <Link to="/menu">View Our Menu</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-2 border-primary text-primary hover:bg-primary/10 font-semibold px-8 py-6 text-lg rounded-xl">
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="border-2 border-primary text-primary hover:bg-primary/10 font-semibold px-8 py-6 text-lg rounded-xl"
+              >
                 <Link to="/reviews">
                   <Star className="w-5 h-5 mr-2" />
                   Read Reviews
@@ -58,7 +65,7 @@ const Home = () => {
               We bring the authentic taste of Italy to Baguio with every slice
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-card rounded-2xl p-8 shadow-card hover:shadow-warm transition-shadow duration-300 border border-border text-center">
               <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
@@ -69,7 +76,7 @@ const Home = () => {
                 Only the finest ingredients sourced locally from Benguet farms and imported from Italy.
               </p>
             </div>
-            
+
             <div className="bg-card rounded-2xl p-8 shadow-card hover:shadow-warm transition-shadow duration-300 border border-border text-center">
               <div className="w-20 h-20 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-6">
                 <Flame className="w-10 h-10 text-accent" />
@@ -79,7 +86,7 @@ const Home = () => {
                 Every pizza is baked to order in our traditional wood-fired oven for that authentic taste.
               </p>
             </div>
-            
+
             <div className="bg-card rounded-2xl p-8 shadow-card hover:shadow-warm transition-shadow duration-300 border border-border text-center">
               <div className="w-20 h-20 rounded-2xl bg-success/10 flex items-center justify-center mx-auto mb-6">
                 <Truck className="w-10 h-10 text-success" />
@@ -100,7 +107,7 @@ const Home = () => {
             {/* Decorative elements */}
             <div className="absolute top-4 left-4 w-20 h-20 rounded-full border-2 border-secondary-foreground/10 opacity-50" />
             <div className="absolute bottom-4 right-4 w-32 h-32 rounded-full border-2 border-secondary-foreground/10 opacity-50" />
-            
+
             <div className="relative">
               <img src={pizzaVolanteLogo} alt="Pizza Volante" className="h-24 w-auto mx-auto mb-6" />
               <h2 className="text-3xl md:text-4xl font-display font-bold text-secondary-foreground mb-6">
@@ -109,7 +116,11 @@ const Home = () => {
               <p className="text-secondary-foreground/80 mb-8 max-w-xl mx-auto text-lg">
                 Your feedback helps us serve you better. Leave a review and let us know how we're doing.
               </p>
-              <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-10 py-6 text-lg rounded-xl shadow-warm">
+              <Button
+                asChild
+                size="lg"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-10 py-6 text-lg rounded-xl shadow-warm"
+              >
                 <Link to="/reviews">
                   <Star className="w-5 h-5 mr-2" />
                   Leave a Review
