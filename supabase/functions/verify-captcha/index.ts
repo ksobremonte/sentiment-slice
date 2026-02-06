@@ -49,6 +49,8 @@ Deno.serve(async (req) => {
     form.set("secret", secret);
     form.set("response", token);
 
+    console.log("[verify-captcha] Verifying token with hCaptcha...");
+
     const verifyRes = await fetch("https://hcaptcha.com/siteverify", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -56,13 +58,16 @@ Deno.serve(async (req) => {
     });
 
     const verifyJson = await verifyRes.json().catch(() => null);
+    console.log("[verify-captcha] hCaptcha response:", JSON.stringify(verifyJson));
+    
     const success = Boolean(verifyJson?.success);
 
     return new Response(JSON.stringify({ success }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch {
+  } catch (err) {
+    console.error("[verify-captcha] Error:", err);
     return new Response(JSON.stringify({ success: false }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
