@@ -1,14 +1,14 @@
-// Edge function for customer chat with real review data and feedback detection
+// Edge function for customer chat with persistent conversations and admin replies
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 interface Message {
-  role: "user" | "assistant" | "system";
+  role: "user" | "assistant" | "admin" | "system";
   content: string;
 }
 
@@ -100,22 +100,106 @@ Respond with a JSON object:
   }
 }
 
-// Function to save feedback as a review
+// Get or create a conversation
+async function getOrCreateConversation(
+  supabase: ReturnType<typeof createClient>,
+  sessionId: string
+): Promise<string | null> {
+  // Try to get existing conversation
+  const { data: existing } = await supabase
+    .from("chat_conversations")
+    .select("id")
+    .eq("session_id", sessionId)
+    .single();
+
+  if (existing) {
+    return existing.id;
+  }
+
+  // Create new conversation
+  const { data: created, error } = await supabase
+    .from("chat_conversations")
+    .insert({ session_id: sessionId })
+    .select("id")
+    .single();
+
+  if (error) {
+    console.error("Error creating conversation:", error);
+    return null;
+  }
+
+  return created.id;
+}
+
+// Save a message to the database
+async function saveMessage(
+  supabase: ReturnType<typeof createClient>,
+  conversationId: string,
+  role: "user" | "assistant" | "admin",
+  content: string,
+  isComplaint: boolean = false,
+  sentiment?: string
+): Promise<void> {
+  const { error } = await supabase.from("chat_messages").insert({
+    conversation_id: conversationId,
+    role,
+    content,
+    is_complaint: isComplaint,
+    sentiment: sentiment || null,
+  });
+
+  if (error) {
+    console.error("Error saving message:", error);
+  }
+}
+
+// Fetch admin messages that the customer hasn't seen yet
+async function fetchAdminReplies(
+  supabase: ReturnType<typeof createClient>,
+  conversationId: string,
+  lastKnownMessageCount: number
+): Promise<Message[]> {
+  const { data: allMessages, error } = await supabase
+    .from("chat_messages")
+    .select("role, content, created_at")
+    .eq("conversation_id", conversationId)
+    .order("created_at", { ascending: true });
+
+  if (error || !allMessages) {
+    return [];
+  }
+
+  // Get messages after the client's known count (admin replies)
+  const newMessages = allMessages.slice(lastKnownMessageCount);
+  return newMessages
+    .filter((m: { role: string }) => m.role === "admin")
+    .map((m: { role: string; content: string }) => ({ role: m.role as "admin", content: m.content }));
+}
+
+// Function to save feedback as a review linked to conversation
 async function saveFeedbackAsReview(
   supabase: ReturnType<typeof createClient>,
   feedback: string,
-  classification: FeedbackClassification
+  classification: FeedbackClassification,
+  conversationId: string
 ): Promise<void> {
   try {
-    // Insert the review with chat-specific defaults
+    // Update conversation status to pending_admin
+    await supabase
+      .from("chat_conversations")
+      .update({ status: "pending_admin" })
+      .eq("id", conversationId);
+
+    // Insert the review linked to this conversation
     const { error } = await supabase.from("reviews").insert({
       name: "Chat Visitor",
       email: "chat-feedback@pizzavolante.local",
-      rating: 3, // Neutral rating - sentiment is determined from text
+      rating: 3,
       feedback: feedback,
       sentiment: classification.sentiment,
-      approved: false, // Always require admin moderation for chat feedback
+      approved: false,
       language: "en",
+      conversation_id: conversationId,
     });
 
     if (error) {
@@ -134,13 +218,18 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { messages, storeInfo } = await req.json() as { messages: Message[]; storeInfo: StoreInfo };
+    const { messages, storeInfo, sessionId, messageCount } = await req.json() as { 
+      messages: Message[]; 
+      storeInfo: StoreInfo;
+      sessionId?: string;
+      messageCount?: number;
+    };
 
     if (!messages || !Array.isArray(messages)) {
       throw new Error("Messages array is required");
     }
 
-    // Initialize Supabase client to fetch real reviews
+    // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
@@ -155,20 +244,37 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get the latest user message for feedback classification
+    // Get or create conversation if sessionId provided
+    let conversationId: string | null = null;
+    if (sessionId) {
+      conversationId = await getOrCreateConversation(supabase, sessionId);
+    }
+
+    // Check for admin replies before responding
+    let adminReplies: Message[] = [];
+    if (conversationId && typeof messageCount === "number") {
+      adminReplies = await fetchAdminReplies(supabase, conversationId, messageCount);
+    }
+
+    // Get the latest user message
     const latestUserMessage = messages.filter(m => m.role === "user").pop();
     
-    // Classify if the message contains feedback (run in background, don't block response)
-    if (latestUserMessage && latestUserMessage.content.length > 10) {
+    // Save user message to database
+    if (conversationId && latestUserMessage) {
+      await saveMessage(supabase, conversationId, "user", latestUserMessage.content);
+    }
+
+    // Classify feedback and save if it's a complaint
+    if (latestUserMessage && latestUserMessage.content.length > 10 && conversationId) {
       classifyFeedback(latestUserMessage.content, lovableApiKey).then(async (classification) => {
         if (classification.is_feedback && classification.confidence >= 0.7) {
           console.log("Detected feedback:", classification);
-          await saveFeedbackAsReview(supabase, latestUserMessage.content, classification);
+          await saveFeedbackAsReview(supabase, latestUserMessage.content, classification, conversationId!);
         }
       }).catch(err => console.error("Background feedback classification error:", err));
     }
 
-    // Fetch approved reviews from the database (prioritizing 4-5 star reviews)
+    // Fetch approved reviews from the database
     const { data: reviews, error: reviewsError } = await supabase
       .from("reviews_public")
       .select("id, name, rating, feedback, sentiment, created_at")
@@ -201,6 +307,11 @@ Deno.serve(async (req) => {
     const fiveStarCount = (reviews || []).filter((r: Review) => r.rating === 5).length;
     const fourStarCount = (reviews || []).filter((r: Review) => r.rating === 4).length;
 
+    // Include admin replies in context if any
+    const adminContext = adminReplies.length > 0
+      ? `\n\nRECENT ADMIN REPLIES TO THIS CUSTOMER:\n${adminReplies.map(m => `- Admin: "${m.content}"`).join("\n")}\nPlease acknowledge the admin's response and continue the conversation naturally.`
+      : "";
+
     const systemPrompt = `You are a friendly and helpful customer service assistant for ${storeInfo.name}, a popular Italian pizzeria located in ${storeInfo.location}.
 
 STORE INFORMATION:
@@ -231,6 +342,7 @@ HIGHLIGHTED CUSTOMER REVIEWS (4-5 Stars):
 ${formatReviews(highRatedReviews)}
 
 ${otherReviews.length > 0 ? `OTHER CUSTOMER REVIEWS:\n${formatReviews(otherReviews)}` : ""}
+${adminContext}
 
 YOUR ROLE:
 1. Answer questions about store hours, location, and contact info
@@ -240,7 +352,8 @@ YOUR ROLE:
 5. Highlight positive 4-5 star reviews when discussing customer satisfaction
 6. Summarize review themes when asked about what customers think
 7. Be warm, friendly, and use occasional Italian phrases like "Buongiorno!" or "Grazie!"
-8. If a customer expresses a complaint or concern, acknowledge it empathetically and assure them their feedback has been noted
+8. If a customer expresses a complaint or concern, acknowledge it empathetically and assure them their feedback has been noted AND that our management team will respond shortly
+9. If an admin has replied, relay their message naturally and continue helping the customer
 
 CRITICAL GUIDELINES:
 - NEVER invent or fabricate customer reviews - only use the real reviews provided above
@@ -249,11 +362,17 @@ CRITICAL GUIDELINES:
 - For orders or reservations, direct them to call ${storeInfo.phone}
 - If you don't know something specific, be honest and suggest they contact the store directly
 - Be enthusiastic about the food and share genuine customer praise!
-- When customers share complaints or concerns, respond with empathy and let them know their feedback is being forwarded to management`;
+- When customers share complaints or concerns, respond with empathy and let them know their feedback is being forwarded to management and they will receive a response in this chat`;
+
+    // Combine messages including admin replies for context
+    const allMessagesForAI = [
+      ...messages.filter((m) => m.role === "user" || m.role === "assistant"),
+      ...adminReplies.map(m => ({ role: "assistant" as const, content: `[Management Response] ${m.content}` })),
+    ];
 
     const apiMessages: Message[] = [
       { role: "system", content: systemPrompt },
-      ...messages.filter((m) => m.role === "user" || m.role === "assistant"),
+      ...allMessagesForAI,
     ];
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -289,12 +408,59 @@ CRITICAL GUIDELINES:
       throw new Error("Failed to get response from AI");
     }
 
-    return new Response(response.body, {
+    // We need to save the assistant's response after streaming
+    // Create a TransformStream to capture the response while passing it through
+    const { readable, writable } = new TransformStream();
+    const writer = writable.getWriter();
+    const reader = response.body!.getReader();
+    
+    let fullAssistantResponse = "";
+    
+    (async () => {
+      try {
+        const decoder = new TextDecoder();
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          const chunk = decoder.decode(value, { stream: true });
+          await writer.write(value);
+          
+          // Parse SSE to extract content
+          const lines = chunk.split("\n");
+          for (const line of lines) {
+            if (line.startsWith("data: ") && !line.includes("[DONE]")) {
+              try {
+                const json = JSON.parse(line.slice(6));
+                const content = json.choices?.[0]?.delta?.content;
+                if (content) {
+                  fullAssistantResponse += content;
+                }
+              } catch {
+                // Ignore parsing errors
+              }
+            }
+          }
+        }
+        await writer.close();
+        
+        // Save assistant response to database
+        if (conversationId && fullAssistantResponse) {
+          await saveMessage(supabase, conversationId, "assistant", fullAssistantResponse);
+        }
+      } catch (err) {
+        console.error("Error in stream processing:", err);
+        await writer.abort(err);
+      }
+    })();
+
+    return new Response(readable, {
       headers: {
         ...corsHeaders,
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache",
         Connection: "keep-alive",
+        "X-Conversation-Id": conversationId || "",
       },
     });
   } catch (error) {

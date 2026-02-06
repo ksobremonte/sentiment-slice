@@ -15,6 +15,7 @@ export interface Review {
   approved: boolean | null;
   admin_response: string | null;
   admin_response_at: string | null;
+  conversation_id: string | null;
 }
 
 export const useReviews = () => {
@@ -49,7 +50,7 @@ export const useReviews = () => {
       // Fetch all reviews directly for dashboard (admin view sees all)
       const { data, error } = await supabase
         .from("reviews")
-        .select("id, name, rating, feedback, sentiment, created_at, photo_url, language, approved, admin_response, admin_response_at")
+        .select("id, name, rating, feedback, sentiment, created_at, photo_url, language, approved, admin_response, admin_response_at, conversation_id")
         .order("created_at", { ascending: false });
 
       if (error) throw error;

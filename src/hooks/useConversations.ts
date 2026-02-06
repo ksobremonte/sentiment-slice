@@ -1,0 +1,167 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
+
+export interface ChatMessage {
+  id: string;
+  conversation_id: string;
+  role: "user" | "assistant" | "admin";
+  content: string;
+  created_at: string;
+  is_complaint: boolean;
+  sentiment: string | null;
+}
+
+export interface ChatConversation {
+  id: string;
+  session_id: string;
+  created_at: string;
+  updated_at: string;
+  status: "active" | "resolved" | "pending_admin";
+  messages?: ChatMessage[];
+}
+
+export const useConversations = () => {
+  const queryClient = useQueryClient();
+
+  // Subscribe to realtime changes
+  useEffect(() => {
+    const conversationsChannel = supabase
+      .channel('conversations-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'chat_conversations',
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["conversations"] });
+        }
+      )
+      .subscribe();
+
+    const messagesChannel = supabase
+      .channel('messages-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'chat_messages',
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["conversations"] });
+          queryClient.invalidateQueries({ queryKey: ["conversation-messages"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(conversationsChannel);
+      supabase.removeChannel(messagesChannel);
+    };
+  }, [queryClient]);
+
+  return useQuery({
+    queryKey: ["conversations"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("chat_conversations")
+        .select("*")
+        .order("updated_at", { ascending: false });
+
+      if (error) throw error;
+      return data as ChatConversation[];
+    },
+  });
+};
+
+export const useConversationMessages = (conversationId: string | null) => {
+  const queryClient = useQueryClient();
+
+  // Subscribe to realtime changes for this conversation
+  useEffect(() => {
+    if (!conversationId) return;
+
+    const channel = supabase
+      .channel(`messages-${conversationId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'chat_messages',
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["conversation-messages", conversationId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [conversationId, queryClient]);
+
+  return useQuery({
+    queryKey: ["conversation-messages", conversationId],
+    queryFn: async () => {
+      if (!conversationId) return [];
+      
+      const { data, error } = await supabase
+        .from("chat_messages")
+        .select("*")
+        .eq("conversation_id", conversationId)
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+      return data as ChatMessage[];
+    },
+    enabled: !!conversationId,
+  });
+};
+
+export const useSendAdminReply = () => {
+  const queryClient = useQueryClient();
+
+  const sendReply = async (conversationId: string, content: string) => {
+    const { error } = await supabase.from("chat_messages").insert({
+      conversation_id: conversationId,
+      role: "admin",
+      content,
+      is_complaint: false,
+    });
+
+    if (error) throw error;
+
+    // Update conversation status
+    await supabase
+      .from("chat_conversations")
+      .update({ status: "active" })
+      .eq("id", conversationId);
+
+    queryClient.invalidateQueries({ queryKey: ["conversation-messages", conversationId] });
+    queryClient.invalidateQueries({ queryKey: ["conversations"] });
+  };
+
+  return { sendReply };
+};
+
+export const useResolveConversation = () => {
+  const queryClient = useQueryClient();
+
+  const resolve = async (conversationId: string) => {
+    const { error } = await supabase
+      .from("chat_conversations")
+      .update({ status: "resolved" })
+      .eq("id", conversationId);
+
+    if (error) throw error;
+
+    queryClient.invalidateQueries({ queryKey: ["conversations"] });
+  };
+
+  return { resolve };
+};
