@@ -1,4 +1,4 @@
-import { Send, User, Star, Receipt, Image as ImageIcon } from "lucide-react";
+import { Send, User, Star, Image as ImageIcon, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Review } from "@/hooks/useReviews";
@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import AdminResponseDialog from "./AdminResponseDialog";
 
 interface ReviewCardProps {
   review: Review;
@@ -55,6 +56,12 @@ const ReviewCard = ({ review, onAnalyze }: ReviewCardProps) => {
                   {review.sentiment.charAt(0).toUpperCase() + review.sentiment.slice(1)}
                 </span>
               )}
+              {review.name === "Chat Visitor" && (
+                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-primary/10 text-primary flex items-center gap-1">
+                  <MessageSquare className="w-3 h-3" />
+                  Chat Feedback
+                </span>
+              )}
             </div>
             
             {/* Star Rating */}
@@ -71,6 +78,22 @@ const ReviewCard = ({ review, onAnalyze }: ReviewCardProps) => {
             </div>
             
             <p className="text-foreground leading-relaxed">{review.feedback}</p>
+            
+            {/* Admin Response */}
+            {review.admin_response && (
+              <div className="mt-4 p-3 bg-secondary/50 rounded-xl border border-border">
+                <div className="flex items-center gap-2 mb-2">
+                  <MessageSquare className="w-4 h-4 text-primary" />
+                  <span className="text-xs font-semibold text-primary">Admin Response</span>
+                  {review.admin_response_at && (
+                    <span className="text-xs text-muted-foreground">
+                      • {formatDistanceToNow(new Date(review.admin_response_at), { addSuffix: true })}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-foreground">{review.admin_response}</p>
+              </div>
+            )}
             
             {/* Photo Preview */}
             {review.photo_url && (
@@ -94,15 +117,22 @@ const ReviewCard = ({ review, onAnalyze }: ReviewCardProps) => {
             <p className="text-xs text-muted-foreground mt-4">{timeAgo}</p>
           </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onAnalyze(review)}
-          className="flex-shrink-0 rounded-xl border-2 font-semibold hover:bg-primary hover:text-primary-foreground hover:border-primary"
-        >
-          <Send className="w-4 h-4 mr-2" />
-          Analyze
-        </Button>
+        <div className="flex flex-col gap-2 flex-shrink-0">
+          <AdminResponseDialog
+            reviewId={review.id}
+            reviewerName={review.name}
+            existingResponse={review.admin_response}
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onAnalyze(review)}
+            className="rounded-xl border-2 font-semibold hover:bg-primary hover:text-primary-foreground hover:border-primary"
+          >
+            <Send className="w-4 h-4 mr-2" />
+            Analyze
+          </Button>
+        </div>
       </div>
     </div>
   );

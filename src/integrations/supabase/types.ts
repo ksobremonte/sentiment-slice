@@ -16,6 +16,8 @@ export type Database = {
     Tables: {
       reviews: {
         Row: {
+          admin_response: string | null
+          admin_response_at: string | null
           approved: boolean | null
           created_at: string
           email: string
@@ -29,6 +31,8 @@ export type Database = {
           sentiment: string | null
         }
         Insert: {
+          admin_response?: string | null
+          admin_response_at?: string | null
           approved?: boolean | null
           created_at?: string
           email: string
@@ -42,6 +46,8 @@ export type Database = {
           sentiment?: string | null
         }
         Update: {
+          admin_response?: string | null
+          admin_response_at?: string | null
           approved?: boolean | null
           created_at?: string
           email?: string
