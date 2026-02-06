@@ -1,4 +1,4 @@
-import { User, Star, Check, X, Globe, AlertTriangle } from "lucide-react";
+import { User, Star, Check, X, Globe, AlertTriangle, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Review } from "@/hooks/useReviews";
@@ -14,6 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import AdminResponseDialog from "./AdminResponseDialog";
 
 interface PendingReviewCardProps {
   review: Review;
@@ -56,6 +57,12 @@ const PendingReviewCard = ({ review, onApprove, onReject, isProcessing }: Pendin
               <span className="text-xs font-semibold px-3 py-1 rounded-full bg-warning/10 text-warning">
                 Pending Review
               </span>
+              {review.name === "Chat Visitor" && (
+                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-primary/10 text-primary flex items-center gap-1">
+                  <MessageSquare className="w-3 h-3" />
+                  Chat Feedback
+                </span>
+              )}
               {review.language && review.language !== "en" && (
                 <span className="text-xs font-semibold px-3 py-1 rounded-full bg-muted text-muted-foreground flex items-center gap-1">
                   <Globe className="w-3 h-3" />
@@ -79,10 +86,31 @@ const PendingReviewCard = ({ review, onApprove, onReject, isProcessing }: Pendin
             
             <p className="text-foreground leading-relaxed">{review.feedback}</p>
             
+            {/* Admin Response */}
+            {review.admin_response && (
+              <div className="mt-4 p-3 bg-secondary/50 rounded-xl border border-border">
+                <div className="flex items-center gap-2 mb-2">
+                  <MessageSquare className="w-4 h-4 text-primary" />
+                  <span className="text-xs font-semibold text-primary">Admin Response</span>
+                  {review.admin_response_at && (
+                    <span className="text-xs text-muted-foreground">
+                      • {formatDistanceToNow(new Date(review.admin_response_at), { addSuffix: true })}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-foreground">{review.admin_response}</p>
+              </div>
+            )}
+            
             <p className="text-xs text-muted-foreground mt-4">{timeAgo}</p>
           </div>
         </div>
         <div className="flex flex-col gap-2 flex-shrink-0">
+          <AdminResponseDialog
+            reviewId={review.id}
+            reviewerName={review.name}
+            existingResponse={review.admin_response}
+          />
           <Button
             variant="outline"
             size="sm"
