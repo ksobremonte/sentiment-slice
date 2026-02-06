@@ -8,6 +8,7 @@ import SentimentResult from "@/components/dashboard/SentimentResult";
 import StatsDetail from "@/components/dashboard/StatsDetail";
 import ReviewChat from "@/components/dashboard/ReviewChat";
 import SentimentChart from "@/components/dashboard/SentimentChart";
+import ConversationsList from "@/components/dashboard/ConversationsList";
 import { useReviews, Review } from "@/hooks/useReviews";
 import { useAIReviewSort } from "@/hooks/useAIReviewSort";
 import { Input } from "@/components/ui/input";
@@ -246,12 +247,15 @@ const Dashboard = () => {
           </div>
         </section>
 
-        {/* Sentiment Summary */}
-        <SentimentChart 
-          sentimentData={sentimentData}
-          filterSentiment={filterSentiment}
-          onFilterChange={setFilterSentiment}
-        />
+        {/* Conversations and Sentiment */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+          <ConversationsList />
+          <SentimentChart 
+            sentimentData={sentimentData}
+            filterSentiment={filterSentiment}
+            onFilterChange={setFilterSentiment}
+          />
+        </div>
 
         {/* Pending Reviews Section */}
         {pendingReviews.length > 0 && (

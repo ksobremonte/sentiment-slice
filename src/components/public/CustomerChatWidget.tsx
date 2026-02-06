@@ -1,11 +1,12 @@
-import { useState, useRef, useEffect } from "react";
-import { Send, Bot, User, Loader2, MessageSquare, X } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Send, Bot, User, Loader2, MessageSquare, X, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "admin";
   content: string;
 }
 
@@ -23,6 +24,17 @@ const STORE_INFO = {
   delivery: "Free delivery within Baguio City for orders above ₱500",
 };
 
+// Generate or retrieve session ID
+const getSessionId = () => {
+  const storageKey = "pv-chat-session-id";
+  let sessionId = localStorage.getItem(storageKey);
+  if (!sessionId) {
+    sessionId = crypto.randomUUID();
+    localStorage.setItem(storageKey, sessionId);
+  }
+  return sessionId;
+};
+
 const CustomerChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -33,6 +45,8 @@ const CustomerChatWidget = () => {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [sessionId] = useState(getSessionId);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -41,7 +55,43 @@ const CustomerChatWidget = () => {
     }
   }, [messages]);
 
-  const sendMessage = async () => {
+  // Subscribe to admin replies in real-time
+  useEffect(() => {
+    if (!conversationId) return;
+
+    const channel = supabase
+      .channel(`customer-chat-${conversationId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'chat_messages',
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        (payload) => {
+          const newMessage = payload.new as { role: string; content: string };
+          // Only add admin messages (user and assistant are already tracked locally)
+          if (newMessage.role === "admin") {
+            setMessages((prev) => {
+              // Check if we already have this message
+              const isDuplicate = prev.some(
+                (m) => m.role === "admin" && m.content === newMessage.content
+              );
+              if (isDuplicate) return prev;
+              return [...prev, { role: "admin", content: newMessage.content }];
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [conversationId]);
+
+  const sendMessage = useCallback(async () => {
     if (!input.trim() || isLoading) return;
 
     const userMessage: Message = { role: "user", content: input };
@@ -62,8 +112,16 @@ const CustomerChatWidget = () => {
         body: JSON.stringify({
           messages: updatedMessages,
           storeInfo: STORE_INFO,
+          sessionId,
+          messageCount: updatedMessages.length,
         }),
       });
+
+      // Capture conversation ID from response headers
+      const newConversationId = response.headers.get("X-Conversation-Id");
+      if (newConversationId && !conversationId) {
+        setConversationId(newConversationId);
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -127,7 +185,7 @@ const CustomerChatWidget = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [input, isLoading, messages, sessionId, conversationId]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -179,21 +237,34 @@ const CustomerChatWidget = () => {
               key={i}
               className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
-              {msg.role === "assistant" && (
-                <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Bot className="h-5 w-5 text-primary" />
+              {(msg.role === "assistant" || msg.role === "admin") && (
+                <div className={`h-9 w-9 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  msg.role === "admin" ? "bg-primary/20" : "bg-primary/10"
+                }`}>
+                  {msg.role === "admin" ? (
+                    <Shield className="h-5 w-5 text-primary" />
+                  ) : (
+                    <Bot className="h-5 w-5 text-primary" />
+                  )}
                 </div>
               )}
-              <div
-                className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
-                  msg.role === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-foreground"
-                }`}
-              >
-                {msg.content || (isLoading && i === messages.length - 1 ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : null)}
+              <div className="max-w-[80%] space-y-1">
+                {msg.role === "admin" && (
+                  <span className="text-xs font-medium text-primary">Management Response</span>
+                )}
+                <div
+                  className={`rounded-2xl px-4 py-3 text-sm ${
+                    msg.role === "user"
+                      ? "bg-primary text-primary-foreground"
+                      : msg.role === "admin"
+                      ? "bg-primary/10 text-foreground border-2 border-primary/20"
+                      : "bg-muted text-foreground"
+                  }`}
+                >
+                  {msg.content || (isLoading && i === messages.length - 1 ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : null)}
+                </div>
               </div>
               {msg.role === "user" && (
                 <div className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">

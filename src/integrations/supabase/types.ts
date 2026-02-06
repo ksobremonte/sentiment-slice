@@ -14,11 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          session_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          session_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          session_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          is_complaint: boolean | null
+          role: string
+          sentiment: string | null
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_complaint?: boolean | null
+          role: string
+          sentiment?: string | null
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_complaint?: boolean | null
+          role?: string
+          sentiment?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reviews: {
         Row: {
           admin_response: string | null
           admin_response_at: string | null
           approved: boolean | null
+          conversation_id: string | null
           created_at: string
           email: string
           feedback: string
@@ -34,6 +97,7 @@ export type Database = {
           admin_response?: string | null
           admin_response_at?: string | null
           approved?: boolean | null
+          conversation_id?: string | null
           created_at?: string
           email: string
           feedback: string
@@ -49,6 +113,7 @@ export type Database = {
           admin_response?: string | null
           admin_response_at?: string | null
           approved?: boolean | null
+          conversation_id?: string | null
           created_at?: string
           email?: string
           feedback?: string
@@ -60,7 +125,15 @@ export type Database = {
           receipt_number?: string | null
           sentiment?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "reviews_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
