@@ -98,32 +98,34 @@ Only return the JSON array, no other text. Format: ["id1", "id2", "id3", ...]`;
     }
 
     if (action === "analyze-sentiment") {
-      // Advanced NLP-based sentiment analysis with multi-aspect evaluation
+      // Pure text-based NLP sentiment analysis - no star rating influence
       const review = reviews[0] as Review;
       
-      const systemPrompt = `You are an advanced sentiment analysis system for a pizza restaurant. Perform deep NLP analysis on customer reviews.
+      const systemPrompt = `You are an advanced sentiment analysis system for a pizza restaurant. Analyze customer review TEXT ONLY to determine sentiment.
+
+CRITICAL: Determine sentiment PURELY from the written text. DO NOT consider or be influenced by any star rating.
 
 ANALYSIS FRAMEWORK:
 1. **Lexical Analysis**: Identify sentiment-bearing words, intensifiers (very, extremely), negations (not, never), and hedging language (somewhat, kind of)
-2. **Contextual Understanding**: Consider sarcasm, irony, and implicit sentiment (e.g., "interesting pizza" could be negative)
+2. **Contextual Understanding**: Detect sarcasm, irony, and implicit sentiment (e.g., "interesting pizza" could be negative)
 3. **Aspect-Based Sentiment**: Evaluate sentiment for different aspects:
    - Food quality (taste, freshness, portion size)
    - Service (staff attitude, speed, accuracy)
    - Value (price vs quality)
    - Ambiance/experience
-4. **Rating-Text Alignment**: Check if the star rating aligns with the text sentiment (misalignment may indicate nuanced feelings)
-5. **Emotional Intensity**: Measure how strongly positive or negative the sentiment is
+4. **Emotional Intensity**: Measure how strongly positive or negative the language is
+5. **Language Patterns**: Consider exclamation marks, capitalization, emoji sentiment
 
-CLASSIFICATION RULES:
-- POSITIVE: Predominantly positive language, satisfaction indicators, recommendation intent, 4-5 stars with matching text
-- NEGATIVE: Complaints, disappointment, frustration, warnings to others, 1-2 stars with matching text  
-- NEUTRAL: Mixed feelings, balanced pros/cons, lukewarm praise, 3 stars, or rating-text mismatch requiring moderation
+CLASSIFICATION RULES (based on TEXT ONLY):
+- POSITIVE: Predominantly positive language, satisfaction indicators, praise, enthusiasm, recommendation language
+- NEGATIVE: Complaints, disappointment, frustration, criticism, warnings, negative adjectives
+- NEUTRAL: Mixed feelings, balanced pros/cons, lukewarm language, factual descriptions without emotion, ambiguous statements
 
 EDGE CASES:
-- Sarcasm with low rating = negative (even if words seem positive)
-- Constructive criticism with high rating = positive (customer is satisfied but helpful)
-- Single word reviews: rely more on rating
-- Emoji-heavy reviews: interpret emoji sentiment`;
+- Sarcasm: Detect through context (e.g., "Oh great, cold pizza again" = negative)
+- Short reviews: Analyze word choice carefully ("OK" = neutral, "Amazing!" = positive, "Terrible" = negative)
+- Emoji-heavy reviews: Interpret emoji sentiment (😊 = positive, 😠 = negative)
+- Constructive criticism with positive tone: Consider overall emotional valence`;
 
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
@@ -135,21 +137,21 @@ EDGE CASES:
           model: "google/gemini-2.5-flash",
           messages: [
             { role: "system", content: systemPrompt },
-            { role: "user", content: `Analyze this review:\n\nRating: ${review.rating}/5 stars\nFeedback: "${review.feedback}"\n\nProvide your analysis.` }
+            { role: "user", content: `Analyze the sentiment of this review text ONLY (ignore any rating information):\n\n"${review.feedback}"\n\nClassify the sentiment based purely on the words and language used.` }
           ],
           tools: [
             {
               type: "function",
               function: {
                 name: "classify_sentiment",
-                description: "Classify the sentiment of a customer review with detailed analysis",
+                description: "Classify the sentiment of a customer review based purely on text analysis",
                 parameters: {
                   type: "object",
                   properties: {
                     sentiment: {
                       type: "string",
                       enum: ["positive", "negative", "neutral"],
-                      description: "The overall sentiment classification"
+                      description: "The overall sentiment classification based on text analysis only"
                     },
                     confidence: {
                       type: "number",
@@ -167,19 +169,19 @@ EDGE CASES:
                         value: { type: "string", enum: ["positive", "negative", "neutral", "not_mentioned"] },
                         experience: { type: "string", enum: ["positive", "negative", "neutral", "not_mentioned"] }
                       },
-                      description: "Sentiment for each aspect of the review"
+                      description: "Sentiment for each aspect mentioned in the review text"
                     },
                     key_phrases: {
                       type: "array",
                       items: { type: "string" },
                       description: "Key sentiment-bearing phrases from the review (max 3)"
                     },
-                    rating_alignment: {
-                      type: "boolean",
-                      description: "Whether the text sentiment aligns with the star rating"
+                    reasoning: {
+                      type: "string",
+                      description: "Brief explanation of why this sentiment was chosen based on the text"
                     }
                   },
-                  required: ["sentiment", "confidence", "language", "aspects", "rating_alignment"]
+                  required: ["sentiment", "confidence", "language", "aspects", "reasoning"]
                 }
               }
             }
@@ -213,7 +215,7 @@ EDGE CASES:
       let confidence = 0.5;
       let aspects = {};
       let keyPhrases: string[] = [];
-      let ratingAlignment = true;
+      let reasoning = "";
       
       try {
         const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
@@ -225,22 +227,21 @@ EDGE CASES:
           language = (parsed.language || "en").toLowerCase().substring(0, 5);
           aspects = parsed.aspects || {};
           keyPhrases = parsed.key_phrases || [];
-          ratingAlignment = parsed.rating_alignment ?? true;
+          reasoning = parsed.reasoning || "";
           
           // Auto-reject non-English reviews for moderation
           approved = language === "en";
           
-          // If rating doesn't align with text AND confidence is low, mark for moderation
-          if (!ratingAlignment && confidence < 0.7) {
+          // Low confidence text analysis = needs human review
+          if (confidence < 0.6) {
             approved = false;
           }
         }
       } catch (parseError) {
         console.error("Failed to parse tool call response:", parseError);
-        // Fallback: use simple heuristics based on rating
-        if (review.rating >= 4) sentiment = "positive";
-        else if (review.rating <= 2) sentiment = "negative";
-        else sentiment = "neutral";
+        // Fallback: mark as neutral and flag for review (no rating-based fallback)
+        sentiment = "neutral";
+        approved = false;
       }
 
       return new Response(JSON.stringify({ 
@@ -250,7 +251,7 @@ EDGE CASES:
         confidence,
         aspects,
         keyPhrases,
-        ratingAlignment
+        reasoning
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
