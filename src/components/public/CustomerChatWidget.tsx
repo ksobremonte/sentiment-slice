@@ -3,7 +3,8 @@ import { Send, Bot, User, Loader2, MessageSquare, X, Shield } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { supabase } from "@/integrations/supabase/client";
+
+const CHECK_REPLIES_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/check-replies`;
 
 interface Message {
   role: "user" | "assistant" | "admin";
@@ -55,41 +56,54 @@ const CustomerChatWidget = () => {
     }
   }, [messages]);
 
-  // Subscribe to admin replies in real-time
+  // Poll for admin replies
+  const lastSeenTimestampRef = useRef<string | null>(null);
+
   useEffect(() => {
-    if (!conversationId) return;
+    if (!conversationId || !isOpen) return;
 
-    const channel = supabase
-      .channel(`customer-chat-${conversationId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'chat_messages',
-          filter: `conversation_id=eq.${conversationId}`,
-        },
-        (payload) => {
-          const newMessage = payload.new as { role: string; content: string };
-          // Only add admin messages (user and assistant are already tracked locally)
-          if (newMessage.role === "admin") {
-            setMessages((prev) => {
-              // Check if we already have this message
-              const isDuplicate = prev.some(
-                (m) => m.role === "admin" && m.content === newMessage.content
+    const pollReplies = async () => {
+      try {
+        const response = await fetch(CHECK_REPLIES_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            conversationId,
+            lastSeenTimestamp: lastSeenTimestampRef.current,
+          }),
+        });
+
+        if (!response.ok) return;
+        const { messages: adminMessages } = await response.json();
+
+        if (adminMessages && adminMessages.length > 0) {
+          setMessages((prev) => {
+            let updated = [...prev];
+            for (const msg of adminMessages) {
+              const isDuplicate = updated.some(
+                (m) => m.role === "admin" && m.content === msg.content
               );
-              if (isDuplicate) return prev;
-              return [...prev, { role: "admin", content: newMessage.content }];
-            });
-          }
+              if (!isDuplicate) {
+                updated = [...updated, { role: "admin", content: msg.content }];
+              }
+            }
+            return updated;
+          });
+          lastSeenTimestampRef.current = adminMessages[adminMessages.length - 1].created_at;
         }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
+      } catch (err) {
+        console.error("Error polling admin replies:", err);
+      }
     };
-  }, [conversationId]);
+
+    const interval = setInterval(pollReplies, 5000);
+    pollReplies(); // Initial check
+
+    return () => clearInterval(interval);
+  }, [conversationId, isOpen]);
 
   const sendMessage = useCallback(async () => {
     if (!input.trim() || isLoading) return;

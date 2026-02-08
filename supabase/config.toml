@@ -11,3 +11,9 @@ verify_jwt = false
 
 [functions.upload-review-photo]
 verify_jwt = false
+
+[functions.customer-chat]
+verify_jwt = false
+
+[functions.check-replies]
+verify_jwt = false
