@@ -45,8 +45,10 @@ export type Database = {
           created_at: string
           id: string
           is_complaint: boolean | null
+          language: string | null
           role: string
           sentiment: string | null
+          status: string | null
         }
         Insert: {
           content: string
@@ -54,8 +56,10 @@ export type Database = {
           created_at?: string
           id?: string
           is_complaint?: boolean | null
+          language?: string | null
           role: string
           sentiment?: string | null
+          status?: string | null
         }
         Update: {
           content?: string
@@ -63,8 +67,10 @@ export type Database = {
           created_at?: string
           id?: string
           is_complaint?: boolean | null
+          language?: string | null
           role?: string
           sentiment?: string | null
+          status?: string | null
         }
         Relationships: [
           {
