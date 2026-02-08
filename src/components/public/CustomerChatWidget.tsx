@@ -264,7 +264,7 @@ const CustomerChatWidget = () => {
               )}
               <div className="max-w-[80%] space-y-1">
                 {msg.role === "admin" && (
-                  <span className="text-xs font-medium text-primary">Management Response</span>
+                  <span className="text-xs font-medium text-primary">Pizza Volante Support</span>
                 )}
                 <div
                   className={`rounded-2xl px-4 py-3 text-sm ${

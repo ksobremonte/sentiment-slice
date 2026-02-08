@@ -32,33 +32,40 @@ interface Review {
   created_at: string;
 }
 
-interface FeedbackClassification {
+interface MessageClassification {
   is_feedback: boolean;
   category: "complaint" | "concern" | "question" | "praise" | "none";
   sentiment: "positive" | "neutral" | "negative";
   confidence: number;
   summary: string;
+  language: string;
+  is_flagged: boolean;
+  flag_reason: string;
 }
 
-// Function to classify if a message is feedback/complaint
-async function classifyFeedback(message: string, lovableApiKey: string): Promise<FeedbackClassification> {
-  const classificationPrompt = `You are a feedback classifier for a pizza restaurant. Analyze the customer message and determine if it contains genuine feedback about:
-- Food quality, taste, or preparation
-- Service quality or staff behavior
-- Cleanliness or hygiene
-- Delivery issues
-- Pricing concerns
-- Any complaints, concerns, or negative experiences
+// Classify message for sentiment, language, feedback, and hate speech
+async function classifyMessage(message: string, lovableApiKey: string): Promise<MessageClassification> {
+  const classificationPrompt = `You are a message classifier for a pizza restaurant. Analyze the customer message and determine:
 
-IMPORTANT: Only classify as feedback if the message is a SINCERE complaint, concern, question, or comment about the restaurant experience. Do NOT classify general greetings, questions about hours/menu, or casual conversation as feedback.
+1. FEEDBACK DETECTION: Is this genuine feedback about the restaurant experience? (food, service, cleanliness, delivery, pricing)
+   - Only classify as feedback if SINCERE. Greetings, menu questions, or casual chat are NOT feedback.
+
+2. LANGUAGE DETECTION: Detect the language of the message (ISO 639-1 code).
+
+3. SENTIMENT ANALYSIS: Determine sentiment PURELY from the text, ignoring any ratings.
+
+4. CONTENT MODERATION: Check for insults, hate speech, obscene language, threats, or abusive content.
 
 Respond with a JSON object:
 {
-  "is_feedback": boolean (true if message contains genuine restaurant feedback),
+  "is_feedback": boolean,
   "category": "complaint" | "concern" | "question" | "praise" | "none",
   "sentiment": "positive" | "neutral" | "negative",
-  "confidence": number (0-1, how confident you are this is genuine feedback),
-  "summary": string (brief summary of the feedback, max 100 chars)
+  "confidence": number (0-1),
+  "summary": string (brief summary, max 100 chars),
+  "language": string (ISO 639-1 code, e.g. "en", "tl", "ilo"),
+  "is_flagged": boolean (true if contains hate speech, insults, obscene language, threats),
+  "flag_reason": string (reason for flagging, empty if not flagged)
 }`;
 
   try {
@@ -74,29 +81,38 @@ Respond with a JSON object:
           { role: "system", content: classificationPrompt },
           { role: "user", content: `Classify this customer message: "${message}"` }
         ],
-        max_tokens: 200,
+        max_tokens: 300,
         temperature: 0.1,
       }),
     });
 
     if (!response.ok) {
       console.error("Classification API error:", await response.text());
-      return { is_feedback: false, category: "none", sentiment: "neutral", confidence: 0, summary: "" };
+      return { is_feedback: false, category: "none", sentiment: "neutral", confidence: 0, summary: "", language: "en", is_flagged: false, flag_reason: "" };
     }
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || "";
     
-    // Extract JSON from response
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+      const parsed = JSON.parse(jsonMatch[0]);
+      return {
+        is_feedback: parsed.is_feedback ?? false,
+        category: parsed.category ?? "none",
+        sentiment: parsed.sentiment ?? "neutral",
+        confidence: parsed.confidence ?? 0,
+        summary: parsed.summary ?? "",
+        language: (parsed.language ?? "en").toLowerCase().substring(0, 5),
+        is_flagged: parsed.is_flagged ?? false,
+        flag_reason: parsed.flag_reason ?? "",
+      };
     }
     
-    return { is_feedback: false, category: "none", sentiment: "neutral", confidence: 0, summary: "" };
+    return { is_feedback: false, category: "none", sentiment: "neutral", confidence: 0, summary: "", language: "en", is_flagged: false, flag_reason: "" };
   } catch (error) {
-    console.error("Error classifying feedback:", error);
-    return { is_feedback: false, category: "none", sentiment: "neutral", confidence: 0, summary: "" };
+    console.error("Error classifying message:", error);
+    return { is_feedback: false, category: "none", sentiment: "neutral", confidence: 0, summary: "", language: "en", is_flagged: false, flag_reason: "" };
   }
 }
 
@@ -105,18 +121,14 @@ async function getOrCreateConversation(
   supabase: ReturnType<typeof createClient>,
   sessionId: string
 ): Promise<string | null> {
-  // Try to get existing conversation
   const { data: existing } = await supabase
     .from("chat_conversations")
     .select("id")
     .eq("session_id", sessionId)
-    .single();
+    .maybeSingle();
 
-  if (existing) {
-    return existing.id;
-  }
+  if (existing) return existing.id;
 
-  // Create new conversation
   const { data: created, error } = await supabase
     .from("chat_conversations")
     .insert({ session_id: sessionId })
@@ -127,25 +139,30 @@ async function getOrCreateConversation(
     console.error("Error creating conversation:", error);
     return null;
   }
-
   return created.id;
 }
 
-// Save a message to the database
+// Save a message to the database with sentiment, language, and status
 async function saveMessage(
   supabase: ReturnType<typeof createClient>,
   conversationId: string,
   role: "user" | "assistant" | "admin",
   content: string,
-  isComplaint: boolean = false,
-  sentiment?: string
+  options: {
+    isComplaint?: boolean;
+    sentiment?: string;
+    language?: string;
+    status?: string;
+  } = {}
 ): Promise<void> {
   const { error } = await supabase.from("chat_messages").insert({
     conversation_id: conversationId,
     role,
     content,
-    is_complaint: isComplaint,
-    sentiment: sentiment || null,
+    is_complaint: options.isComplaint ?? false,
+    sentiment: options.sentiment ?? null,
+    language: options.language ?? null,
+    status: options.status ?? "approved",
   });
 
   if (error) {
@@ -165,47 +182,45 @@ async function fetchAdminReplies(
     .eq("conversation_id", conversationId)
     .order("created_at", { ascending: true });
 
-  if (error || !allMessages) {
-    return [];
-  }
+  if (error || !allMessages) return [];
 
-  // Get messages after the client's known count (admin replies)
   const newMessages = allMessages.slice(lastKnownMessageCount);
   return newMessages
     .filter((m: { role: string }) => m.role === "admin")
     .map((m: { role: string; content: string }) => ({ role: m.role as "admin", content: m.content }));
 }
 
-// Function to save feedback as a review linked to conversation
+// Save feedback as a review linked to conversation
 async function saveFeedbackAsReview(
   supabase: ReturnType<typeof createClient>,
   feedback: string,
-  classification: FeedbackClassification,
+  classification: MessageClassification,
   conversationId: string
 ): Promise<void> {
   try {
-    // Update conversation status to pending_admin
     await supabase
       .from("chat_conversations")
       .update({ status: "pending_admin" })
       .eq("id", conversationId);
 
-    // Insert the review linked to this conversation
+    // Determine approval: only English + not flagged + high confidence
+    const approved = classification.language === "en" && !classification.is_flagged && classification.confidence >= 0.6;
+
     const { error } = await supabase.from("reviews").insert({
       name: "Chat Visitor",
       email: "chat-feedback@pizzavolante.local",
       rating: 3,
       feedback: feedback,
       sentiment: classification.sentiment,
-      approved: false,
-      language: "en",
+      approved,
+      language: classification.language,
       conversation_id: conversationId,
     });
 
     if (error) {
       console.error("Error saving chat feedback:", error);
     } else {
-      console.log("Chat feedback saved for moderation:", classification.summary);
+      console.log("Chat feedback saved:", { summary: classification.summary, approved, flagged: classification.is_flagged });
     }
   } catch (error) {
     console.error("Error in saveFeedbackAsReview:", error);
@@ -229,52 +244,62 @@ Deno.serve(async (req) => {
       throw new Error("Messages array is required");
     }
 
-    // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
     
-    if (!supabaseUrl || !supabaseKey) {
-      throw new Error("Supabase configuration missing");
-    }
-
-    if (!lovableApiKey) {
-      throw new Error("LOVABLE_API_KEY is not configured");
-    }
+    if (!supabaseUrl || !supabaseKey) throw new Error("Supabase configuration missing");
+    if (!lovableApiKey) throw new Error("LOVABLE_API_KEY is not configured");
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get or create conversation if sessionId provided
     let conversationId: string | null = null;
     if (sessionId) {
       conversationId = await getOrCreateConversation(supabase, sessionId);
     }
 
-    // Check for admin replies before responding
     let adminReplies: Message[] = [];
     if (conversationId && typeof messageCount === "number") {
       adminReplies = await fetchAdminReplies(supabase, conversationId, messageCount);
     }
 
-    // Get the latest user message
     const latestUserMessage = messages.filter(m => m.role === "user").pop();
     
-    // Save user message to database
-    if (conversationId && latestUserMessage) {
-      await saveMessage(supabase, conversationId, "user", latestUserMessage.content);
-    }
+    // Classify every user message for sentiment, language, and content moderation
+    if (latestUserMessage && conversationId) {
+      classifyMessage(latestUserMessage.content, lovableApiKey).then(async (classification) => {
+        // Determine message status
+        let messageStatus = "approved";
+        if (classification.is_flagged) {
+          messageStatus = "flagged";
+        } else if (classification.language !== "en") {
+          messageStatus = "pending_review";
+        }
 
-    // Classify feedback and save if it's a complaint
-    if (latestUserMessage && latestUserMessage.content.length > 10 && conversationId) {
-      classifyFeedback(latestUserMessage.content, lovableApiKey).then(async (classification) => {
+        // Save user message with full classification data
+        await saveMessage(supabase, conversationId!, "user", latestUserMessage.content, {
+          isComplaint: classification.is_feedback && classification.category === "complaint",
+          sentiment: classification.sentiment,
+          language: classification.language,
+          status: messageStatus,
+        });
+
+        // Save as review if genuine feedback with sufficient confidence
         if (classification.is_feedback && classification.confidence >= 0.7) {
           console.log("Detected feedback:", classification);
           await saveFeedbackAsReview(supabase, latestUserMessage.content, classification, conversationId!);
         }
-      }).catch(err => console.error("Background feedback classification error:", err));
+
+        if (classification.is_flagged) {
+          console.log("⚠️ Flagged message:", classification.flag_reason);
+        }
+      }).catch(err => console.error("Background classification error:", err));
+    } else if (latestUserMessage && conversationId) {
+      // Fallback: save without classification
+      await saveMessage(supabase, conversationId, "user", latestUserMessage.content);
     }
 
-    // Fetch approved reviews from the database
+    // Fetch approved reviews
     const { data: reviews, error: reviewsError } = await supabase
       .from("reviews_public")
       .select("id, name, rating, feedback, sentiment, created_at")
@@ -283,15 +308,11 @@ Deno.serve(async (req) => {
       .order("created_at", { ascending: false })
       .limit(20);
 
-    if (reviewsError) {
-      console.error("Error fetching reviews:", reviewsError);
-    }
+    if (reviewsError) console.error("Error fetching reviews:", reviewsError);
 
-    // Separate high-rated reviews for highlighting
     const highRatedReviews = (reviews || []).filter((r: Review) => r.rating >= 4);
     const otherReviews = (reviews || []).filter((r: Review) => r.rating < 4);
 
-    // Format reviews for the AI context
     const formatReviews = (reviewList: Review[]) => {
       if (!reviewList || reviewList.length === 0) return "No reviews available.";
       return reviewList.map((r: Review) => 
@@ -299,7 +320,6 @@ Deno.serve(async (req) => {
       ).join("\n");
     };
 
-    // Calculate review statistics
     const totalReviews = (reviews || []).length;
     const avgRating = totalReviews > 0 
       ? ((reviews || []).reduce((sum: number, r: Review) => sum + r.rating, 0) / totalReviews).toFixed(1)
@@ -307,7 +327,6 @@ Deno.serve(async (req) => {
     const fiveStarCount = (reviews || []).filter((r: Review) => r.rating === 5).length;
     const fourStarCount = (reviews || []).filter((r: Review) => r.rating === 4).length;
 
-    // Include admin replies in context if any
     const adminContext = adminReplies.length > 0
       ? `\n\nRECENT ADMIN REPLIES TO THIS CUSTOMER:\n${adminReplies.map(m => `- Admin: "${m.content}"`).join("\n")}\nPlease acknowledge the admin's response and continue the conversation naturally.`
       : "";
@@ -362,12 +381,15 @@ CRITICAL GUIDELINES:
 - For orders or reservations, direct them to call ${storeInfo.phone}
 - If you don't know something specific, be honest and suggest they contact the store directly
 - Be enthusiastic about the food and share genuine customer praise!
-- When customers share complaints or concerns, respond with empathy and let them know their feedback is being forwarded to management and they will receive a response in this chat`;
+- When customers share complaints or concerns, respond with empathy and let them know their feedback is being forwarded to management and they will receive a response in this chat
+- NEVER argue with the customer. Always remain polite, calm, and professional.
+- NEVER expose internal moderation logic or mention flagging/filtering systems.
+- Encourage constructive feedback when appropriate.
+- If a customer uses abusive language, calmly acknowledge their frustration without escalating. Offer to help resolve their concern.`;
 
-    // Combine messages including admin replies for context
     const allMessagesForAI = [
       ...messages.filter((m) => m.role === "user" || m.role === "assistant"),
-      ...adminReplies.map(m => ({ role: "assistant" as const, content: `[Management Response] ${m.content}` })),
+      ...adminReplies.map(m => ({ role: "assistant" as const, content: `[Pizza Volante Support] ${m.content}` })),
     ];
 
     const apiMessages: Message[] = [
@@ -393,14 +415,12 @@ CRITICAL GUIDELINES:
     if (!response.ok) {
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Rate limits exceeded, please try again later." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       if (response.status === 402) {
         return new Response(JSON.stringify({ error: "Service temporarily unavailable." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const errorText = await response.text();
@@ -408,8 +428,6 @@ CRITICAL GUIDELINES:
       throw new Error("Failed to get response from AI");
     }
 
-    // We need to save the assistant's response after streaming
-    // Create a TransformStream to capture the response while passing it through
     const { readable, writable } = new TransformStream();
     const writer = writable.getWriter();
     const reader = response.body!.getReader();
@@ -426,25 +444,19 @@ CRITICAL GUIDELINES:
           const chunk = decoder.decode(value, { stream: true });
           await writer.write(value);
           
-          // Parse SSE to extract content
           const lines = chunk.split("\n");
           for (const line of lines) {
             if (line.startsWith("data: ") && !line.includes("[DONE]")) {
               try {
                 const json = JSON.parse(line.slice(6));
                 const content = json.choices?.[0]?.delta?.content;
-                if (content) {
-                  fullAssistantResponse += content;
-                }
-              } catch {
-                // Ignore parsing errors
-              }
+                if (content) fullAssistantResponse += content;
+              } catch { /* ignore */ }
             }
           }
         }
         await writer.close();
         
-        // Save assistant response to database
         if (conversationId && fullAssistantResponse) {
           await saveMessage(supabase, conversationId, "assistant", fullAssistantResponse);
         }
@@ -467,10 +479,7 @@ CRITICAL GUIDELINES:
     console.error("Error:", error);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : "An error occurred" }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });

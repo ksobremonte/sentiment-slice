@@ -133,7 +133,7 @@ const ConversationThread = ({ conversation, onClose }: ConversationThreadProps) 
                 <div className="max-w-[75%] space-y-1">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span className="capitalize font-medium">
-                      {msg.role === "admin" ? "You" : msg.role}
+                      {msg.role === "admin" ? "You (Pizza Volante Support)" : msg.role}
                     </span>
                     <span>•</span>
                     <span>{formatDistanceToNow(new Date(msg.created_at), { addSuffix: true })}</span>
