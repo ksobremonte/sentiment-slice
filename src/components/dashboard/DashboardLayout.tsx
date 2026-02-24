@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import DashboardHeader from "./DashboardHeader";
-import ReviewChat from "./ReviewChat";
-import { useReviews } from "@/hooks/useReviews";
 import { cn } from "@/lib/utils";
 
 interface DashboardLayoutProps {
@@ -24,7 +22,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { signOut, user } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
-  const { data: reviews = [] } = useReviews();
+  
 
   const handleLogout = async () => {
     const { error } = await signOut();
@@ -81,7 +79,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </div>
       </nav>
 
-      <ReviewChat reviews={reviews} />
+      
     </div>
   );
 };
