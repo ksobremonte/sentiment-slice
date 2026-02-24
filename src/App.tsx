@@ -35,7 +35,7 @@ const App = () => (
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route
-              path="/dashboard"
+              path="/pv-dashboard"
               element={
                 <ProtectedRoute>
                   <Dashboard />
