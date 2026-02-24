@@ -8,7 +8,10 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
-import Dashboard from "./pages/Dashboard";
+import DashboardOverview from "./pages/dashboard/DashboardOverview";
+import DashboardConversations from "./pages/dashboard/DashboardConversations";
+import DashboardSentiment from "./pages/dashboard/DashboardSentiment";
+import DashboardReviews from "./pages/dashboard/DashboardReviews";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import MenuPage from "./pages/MenuPage";
@@ -36,11 +39,19 @@ const App = () => (
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route
               path="/pv-dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
+              element={<ProtectedRoute><DashboardOverview /></ProtectedRoute>}
+            />
+            <Route
+              path="/pv-dashboard/conversations"
+              element={<ProtectedRoute><DashboardConversations /></ProtectedRoute>}
+            />
+            <Route
+              path="/pv-dashboard/sentiment"
+              element={<ProtectedRoute><DashboardSentiment /></ProtectedRoute>}
+            />
+            <Route
+              path="/pv-dashboard/reviews"
+              element={<ProtectedRoute><DashboardReviews /></ProtectedRoute>}
             />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
