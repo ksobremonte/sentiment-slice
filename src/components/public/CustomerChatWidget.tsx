@@ -212,16 +212,16 @@ const CustomerChatWidget = () => {
     return (
       <Button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 h-14 w-14 sm:h-16 sm:w-16 rounded-full shadow-warm bg-primary hover:bg-primary/90 z-[9999]"
+        className="fixed bottom-20 right-4 md:bottom-6 md:right-6 h-14 w-14 md:h-16 md:w-16 rounded-full shadow-warm bg-primary hover:bg-primary/90 z-[9999]"
         size="icon"
       >
-        <MessageSquare className="h-6 w-6 sm:h-7 sm:w-7" />
+        <MessageSquare className="h-6 w-6 md:h-7 md:w-7" />
       </Button>
     );
   }
 
   return (
-    <div className="fixed z-[9999] bg-card border-2 border-border rounded-3xl shadow-warm flex flex-col overflow-hidden inset-2 sm:inset-auto sm:bottom-6 sm:right-6 sm:w-96 sm:h-[520px]">
+    <div className="fixed z-[9999] bg-card border-2 border-border rounded-3xl shadow-warm flex flex-col overflow-hidden inset-2 bottom-[4.5rem] md:inset-auto md:bottom-6 md:right-6 md:w-96 md:h-[520px]">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b-2 border-border bg-secondary">
         <div className="flex items-center gap-3">
