@@ -22,7 +22,6 @@ export const usePublicReviews = () => {
       const { data, error } = await supabase
         .from("reviews_public")
         .select("id, name, rating, feedback, sentiment, created_at, photo_url, language, approved")
-        .gte("rating", 4)
         .order("created_at", { ascending: false });
 
       if (error) {
