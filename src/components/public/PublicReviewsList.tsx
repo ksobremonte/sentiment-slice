@@ -1,9 +1,26 @@
-import { Star, MessageSquare, Loader2 } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Star, MessageSquare, Loader2, ArrowUpDown } from "lucide-react";
 import { usePublicReviews } from "@/hooks/usePublicReviews";
 import PublicReviewCard from "./PublicReviewCard";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+type SortOption = "latest" | "highest" | "lowest";
 
 const PublicReviewsList = () => {
   const { data: reviews = [], isLoading } = usePublicReviews();
+  const [sort, setSort] = useState<SortOption>("latest");
+
+  const sortedReviews = useMemo(() => {
+    const sorted = [...reviews];
+    switch (sort) {
+      case "highest":
+        return sorted.sort((a, b) => b.rating - a.rating);
+      case "lowest":
+        return sorted.sort((a, b) => a.rating - b.rating);
+      default:
+        return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    }
+  }, [reviews, sort]);
 
   if (isLoading) {
     return (
@@ -37,12 +54,27 @@ const PublicReviewsList = () => {
           ))}
         </div>
         <p className="text-2xl font-display font-bold text-foreground">{avgRating.toFixed(1)} out of 5</p>
-        <p className="text-muted-foreground">{reviews.length} happy customer{reviews.length !== 1 ? "s" : ""}</p>
+        <p className="text-muted-foreground">{reviews.length} review{reviews.length !== 1 ? "s" : ""}</p>
+      </div>
+
+      {/* Sort Controls */}
+      <div className="flex items-center justify-end gap-2">
+        <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
+        <Select value={sort} onValueChange={(v) => setSort(v as SortOption)}>
+          <SelectTrigger className="w-48 rounded-xl border-2">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="latest">Latest First</SelectItem>
+            <SelectItem value="highest">Highest Rating</SelectItem>
+            <SelectItem value="lowest">Lowest Rating</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Reviews Grid */}
       <div className="grid gap-4">
-        {reviews.map((review) => (
+        {sortedReviews.map((review) => (
           <PublicReviewCard key={review.id} review={review} />
         ))}
       </div>
