@@ -229,19 +229,13 @@ EDGE CASES:
           keyPhrases = parsed.key_phrases || [];
           reasoning = parsed.reasoning || "";
           
-          // Auto-reject non-English reviews for moderation
-          approved = language === "en";
-          
-          // Low confidence text analysis = needs human review
-          if (confidence < 0.6) {
-            approved = false;
-          }
+          // All reviews are auto-approved immediately
+          approved = true;
         }
       } catch (parseError) {
         console.error("Failed to parse tool call response:", parseError);
-        // Fallback: mark as neutral and flag for review (no rating-based fallback)
         sentiment = "neutral";
-        approved = false;
+        approved = true;
       }
 
       return new Response(JSON.stringify({ 
