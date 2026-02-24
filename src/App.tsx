@@ -12,6 +12,10 @@ import DashboardOverview from "./pages/dashboard/DashboardOverview";
 import DashboardConversations from "./pages/dashboard/DashboardConversations";
 import DashboardSentiment from "./pages/dashboard/DashboardSentiment";
 import DashboardReviews from "./pages/dashboard/DashboardReviews";
+import DashboardAudit from "./pages/dashboard/DashboardAudit";
+import DashboardDetection from "./pages/dashboard/DashboardDetection";
+import DashboardAI from "./pages/dashboard/DashboardAI";
+import DashboardUsers from "./pages/dashboard/DashboardUsers";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import MenuPage from "./pages/MenuPage";
@@ -37,22 +41,14 @@ const App = () => (
             <Route path="/pv-admin" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route
-              path="/pv-dashboard"
-              element={<ProtectedRoute><DashboardOverview /></ProtectedRoute>}
-            />
-            <Route
-              path="/pv-dashboard/conversations"
-              element={<ProtectedRoute><DashboardConversations /></ProtectedRoute>}
-            />
-            <Route
-              path="/pv-dashboard/sentiment"
-              element={<ProtectedRoute><DashboardSentiment /></ProtectedRoute>}
-            />
-            <Route
-              path="/pv-dashboard/reviews"
-              element={<ProtectedRoute><DashboardReviews /></ProtectedRoute>}
-            />
+            <Route path="/pv-dashboard" element={<ProtectedRoute><DashboardOverview /></ProtectedRoute>} />
+            <Route path="/pv-dashboard/conversations" element={<ProtectedRoute><DashboardConversations /></ProtectedRoute>} />
+            <Route path="/pv-dashboard/sentiment" element={<ProtectedRoute><DashboardSentiment /></ProtectedRoute>} />
+            <Route path="/pv-dashboard/reviews" element={<ProtectedRoute><DashboardReviews /></ProtectedRoute>} />
+            <Route path="/pv-dashboard/audit" element={<ProtectedRoute><DashboardAudit /></ProtectedRoute>} />
+            <Route path="/pv-dashboard/detection" element={<ProtectedRoute><DashboardDetection /></ProtectedRoute>} />
+            <Route path="/pv-dashboard/ai" element={<ProtectedRoute><DashboardAI /></ProtectedRoute>} />
+            <Route path="/pv-dashboard/users" element={<ProtectedRoute><DashboardUsers /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
