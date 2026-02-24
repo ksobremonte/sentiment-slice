@@ -1,14 +1,17 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Star, MessageSquare, Loader2, ArrowUpDown } from "lucide-react";
 import { usePublicReviews } from "@/hooks/usePublicReviews";
 import PublicReviewCard from "./PublicReviewCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 type SortOption = "latest" | "highest" | "lowest";
+const REVIEWS_PER_PAGE = 8;
 
 const PublicReviewsList = () => {
   const { data: reviews = [], isLoading } = usePublicReviews();
   const [sort, setSort] = useState<SortOption>("latest");
+  const [page, setPage] = useState(1);
 
   const sortedReviews = useMemo(() => {
     const sorted = [...reviews];
@@ -21,6 +24,12 @@ const PublicReviewsList = () => {
         return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     }
   }, [reviews, sort]);
+
+  const totalPages = Math.ceil(sortedReviews.length / REVIEWS_PER_PAGE);
+  const paginatedReviews = sortedReviews.slice((page - 1) * REVIEWS_PER_PAGE, page * REVIEWS_PER_PAGE);
+
+  // Reset page when sort changes
+  useEffect(() => { setPage(1); }, [sort]);
 
   if (isLoading) {
     return (
@@ -42,7 +51,7 @@ const PublicReviewsList = () => {
   const avgRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Summary */}
       <div className="bg-card border-2 border-border rounded-2xl p-6 shadow-subtle text-center">
         <div className="flex items-center justify-center gap-2 mb-2">
@@ -72,12 +81,39 @@ const PublicReviewsList = () => {
         </Select>
       </div>
 
-      {/* Reviews Grid */}
+      {/* Reviews */}
       <div className="grid gap-4">
-        {sortedReviews.map((review) => (
+        {paginatedReviews.map((review) => (
           <PublicReviewCard key={review.id} review={review} />
         ))}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 pt-4">
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="rounded-xl border-2 font-semibold"
+          >
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground font-semibold px-4">
+            Page {page} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className="rounded-xl border-2 font-semibold"
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
