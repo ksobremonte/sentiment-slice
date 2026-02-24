@@ -16,7 +16,7 @@ const NotFound = () => {
         <p className="text-xl text-muted-foreground mb-8">
           Oops! This page got lost in delivery.
         </p>
-        <Link to="/dashboard">
+        <Link to="/pv-dashboard">
           <Button size="lg">
             <Home className="w-4 h-4 mr-2" />
             Back to Dashboard

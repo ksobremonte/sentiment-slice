@@ -50,7 +50,7 @@ const Login = () => {
       setCaptchaToken(null);
     } else {
       toast.success("Welcome back!");
-      navigate("/dashboard");
+      navigate("/pv-dashboard");
     }
   };
 
