@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, MessageSquare, PieChart, Star, LogOut } from "lucide-react";
+import { LayoutDashboard, MessageSquare, PieChart, Star, LogOut, Shield, Brain, Users, History, ChevronUp, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -11,18 +11,25 @@ interface DashboardLayoutProps {
   children: ReactNode;
 }
 
-const navItems = [
+const mainNavItems = [
   { label: "Overview", icon: LayoutDashboard, path: "/pv-dashboard" },
-  { label: "Conversations", icon: MessageSquare, path: "/pv-dashboard/conversations" },
+  { label: "Chats", icon: MessageSquare, path: "/pv-dashboard/conversations" },
   { label: "Sentiment", icon: PieChart, path: "/pv-dashboard/sentiment" },
   { label: "Reviews", icon: Star, path: "/pv-dashboard/reviews" },
+];
+
+const adminNavItems = [
+  { label: "Audit Log", icon: History, path: "/pv-dashboard/audit" },
+  { label: "Detection", icon: Shield, path: "/pv-dashboard/detection" },
+  { label: "AI Config", icon: Brain, path: "/pv-dashboard/ai" },
+  { label: "Users", icon: Users, path: "/pv-dashboard/users" },
 ];
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { signOut, user } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
-  
+  const [showAdmin, setShowAdmin] = useState(false);
 
   const handleLogout = async () => {
     const { error } = await signOut();
@@ -34,8 +41,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     }
   };
 
+  const isAdminPage = adminNavItems.some((item) => location.pathname === item.path);
+  const activeNav = isAdminPage ? adminNavItems : mainNavItems;
+
   return (
-    <div className="min-h-screen bg-cream-warm brick-overlay pb-20">
+    <div className="min-h-screen bg-cream-warm brick-overlay pb-24">
       <DashboardHeader />
 
       {/* User bar */}
@@ -55,31 +65,62 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         {children}
       </main>
 
+      {/* Admin panel toggle (slides up) */}
+      {showAdmin && (
+        <div className="fixed bottom-[72px] left-0 right-0 z-50 bg-card border-t-2 border-border shadow-warm animate-fade-in">
+          <div className="flex items-center justify-around py-2">
+            {adminNavItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => { navigate(item.path); setShowAdmin(false); }}
+                  className={cn(
+                    "flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all min-w-[56px]",
+                    isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <item.icon className={cn("w-5 h-5", isActive && "text-primary")} />
+                  <span className="text-[10px] font-semibold">{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t-2 border-border shadow-warm">
         <div className="flex items-center justify-around py-2">
-          {navItems.map((item) => {
+          {mainNavItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <button
                 key={item.path}
-                onClick={() => navigate(item.path)}
+                onClick={() => { navigate(item.path); setShowAdmin(false); }}
                 className={cn(
-                  "flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all min-w-[64px]",
-                  isActive
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground"
+                  "flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all min-w-[56px]",
+                  isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <item.icon className={cn("w-6 h-6", isActive && "text-primary")} />
-                <span className="text-xs font-semibold">{item.label}</span>
+                <item.icon className={cn("w-5 h-5", isActive && "text-primary")} />
+                <span className="text-[10px] font-semibold">{item.label}</span>
               </button>
             );
           })}
+          {/* Admin toggle */}
+          <button
+            onClick={() => setShowAdmin(!showAdmin)}
+            className={cn(
+              "flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all min-w-[56px]",
+              (showAdmin || isAdminPage) ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <Settings className={cn("w-5 h-5", (showAdmin || isAdminPage) && "text-primary")} />
+            <span className="text-[10px] font-semibold">Admin</span>
+          </button>
         </div>
       </nav>
-
-      
     </div>
   );
 };
