@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PublicLayout from "@/components/layout/PublicLayout";
 import PublicReviewsList from "@/components/public/PublicReviewsList";
 import { supabase } from "@/integrations/supabase/client";
@@ -192,25 +191,12 @@ const Reviews = () => {
             </p>
           </div>
 
-          {/* Tabs for Reviews and Submit Form */}
-          <div className="max-w-3xl mx-auto">
-            <Tabs defaultValue="reviews" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-8 h-14 p-1 bg-muted rounded-xl">
-                <TabsTrigger value="reviews" className="rounded-lg text-base font-semibold data-[state=active]:bg-card data-[state=active]:shadow-sm">
-                  <Star className="w-4 h-4 mr-2" />
-                  Read Reviews
-                </TabsTrigger>
-                <TabsTrigger value="submit" className="rounded-lg text-base font-semibold data-[state=active]:bg-card data-[state=active]:shadow-sm">
-                  <Send className="w-4 h-4 mr-2" />
-                  Leave a Review
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="reviews">
-                <PublicReviewsList />
-              </TabsContent>
-              
-              <TabsContent value="submit">
+          {/* Submit Form */}
+          <div className="max-w-3xl mx-auto mb-16">
+            <h2 className="text-2xl font-display font-bold text-foreground mb-6 text-center">
+              <Send className="w-6 h-6 inline mr-2 text-primary" />
+              Leave a Review
+            </h2>
             {isSubmitted ? (
               <div className="bg-card border-2 border-success/30 rounded-3xl p-10 text-center shadow-warm animate-fade-in">
                 <div className="w-20 h-20 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-6">
@@ -373,8 +359,15 @@ const Reviews = () => {
                 </Button>
               </form>
             )}
-              </TabsContent>
-            </Tabs>
+          </div>
+
+          {/* Reviews List */}
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-2xl font-display font-bold text-foreground mb-6 text-center">
+              <Star className="w-6 h-6 inline mr-2 text-primary" />
+              What Our Customers Say
+            </h2>
+            <PublicReviewsList />
           </div>
         </div>
       </section>
