@@ -1,11 +1,30 @@
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, MessageSquare, PieChart, Star, LogOut, Shield, Brain, Users, History, ChevronUp, Settings } from "lucide-react";
+import {
+  LayoutDashboard, MessageSquare, PieChart, Star,
+  LogOut, Shield, Brain, Users, History, Settings,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import DashboardHeader from "./DashboardHeader";
 import { cn } from "@/lib/utils";
+import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarHeader,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarTrigger,
+  SidebarSeparator,
+  useSidebar,
+} from "@/components/ui/sidebar";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -25,11 +44,12 @@ const adminNavItems = [
   { label: "Users", icon: Users, path: "/pv-dashboard/users" },
 ];
 
-const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+const DashboardSidebar = () => {
   const { signOut, user } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
-  const [showAdmin, setShowAdmin] = useState(false);
+  const { state } = useSidebar();
+  const collapsed = state === "collapsed";
 
   const handleLogout = async () => {
     const { error } = await signOut();
@@ -41,87 +61,110 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     }
   };
 
-  const isAdminPage = adminNavItems.some((item) => location.pathname === item.path);
-  const activeNav = isAdminPage ? adminNavItems : mainNavItems;
+  const NavItem = ({ item }: { item: typeof mainNavItems[0] }) => {
+    const isActive = location.pathname === item.path;
+    return (
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          isActive={isActive}
+          tooltip={item.label}
+          onClick={() => navigate(item.path)}
+          className={cn(
+            isActive && "bg-primary/10 text-primary font-semibold"
+          )}
+        >
+          <item.icon className="h-4 w-4" />
+          {!collapsed && <span>{item.label}</span>}
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-cream-warm brick-overlay pb-24">
-      <DashboardHeader />
+    <Sidebar collapsible="icon" className="border-r border-border">
+      <SidebarHeader className="p-4">
+        <div className="flex items-center gap-3">
+          <img
+            src={pizzaVolanteLogo}
+            alt="Pizza Volante Logo"
+            className={cn("w-auto transition-all", collapsed ? "h-8" : "h-12")}
+          />
+          {!collapsed && (
+            <div>
+              <h1 className="font-brand text-lg text-foreground leading-tight">Pizza Volante</h1>
+              <p className="text-[10px] text-muted-foreground font-medium tracking-wide">Baguio City</p>
+            </div>
+          )}
+        </div>
+      </SidebarHeader>
 
-      {/* User bar */}
-      <div className="border-b-2 border-border bg-card/80">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <p className="text-sm text-muted-foreground truncate">
-            <span className="text-foreground font-semibold">{user?.email}</span>
+      <SidebarSeparator />
+
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Main</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {mainNavItems.map((item) => (
+                <NavItem key={item.path} item={item} />
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>
+            <Settings className="h-3 w-3 mr-1" />
+            Admin
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {adminNavItems.map((item) => (
+                <NavItem key={item.path} item={item} />
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarSeparator />
+
+      <SidebarFooter className="p-3">
+        {!collapsed && (
+          <p className="text-xs text-muted-foreground truncate mb-2 px-2">
+            {user?.email}
           </p>
-          <Button variant="outline" size="sm" onClick={handleLogout} className="rounded-xl border-2 font-semibold">
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
+        )}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleLogout}
+          className={cn("w-full rounded-xl border-2 font-semibold", collapsed && "px-0")}
+        >
+          <LogOut className="h-4 w-4" />
+          {!collapsed && <span className="ml-2">Sign Out</span>}
+        </Button>
+      </SidebarFooter>
+    </Sidebar>
+  );
+};
+
+const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-cream-warm">
+        <DashboardSidebar />
+        <div className="flex-1 flex flex-col min-w-0">
+          <header className="sticky top-0 z-40 flex items-center gap-2 border-b border-border bg-cream-warm/95 backdrop-blur-sm px-4 py-3">
+            <SidebarTrigger />
+            <div className="text-sm font-semibold text-foreground">Sentiment Dashboard</div>
+          </header>
+          <main className="flex-1 p-4 md:p-6 brick-overlay">
+            {children}
+          </main>
         </div>
       </div>
-
-      <main className="container mx-auto px-4 py-6">
-        {children}
-      </main>
-
-      {/* Admin panel toggle (slides up) */}
-      {showAdmin && (
-        <div className="fixed bottom-[72px] left-0 right-0 z-50 bg-card border-t-2 border-border shadow-warm animate-fade-in">
-          <div className="flex items-center justify-around py-2">
-            {adminNavItems.map((item) => {
-              const isActive = location.pathname === item.path;
-              return (
-                <button
-                  key={item.path}
-                  onClick={() => { navigate(item.path); setShowAdmin(false); }}
-                  className={cn(
-                    "flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all min-w-[56px]",
-                    isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <item.icon className={cn("w-5 h-5", isActive && "text-primary")} />
-                  <span className="text-[10px] font-semibold">{item.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t-2 border-border shadow-warm">
-        <div className="flex items-center justify-around py-2">
-          {mainNavItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <button
-                key={item.path}
-                onClick={() => { navigate(item.path); setShowAdmin(false); }}
-                className={cn(
-                  "flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all min-w-[56px]",
-                  isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <item.icon className={cn("w-5 h-5", isActive && "text-primary")} />
-                <span className="text-[10px] font-semibold">{item.label}</span>
-              </button>
-            );
-          })}
-          {/* Admin toggle */}
-          <button
-            onClick={() => setShowAdmin(!showAdmin)}
-            className={cn(
-              "flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all min-w-[56px]",
-              (showAdmin || isAdminPage) ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <Settings className={cn("w-5 h-5", (showAdmin || isAdminPage) && "text-primary")} />
-            <span className="text-[10px] font-semibold">Admin</span>
-          </button>
-        </div>
-      </nav>
-    </div>
+    </SidebarProvider>
   );
 };
 
