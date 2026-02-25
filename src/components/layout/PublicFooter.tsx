@@ -8,7 +8,7 @@ const PublicFooter = () => {
     <footer className="bg-secondary text-secondary-foreground">
       <div className="container mx-auto px-6 py-16">
         <FadeIn>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {/* Brand */}
             <div className="space-y-4 md:col-span-1">
               <div className="flex items-center gap-3">
@@ -23,24 +23,6 @@ const PublicFooter = () => {
               </p>
             </div>
 
-            {/* Quick Links */}
-            <div>
-              <h4 className="font-display font-semibold text-sm uppercase tracking-wider text-secondary-foreground/50 mb-5">
-                Explore
-              </h4>
-              <nav className="flex flex-col gap-3">
-                {[
-                  { name: "Home", path: "/" },
-                  { name: "About Us", path: "/about" },
-                  { name: "Our Menu", path: "/menu" },
-                  { name: "Reviews", path: "/read-reviews" },
-                ].map((link) => (
-                  <Link key={link.path} to={link.path} className="text-sm text-secondary-foreground/70 hover:text-primary transition-colors">
-                    {link.name}
-                  </Link>
-                ))}
-              </nav>
-            </div>
 
             {/* Contact */}
             <div>
