@@ -13,11 +13,8 @@ const About = () => {
     <PublicLayout>
       {/* Hero — Real exterior photo */}
       <section className="relative h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden">
-        <ParallaxImage
-          src={restaurantExterior}
-          alt="Pizza Volante Baguio exterior"
-          className="absolute inset-0"
-        />
+        <img src={restaurantExterior} alt="Pizza Volante Baguio exterior" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
         <div className="relative z-10 text-center px-6">
           <FadeIn>
             <p className="text-xs font-semibold text-white/60 uppercase tracking-[0.25em] mb-2">Our Story</p>
