@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import PublicLayout from "@/components/layout/PublicLayout";
 import { Link } from "react-router-dom";
+import { FadeIn, AnimatedButton } from "@/components/ui/animated";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -79,7 +80,6 @@ const Reviews = () => {
       let language: string | null = null;
       let approved: boolean = true;
 
-      // Upload photo via secure edge function if provided
       if (photoFile) {
         const formData = new FormData();
         formData.append("file", photoFile);
@@ -98,8 +98,6 @@ const Reviews = () => {
         photoUrl = url;
       }
 
-      // Analyze sentiment and detect language BEFORE inserting.
-      // This avoids having to read back the inserted row, which is intentionally blocked by RLS.
       try {
         const reviewForAnalysis = {
           id: crypto.randomUUID(),
@@ -129,7 +127,6 @@ const Reviews = () => {
           approved = json?.approved ?? true;
         }
       } catch (analyzeError) {
-        // Analysis is optional — never block submission.
         console.error("Auto-analyze failed:", analyzeError);
       }
 
@@ -147,7 +144,6 @@ const Reviews = () => {
 
       if (error) throw error;
 
-      // Immediately refresh the reviews list
       await queryClient.invalidateQueries({ queryKey: ["public-reviews"] });
       
       setIsSubmitted(true);
@@ -176,200 +172,136 @@ const Reviews = () => {
 
   return (
     <PublicLayout>
-      <section className="py-16 lg:py-24">
+      <section className="py-20 lg:py-28">
         <div className="container mx-auto px-6">
           {/* Header */}
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-6">
-              <MessageSquare className="w-10 h-10 text-primary" />
+          <FadeIn>
+            <div className="max-w-3xl mx-auto text-center mb-12">
+              <p className="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-3">Share Your Experience</p>
+              <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-4">
+                Leave a Review
+              </h1>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                Your feedback helps us serve you better.
+              </p>
             </div>
-            <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-6">
-              Customer <span className="text-primary">Reviews</span>
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              See what our customers are saying about Pizza Volante!
-            </p>
-          </div>
+          </FadeIn>
 
           {/* Submit Form */}
-          <div className="max-w-3xl mx-auto mb-16">
-            <h2 className="text-2xl font-display font-bold text-foreground mb-6 text-center">
-              <Send className="w-6 h-6 inline mr-2 text-primary" />
-              Leave a Review
-            </h2>
-            {isSubmitted ? (
-              <div className="bg-card border-2 border-success/30 rounded-3xl p-10 text-center shadow-warm animate-fade-in">
-                <div className="w-20 h-20 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-6">
-                  <CheckCircle className="w-10 h-10 text-success" />
-                </div>
-                <h2 className="text-2xl font-display font-bold text-foreground mb-3">
-                  Grazie Mille!
-                </h2>
-                <p className="text-muted-foreground mb-8 text-lg">
-                  Your feedback has been submitted successfully. We appreciate you taking the time to share your experience with us!
-                </p>
-                <Button onClick={resetForm} variant="outline" size="lg" className="rounded-xl border-2">
-                  Submit Another Review
-                </Button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="bg-card border-2 border-border rounded-3xl p-8 md:p-10 shadow-warm space-y-6">
-                {/* Name */}
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-foreground font-medium">Your Name</Label>
-                  <Input
-                    id="name"
-                    placeholder="Enter your name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="rounded-xl border-2 py-6 px-4 bg-background"
-                    required
-                  />
-                </div>
-
-                {/* Email */}
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-foreground font-medium">Email Address</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="rounded-xl border-2 py-6 px-4 bg-background"
-                    required
-                  />
-                </div>
-
-                {/* Rating */}
-                <div className="space-y-3">
-                  <Label className="text-foreground font-medium">Rate Your Experience</Label>
-                  <div className="flex items-center justify-center gap-2 py-6 bg-muted/50 rounded-xl">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => setRating(star)}
-                        onMouseEnter={() => setHoveredRating(star)}
-                        onMouseLeave={() => setHoveredRating(0)}
-                        className="p-1 transition-transform hover:scale-125"
-                      >
-                        <Star
-                          className={`w-8 h-8 transition-colors ${
-                            star <= (hoveredRating || rating)
-                              ? "fill-warning text-warning"
-                              : "text-muted-foreground/60 stroke-[1.5]"
-                          }`}
-                        />
-                      </button>
-                    ))}
+          <FadeIn delay={0.1}>
+            <div className="max-w-2xl mx-auto mb-12">
+              {isSubmitted ? (
+                <div className="bg-card border border-success/20 rounded-2xl p-10 text-center shadow-card">
+                  <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-5">
+                    <CheckCircle className="w-8 h-8 text-success" />
                   </div>
+                  <h2 className="text-2xl font-display font-bold text-foreground mb-2">Grazie Mille!</h2>
+                  <p className="text-muted-foreground mb-8">Your feedback has been submitted successfully.</p>
+                  <Button onClick={resetForm} variant="outline" size="lg" className="rounded-xl">
+                    Submit Another Review
+                  </Button>
                 </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-8 shadow-card space-y-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name" className="text-foreground font-medium text-sm">Your Name</Label>
+                      <Input id="name" placeholder="Enter your name" value={name} onChange={(e) => setName(e.target.value)} className="rounded-lg bg-background" required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-foreground font-medium text-sm">Email Address</Label>
+                      <Input id="email" type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} className="rounded-lg bg-background" required />
+                    </div>
+                  </div>
 
-                {/* Receipt Number */}
-                <div className="space-y-2">
-                  <Label htmlFor="receipt" className="text-foreground font-medium">
-                    Receipt Number <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="receipt"
-                    placeholder="Enter your receipt number"
-                    value={receiptNumber}
-                    onChange={(e) => setReceiptNumber(e.target.value)}
-                    className="rounded-xl border-2 py-6 px-4 bg-background"
-                    required
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Enter the receipt number from your order to verify your purchase.
-                  </p>
-                </div>
+                  {/* Rating */}
+                  <div className="space-y-2">
+                    <Label className="text-foreground font-medium text-sm">Rate Your Experience</Label>
+                    <div className="flex items-center justify-center gap-2 py-5 bg-muted/40 rounded-xl">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setRating(star)}
+                          onMouseEnter={() => setHoveredRating(star)}
+                          onMouseLeave={() => setHoveredRating(0)}
+                          className="p-1 transition-transform hover:scale-125"
+                        >
+                          <Star
+                            className={`w-8 h-8 transition-colors ${
+                              star <= (hoveredRating || rating)
+                                ? "fill-warning text-warning"
+                                : "text-muted-foreground/40 stroke-[1.5]"
+                            }`}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-                {/* Photo Upload */}
-                <div className="space-y-2">
-                  <Label className="text-foreground font-medium">Upload Photo (Optional)</Label>
-                  <div className="space-y-3">
+                  {/* Receipt */}
+                  <div className="space-y-2">
+                    <Label htmlFor="receipt" className="text-foreground font-medium text-sm">
+                      Receipt Number <span className="text-destructive">*</span>
+                    </Label>
+                    <Input id="receipt" placeholder="Enter your receipt number" value={receiptNumber} onChange={(e) => setReceiptNumber(e.target.value)} className="rounded-lg bg-background" required />
+                    <p className="text-xs text-muted-foreground">Enter the receipt number from your order.</p>
+                  </div>
+
+                  {/* Photo */}
+                  <div className="space-y-2">
+                    <Label className="text-foreground font-medium text-sm">Upload Photo (Optional)</Label>
                     {photoPreview ? (
                       <div className="relative inline-block">
-                        <img
-                          src={photoPreview}
-                          alt="Preview"
-                          className="max-h-48 rounded-2xl border-2 border-border object-cover shadow-subtle"
-                        />
-                        <button
-                          type="button"
-                          onClick={removePhoto}
-                          className="absolute -top-3 -right-3 p-2 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90 shadow-card"
-                        >
-                          <X className="w-4 h-4" />
+                        <img src={photoPreview} alt="Preview" className="max-h-40 rounded-xl border border-border object-cover" />
+                        <button type="button" onClick={removePhoto} className="absolute -top-2 -right-2 p-1.5 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90">
+                          <X className="w-3 h-3" />
                         </button>
                       </div>
                     ) : (
                       <div
                         onClick={() => fileInputRef.current?.click()}
-                        className="border-2 border-dashed border-border rounded-2xl p-8 text-center cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-all"
+                        className="border border-dashed border-border rounded-xl p-6 text-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all"
                       >
-                        <ImageIcon className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
-                        <p className="text-sm text-muted-foreground font-medium">
-                          Click to upload a photo
-                        </p>
-                        <p className="text-xs text-muted-foreground/70 mt-2">
-                          Max 5MB • JPG, PNG, WebP
-                        </p>
+                        <ImageIcon className="w-8 h-8 mx-auto text-muted-foreground/50 mb-2" />
+                        <p className="text-xs text-muted-foreground">Click to upload • Max 5MB</p>
                       </div>
                     )}
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handlePhotoChange}
-                      className="hidden"
-                    />
+                    <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
                   </div>
-                </div>
 
-                {/* Feedback */}
-                <div className="space-y-2">
-                  <Label htmlFor="feedback" className="text-foreground font-medium">Your Feedback</Label>
-                  <Textarea
-                    id="feedback"
-                    placeholder="Tell us about your experience..."
-                    value={feedback}
-                    onChange={(e) => setFeedback(e.target.value)}
-                    rows={5}
-                    className="rounded-xl border-2 px-4 py-3 bg-background resize-none"
-                    required
-                  />
-                </div>
+                  {/* Feedback */}
+                  <div className="space-y-2">
+                    <Label htmlFor="feedback" className="text-foreground font-medium text-sm">Your Feedback</Label>
+                    <Textarea id="feedback" placeholder="Tell us about your experience..." value={feedback} onChange={(e) => setFeedback(e.target.value)} rows={4} className="rounded-lg bg-background resize-none" required />
+                  </div>
 
-                {/* Submit */}
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-6 text-lg rounded-xl shadow-warm"
-                  size="lg"
-                >
-                  {isSubmitting ? (
-                    "Submitting..."
-                  ) : (
-                    <>
-                      <Send className="w-5 h-5 mr-2" />
-                      Submit Feedback
-                    </>
-                  )}
-                </Button>
-              </form>
-            )}
-          </div>
+                  <AnimatedButton>
+                    <Button type="submit" disabled={isSubmitting} className="w-full py-6 text-base rounded-xl shadow-warm" size="lg">
+                      {isSubmitting ? "Submitting..." : (
+                        <>
+                          <Send className="w-4 h-4 mr-2" />
+                          Submit Feedback
+                        </>
+                      )}
+                    </Button>
+                  </AnimatedButton>
+                </form>
+              )}
+            </div>
+          </FadeIn>
 
           {/* Link to Read Reviews */}
-          <div className="max-w-3xl mx-auto text-center">
-            <Link to="/read-reviews">
-              <Button variant="outline" size="lg" className="rounded-xl border-2 font-semibold">
-                <Star className="w-5 h-5 mr-2" />
-                Read All Customer Reviews
-              </Button>
-            </Link>
-          </div>
+          <FadeIn delay={0.2}>
+            <div className="max-w-3xl mx-auto text-center">
+              <Link to="/read-reviews">
+                <Button variant="outline" size="lg" className="rounded-xl font-semibold">
+                  <Star className="w-4 h-4 mr-2" />
+                  Read All Customer Reviews
+                </Button>
+              </Link>
+            </div>
+          </FadeIn>
         </div>
       </section>
     </PublicLayout>

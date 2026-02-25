@@ -1,96 +1,90 @@
-import { Phone, Mail, MapPin, Clock, MessageCircle } from "lucide-react";
+import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import PublicLayout from "@/components/layout/PublicLayout";
+import { FadeIn, StaggerContainer, StaggerItem, HoverCard } from "@/components/ui/animated";
 
 const Contact = () => {
   return (
     <PublicLayout>
-      <section className="py-16 lg:py-24">
+      <section className="py-20 lg:py-28">
         <div className="container mx-auto px-6">
           {/* Header */}
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-6">
-              <MessageCircle className="w-10 h-10 text-primary" />
+          <FadeIn>
+            <div className="max-w-3xl mx-auto text-center mb-16">
+              <p className="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-3">Contact Us</p>
+              <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-4">
+                Get in Touch
+              </h1>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                Have questions? We'd love to hear from you.
+              </p>
             </div>
-            <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-6">
-              Get in <span className="text-primary">Touch</span>
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              Have questions? We'd love to hear from you. Reach out to us anytime!
-            </p>
-          </div>
+          </FadeIn>
 
           {/* Contact Cards */}
-          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-card border-2 border-border rounded-2xl p-8 shadow-card hover:shadow-warm transition-all hover:-translate-y-1">
-              <div className="flex items-start gap-5">
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-7 h-7 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-display font-semibold text-xl text-foreground mb-2">Phone</h3>
-                  <p className="text-lg text-primary font-medium">+63 (074) 445-0777</p>
-                  <p className="text-sm text-muted-foreground mt-2">For orders & inquiries</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-card border-2 border-border rounded-2xl p-8 shadow-card hover:shadow-warm transition-all hover:-translate-y-1">
-              <div className="flex items-start gap-5">
-                <div className="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-7 h-7 text-accent" />
-                </div>
-                <div>
-                  <h3 className="font-display font-semibold text-xl text-foreground mb-2">Email</h3>
-                  <p className="text-lg text-accent font-medium">hello@pizzavolante.ph</p>
-                  <p className="text-sm text-muted-foreground mt-2">We reply within 24 hours</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-card border-2 border-border rounded-2xl p-8 shadow-card hover:shadow-warm transition-all hover:-translate-y-1">
-              <div className="flex items-start gap-5">
-                <div className="w-14 h-14 rounded-2xl bg-success/10 flex items-center justify-center flex-shrink-0">
-                  <MapPin className="w-7 h-7 text-success" />
-                </div>
-                <div>
-                  <h3 className="font-display font-semibold text-xl text-foreground mb-2">Address</h3>
-                  <p className="text-foreground font-medium">123 Session Road</p>
-                  <p className="text-muted-foreground">Baguio City, 2600</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-card border-2 border-border rounded-2xl p-8 shadow-card hover:shadow-warm transition-all hover:-translate-y-1">
-              <div className="flex items-start gap-5">
-                <div className="w-14 h-14 rounded-2xl bg-warning/10 flex items-center justify-center flex-shrink-0">
-                  <Clock className="w-7 h-7 text-warning" />
-                </div>
-                <div>
-                  <h3 className="font-display font-semibold text-xl text-foreground mb-2">Hours</h3>
-                  <div className="space-y-1">
-                    <p className="text-foreground">
-                      <span className="text-muted-foreground">Mon - Thu:</span> 11AM - 9PM
-                    </p>
-                    <p className="text-foreground">
-                      <span className="text-muted-foreground">Fri - Sat:</span> 11AM - 10PM
-                    </p>
-                    <p className="text-foreground">
-                      <span className="text-muted-foreground">Sunday:</span> 12PM - 8PM
-                    </p>
+          <StaggerContainer className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              {
+                icon: Phone,
+                title: "Phone",
+                primary: "+63 (074) 445-0777",
+                secondary: "For orders & inquiries",
+                color: "text-primary",
+                bg: "bg-primary/8",
+              },
+              {
+                icon: Mail,
+                title: "Email",
+                primary: "hello@pizzavolante.ph",
+                secondary: "We reply within 24 hours",
+                color: "text-accent",
+                bg: "bg-accent/8",
+              },
+              {
+                icon: MapPin,
+                title: "Address",
+                primary: "123 Session Road",
+                secondary: "Baguio City, 2600",
+                color: "text-success",
+                bg: "bg-success/8",
+              },
+              {
+                icon: Clock,
+                title: "Hours",
+                primary: "Mon–Sat: 11AM–10PM",
+                secondary: "Sunday: 12PM–8PM",
+                color: "text-warning",
+                bg: "bg-warning/8",
+              },
+            ].map((item) => (
+              <StaggerItem key={item.title}>
+                <HoverCard className="h-full">
+                  <div className="bg-card border border-border rounded-2xl p-6 shadow-card h-full">
+                    <div className="flex items-start gap-4">
+                      <div className={`w-11 h-11 rounded-xl ${item.bg} flex items-center justify-center flex-shrink-0`}>
+                        <item.icon className={`w-5 h-5 ${item.color}`} />
+                      </div>
+                      <div>
+                        <h3 className="font-display font-semibold text-foreground mb-1">{item.title}</h3>
+                        <p className="text-sm font-medium text-foreground">{item.primary}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{item.secondary}</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
+                </HoverCard>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
 
           {/* Map placeholder */}
-          <div className="max-w-4xl mx-auto mt-12">
-            <div className="bg-secondary rounded-3xl p-8 text-center shadow-warm">
-              <MapPin className="w-12 h-12 text-primary mx-auto mb-4" />
-              <h3 className="font-display font-semibold text-xl text-secondary-foreground mb-2">Visit Our Pizzeria</h3>
-              <p className="text-secondary-foreground/80">Located at the heart of Session Road, Baguio City</p>
+          <FadeIn delay={0.3}>
+            <div className="max-w-4xl mx-auto mt-10">
+              <div className="bg-secondary rounded-2xl p-10 text-center">
+                <MapPin className="w-8 h-8 text-primary mx-auto mb-3" />
+                <h3 className="font-display font-semibold text-lg text-secondary-foreground mb-1">Visit Our Pizzeria</h3>
+                <p className="text-sm text-secondary-foreground/60">Located at the heart of Session Road, Baguio City</p>
+              </div>
             </div>
-          </div>
+          </FadeIn>
         </div>
       </section>
     </PublicLayout>
