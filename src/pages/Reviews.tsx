@@ -244,7 +244,7 @@ const Reviews = () => {
                 {/* Rating */}
                 <div className="space-y-3">
                   <Label className="text-foreground font-medium">Rate Your Experience</Label>
-                  <div className="flex gap-2 justify-center py-4 bg-muted/50 rounded-xl">
+                  <div className="flex items-center justify-center gap-2 py-6 bg-muted/50 rounded-xl">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
                         key={star}
@@ -252,10 +252,10 @@ const Reviews = () => {
                         onClick={() => setRating(star)}
                         onMouseEnter={() => setHoveredRating(star)}
                         onMouseLeave={() => setHoveredRating(0)}
-                        className="p-2 transition-transform hover:scale-125"
+                        className="p-1 transition-transform hover:scale-125"
                       >
                         <Star
-                          className={`w-10 h-10 transition-colors ${
+                          className={`w-8 h-8 transition-colors ${
                             star <= (hoveredRating || rating)
                               ? "fill-warning text-warning"
                               : "text-muted-foreground/60 stroke-[1.5]"
