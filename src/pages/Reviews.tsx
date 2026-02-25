@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import PublicLayout from "@/components/layout/PublicLayout";
-import PublicReviewsList from "@/components/public/PublicReviewsList";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -361,13 +361,14 @@ const Reviews = () => {
             )}
           </div>
 
-          {/* Reviews List */}
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl font-display font-bold text-foreground mb-6 text-center">
-              <Star className="w-6 h-6 inline mr-2 text-primary" />
-              What Our Customers Say
-            </h2>
-            <PublicReviewsList />
+          {/* Link to Read Reviews */}
+          <div className="max-w-3xl mx-auto text-center">
+            <Link to="/read-reviews">
+              <Button variant="outline" size="lg" className="rounded-xl border-2 font-semibold">
+                <Star className="w-5 h-5 mr-2" />
+                Read All Customer Reviews
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

@@ -20,6 +20,7 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import MenuPage from "./pages/MenuPage";
 import Reviews from "./pages/Reviews";
+import ReadReviews from "./pages/ReadReviews";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/menu" element={<MenuPage />} />
             <Route path="/reviews" element={<Reviews />} />
+            <Route path="/read-reviews" element={<ReadReviews />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/pv-admin" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
