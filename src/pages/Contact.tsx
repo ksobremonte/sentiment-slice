@@ -54,13 +54,19 @@ const Contact = () => {
             ))}
           </StaggerContainer>
 
-          {/* Restaurant Interior image */}
+          {/* Google Maps Embed */}
           <FadeIn delay={0.2}>
             <div className="max-w-4xl mx-auto mt-10 overflow-hidden rounded-2xl shadow-warm">
-              <ZoomImage
-                src={restaurantInteriorReal}
-                alt="Inside Pizza Volante"
-                className="h-56 md:h-80 w-full"
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d957.0!2d120.5960!3d16.4123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMDgyIERpZWdvIFNpbGFuZyBTdCwgQmFndWlvLCBCZW5ndWV0!5e0!3m2!1sen!2sph!4v1700000000000"
+                width="100%"
+                height="320"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Pizza Volante Location - 082 Diego Silang St, Baguio, Benguet"
+                className="w-full h-56 md:h-80"
               />
             </div>
           </FadeIn>
