@@ -66,11 +66,8 @@ const MenuPage = () => {
     <PublicLayout>
       {/* Menu Hero — Real pizza close-up */}
       <section className="relative h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden">
-        <ParallaxImage
-          src={pizzaSlice}
-          alt="Pizza Volante pizza"
-          className="absolute inset-0"
-        />
+        <img src={pizzaSlice} alt="Pizza Volante pizza" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
         <div className="relative z-10 text-center px-6">
           <FadeIn>
             <img src={pizzaVolanteLogo} alt="Pizza Volante" className="h-14 w-auto mx-auto mb-4 drop-shadow-2xl" />
