@@ -1,25 +1,32 @@
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import PublicLayout from "@/components/layout/PublicLayout";
-import { FadeIn, StaggerContainer, StaggerItem, HoverCard } from "@/components/ui/animated";
+import {
+  FadeIn, StaggerContainer, StaggerItem, HoverCard, ParallaxImage,
+} from "@/components/ui/animated";
+import restaurantInterior from "@/assets/restaurant-interior.jpg";
 
 const Contact = () => {
   return (
     <PublicLayout>
-      <section className="py-20 lg:py-28">
-        <div className="container mx-auto px-6">
-          {/* Header */}
+      {/* Hero */}
+      <section className="relative h-[35vh] md:h-[40vh] flex items-center justify-center overflow-hidden">
+        <ParallaxImage
+          src={restaurantInterior}
+          alt="Pizza Volante restaurant"
+          className="absolute inset-0"
+        />
+        <div className="relative z-10 text-center px-6">
           <FadeIn>
-            <div className="max-w-3xl mx-auto text-center mb-16">
-              <p className="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-3">Contact Us</p>
-              <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-4">
-                Get in Touch
-              </h1>
-              <p className="text-muted-foreground max-w-md mx-auto">
-                Have questions? We'd love to hear from you.
-              </p>
-            </div>
+            <p className="text-xs font-semibold text-white/60 uppercase tracking-[0.25em] mb-2">We'd Love to Hear From You</p>
+            <h1 className="text-4xl md:text-6xl font-display font-bold text-white drop-shadow-lg">
+              Contact Us
+            </h1>
           </FadeIn>
+        </div>
+      </section>
 
+      <section className="py-20 lg:py-28 bg-background">
+        <div className="container mx-auto px-6">
           {/* Contact Cards */}
           <StaggerContainer className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
@@ -58,9 +65,9 @@ const Contact = () => {
             ].map((item) => (
               <StaggerItem key={item.title}>
                 <HoverCard className="h-full">
-                  <div className="bg-card border border-border rounded-2xl p-6 shadow-card h-full">
+                  <div className="bg-card border border-border rounded-2xl p-6 shadow-card h-full group">
                     <div className="flex items-start gap-4">
-                      <div className={`w-11 h-11 rounded-xl ${item.bg} flex items-center justify-center flex-shrink-0`}>
+                      <div className={`w-11 h-11 rounded-xl ${item.bg} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
                         <item.icon className={`w-5 h-5 ${item.color}`} />
                       </div>
                       <div>
@@ -78,10 +85,11 @@ const Contact = () => {
           {/* Map placeholder */}
           <FadeIn delay={0.3}>
             <div className="max-w-4xl mx-auto mt-10">
-              <div className="bg-secondary rounded-2xl p-10 text-center">
+              <div className="bg-secondary rounded-2xl p-10 text-center relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-40 h-40 rounded-full bg-secondary-foreground/[0.02] -translate-y-1/2 translate-x-1/2" />
                 <MapPin className="w-8 h-8 text-primary mx-auto mb-3" />
                 <h3 className="font-display font-semibold text-lg text-secondary-foreground mb-1">Visit Our Pizzeria</h3>
-                <p className="text-sm text-secondary-foreground/60">Located at the heart of Session Road, Baguio City</p>
+                <p className="text-sm text-secondary-foreground/50">Located at the heart of Session Road, Baguio City</p>
               </div>
             </div>
           </FadeIn>
