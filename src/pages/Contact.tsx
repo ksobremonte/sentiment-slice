@@ -1,18 +1,21 @@
-import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import PublicLayout from "@/components/layout/PublicLayout";
 import {
-  FadeIn, StaggerContainer, StaggerItem, HoverCard, ParallaxImage,
+  FadeIn, StaggerContainer, StaggerItem, HoverCard, ParallaxImage, ZoomImage, AnimatedButton,
 } from "@/components/ui/animated";
-import restaurantInterior from "@/assets/restaurant-interior.jpg";
+import { Button } from "@/components/ui/button";
+import restaurantExterior from "@/assets/restaurant-exterior.jpg";
+import restaurantInteriorReal from "@/assets/restaurant-interior-real.jpg";
 
 const Contact = () => {
   return (
     <PublicLayout>
-      {/* Hero */}
-      <section className="relative h-[35vh] md:h-[40vh] flex items-center justify-center overflow-hidden">
+      {/* Hero — Real exterior */}
+      <section className="relative h-[35vh] md:h-[45vh] flex items-center justify-center overflow-hidden">
         <ParallaxImage
-          src={restaurantInterior}
-          alt="Pizza Volante restaurant"
+          src={restaurantExterior}
+          alt="Pizza Volante outdoor seating"
           className="absolute inset-0"
         />
         <div className="relative z-10 text-center px-6">
@@ -30,38 +33,10 @@ const Contact = () => {
           {/* Contact Cards */}
           <StaggerContainer className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
-              {
-                icon: Phone,
-                title: "Phone",
-                primary: "+63 (074) 445-0777",
-                secondary: "For orders & inquiries",
-                color: "text-primary",
-                bg: "bg-primary/8",
-              },
-              {
-                icon: Mail,
-                title: "Email",
-                primary: "hello@pizzavolante.ph",
-                secondary: "We reply within 24 hours",
-                color: "text-accent",
-                bg: "bg-accent/8",
-              },
-              {
-                icon: MapPin,
-                title: "Address",
-                primary: "123 Session Road",
-                secondary: "Baguio City, 2600",
-                color: "text-success",
-                bg: "bg-success/8",
-              },
-              {
-                icon: Clock,
-                title: "Hours",
-                primary: "Mon–Sat: 11AM–10PM",
-                secondary: "Sunday: 12PM–8PM",
-                color: "text-warning",
-                bg: "bg-warning/8",
-              },
+              { icon: Phone, title: "Phone", primary: "+63 (074) 445-0777", secondary: "For orders & inquiries", color: "text-primary", bg: "bg-primary/8" },
+              { icon: Mail, title: "Email", primary: "hello@pizzavolante.ph", secondary: "We reply within 24 hours", color: "text-accent", bg: "bg-accent/8" },
+              { icon: MapPin, title: "Address", primary: "123 Session Road", secondary: "Baguio City, 2600", color: "text-success", bg: "bg-success/8" },
+              { icon: Clock, title: "Hours", primary: "Mon–Sat: 11AM–10PM", secondary: "Sunday: 12PM–8PM", color: "text-warning", bg: "bg-warning/8" },
             ].map((item) => (
               <StaggerItem key={item.title}>
                 <HoverCard className="h-full">
@@ -82,14 +57,32 @@ const Contact = () => {
             ))}
           </StaggerContainer>
 
-          {/* Map placeholder */}
+          {/* Restaurant Interior image */}
+          <FadeIn delay={0.2}>
+            <div className="max-w-4xl mx-auto mt-10 overflow-hidden rounded-2xl shadow-warm">
+              <ZoomImage
+                src={restaurantInteriorReal}
+                alt="Inside Pizza Volante"
+                className="h-56 md:h-80 w-full"
+              />
+            </div>
+          </FadeIn>
+
+          {/* Visit CTA */}
           <FadeIn delay={0.3}>
             <div className="max-w-4xl mx-auto mt-10">
               <div className="bg-secondary rounded-2xl p-10 text-center relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-40 h-40 rounded-full bg-secondary-foreground/[0.02] -translate-y-1/2 translate-x-1/2" />
                 <MapPin className="w-8 h-8 text-primary mx-auto mb-3" />
                 <h3 className="font-display font-semibold text-lg text-secondary-foreground mb-1">Visit Our Pizzeria</h3>
-                <p className="text-sm text-secondary-foreground/50">Located at the heart of Session Road, Baguio City</p>
+                <p className="text-sm text-secondary-foreground/50 mb-6">Located at the heart of Session Road, Baguio City</p>
+                <AnimatedButton>
+                  <Button asChild size="lg" className="rounded-xl shadow-glow btn-glow">
+                    <Link to="/menu">
+                      See Our Menu <ArrowRight className="w-4 h-4 ml-2" />
+                    </Link>
+                  </Button>
+                </AnimatedButton>
               </div>
             </div>
           </FadeIn>
