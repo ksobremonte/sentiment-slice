@@ -6,96 +6,96 @@
 
 @layer base {
   :root {
-    /* Modern Italian Pizzeria — darker, richer, more contrast */
-    --background: 30 15% 97%;
-    --foreground: 20 30% 10%;
+    /* Premium Italian Pizzeria — deep, warm, high contrast */
+    --background: 30 12% 97%;
+    --foreground: 20 35% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 20 30% 10%;
+    --card-foreground: 20 35% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 20 30% 10%;
+    --popover-foreground: 20 35% 8%;
 
-    /* Deep brick red primary */
-    --primary: 6 72% 35%;
+    /* Deep brick red */
+    --primary: 4 74% 32%;
     --primary-foreground: 0 0% 98%;
 
-    /* Dark forest green secondary */
-    --secondary: 152 32% 18%;
-    --secondary-foreground: 40 30% 95%;
+    /* Rich forest green */
+    --secondary: 155 35% 15%;
+    --secondary-foreground: 42 30% 95%;
 
-    /* Refined muted tones */
-    --muted: 30 10% 92%;
-    --muted-foreground: 20 10% 45%;
+    /* Refined muted */
+    --muted: 30 8% 93%;
+    --muted-foreground: 20 8% 46%;
 
-    /* Rich terracotta accent */
-    --accent: 20 70% 48%;
+    /* Warm terracotta accent */
+    --accent: 18 72% 45%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 72% 50%;
     --destructive-foreground: 0 0% 98%;
 
-    --success: 142 55% 32%;
+    --success: 145 55% 30%;
     --success-foreground: 0 0% 98%;
 
     --warning: 38 92% 50%;
-    --warning-foreground: 20 30% 10%;
+    --warning-foreground: 20 35% 8%;
 
     /* Refined borders */
-    --border: 30 15% 88%;
-    --input: 30 15% 90%;
-    --ring: 6 72% 35%;
+    --border: 30 10% 90%;
+    --input: 30 10% 91%;
+    --ring: 4 74% 32%;
 
     --radius: 0.75rem;
 
     /* Dashboard sidebar */
-    --sidebar-background: 20 30% 12%;
-    --sidebar-foreground: 35 30% 92%;
-    --sidebar-primary: 20 70% 48%;
+    --sidebar-background: 20 35% 10%;
+    --sidebar-foreground: 35 25% 92%;
+    --sidebar-primary: 18 72% 45%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 20 25% 18%;
-    --sidebar-accent-foreground: 35 30% 92%;
-    --sidebar-border: 20 20% 18%;
-    --sidebar-ring: 20 70% 48%;
+    --sidebar-accent: 20 28% 16%;
+    --sidebar-accent-foreground: 35 25% 92%;
+    --sidebar-border: 20 22% 16%;
+    --sidebar-ring: 18 72% 45%;
 
     /* Premium gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(6, 72%, 35%) 0%, hsl(20, 70%, 48%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0, 0%, 100%) 0%, hsl(30, 15%, 97%) 100%);
-    --gradient-warm: linear-gradient(135deg, hsl(30, 20%, 96%) 0%, hsl(25, 15%, 92%) 100%);
-    --gradient-chalkboard: linear-gradient(180deg, hsl(152, 32%, 18%) 0%, hsl(152, 32%, 12%) 100%);
-    --gradient-hero: linear-gradient(160deg, hsl(30, 15%, 97%) 0%, hsl(20, 20%, 93%) 50%, hsl(6, 25%, 93%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(4, 74%, 32%) 0%, hsl(18, 72%, 45%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0, 0%, 100%) 0%, hsl(30, 12%, 97%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(30, 15%, 96%) 0%, hsl(25, 12%, 93%) 100%);
+    --gradient-chalkboard: linear-gradient(180deg, hsl(155, 35%, 15%) 0%, hsl(155, 35%, 10%) 100%);
+    --gradient-hero: linear-gradient(160deg, hsl(30, 12%, 97%) 0%, hsl(20, 18%, 94%) 50%, hsl(4, 20%, 94%) 100%);
 
     /* Premium shadows */
-    --shadow-card: 0 4px 24px -6px hsl(20 30% 15% / 0.08);
-    --shadow-warm: 0 12px 40px -12px hsl(20 30% 15% / 0.15);
-    --shadow-subtle: 0 2px 8px -2px hsl(20 30% 15% / 0.06);
-    --shadow-glow: 0 0 30px -5px hsl(6 72% 35% / 0.2);
+    --shadow-card: 0 4px 24px -6px hsl(20 35% 12% / 0.07);
+    --shadow-warm: 0 16px 48px -12px hsl(20 35% 12% / 0.14);
+    --shadow-subtle: 0 2px 8px -2px hsl(20 35% 12% / 0.05);
+    --shadow-glow: 0 0 40px -8px hsl(4 74% 32% / 0.25);
   }
 
   .dark {
-    --background: 20 20% 8%;
-    --foreground: 35 20% 92%;
+    --background: 20 22% 7%;
+    --foreground: 35 18% 92%;
 
-    --card: 20 20% 12%;
-    --card-foreground: 35 20% 92%;
+    --card: 20 22% 11%;
+    --card-foreground: 35 18% 92%;
 
-    --popover: 20 20% 10%;
-    --popover-foreground: 35 20% 92%;
+    --popover: 20 22% 9%;
+    --popover-foreground: 35 18% 92%;
 
-    --primary: 18 65% 55%;
-    --primary-foreground: 20 25% 10%;
+    --primary: 16 68% 52%;
+    --primary-foreground: 20 28% 8%;
 
-    --secondary: 152 20% 22%;
-    --secondary-foreground: 35 20% 92%;
+    --secondary: 155 22% 20%;
+    --secondary-foreground: 35 18% 92%;
 
-    --muted: 20 15% 18%;
-    --muted-foreground: 35 15% 55%;
+    --muted: 20 16% 16%;
+    --muted-foreground: 35 12% 55%;
 
-    --accent: 20 55% 50%;
+    --accent: 18 58% 48%;
     --accent-foreground: 0 0% 98%;
 
-    --border: 20 15% 20%;
-    --input: 20 15% 18%;
+    --border: 20 14% 18%;
+    --input: 20 14% 16%;
   }
 }
 
@@ -168,50 +168,83 @@
     box-shadow: var(--shadow-glow);
   }
 
-  /* Chalkboard text effect */
+  /* Chalkboard text */
   .chalkboard-text {
     font-family: 'Playfair Display', serif;
     text-shadow: 1px 1px 2px hsl(0 0% 0% / 0.1);
   }
 
-  /* Menu board style */
+  /* Menu board */
   .menu-board {
     @apply bg-secondary text-secondary-foreground rounded-2xl p-6;
     background-image: var(--gradient-chalkboard);
   }
 
-  /* Terracotta border accent */
+  /* Terracotta border */
   .border-terracotta {
-    border-color: hsl(20, 70%, 48%);
+    border-color: hsl(18, 72%, 45%);
   }
 
-  /* Subtle texture overlay */
+  /* Subtle ambient glow */
   .brick-overlay {
-    background-image: 
-      radial-gradient(circle at 20% 50%, hsl(6, 72%, 35%, 0.03) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, hsl(20, 70%, 48%, 0.02) 0%, transparent 50%);
+    background-image:
+      radial-gradient(ellipse at 20% 50%, hsl(4, 74%, 32%, 0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, hsl(18, 72%, 45%, 0.03) 0%, transparent 60%);
+  }
+
+  /* Button glow on hover */
+  .btn-glow {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-glow::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), hsl(0 0% 100% / 0.15) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .btn-glow:hover::after {
+    opacity: 1;
+  }
+
+  /* Image hover zoom */
+  .img-zoom {
+    @apply overflow-hidden;
+  }
+  .img-zoom img {
+    @apply transition-transform duration-700 ease-out;
+  }
+  .img-zoom:hover img {
+    @apply scale-110;
   }
 
   .animate-float {
-    animation: float 3s ease-in-out infinite;
+    animation: float 4s ease-in-out infinite;
   }
 
   @keyframes float {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
+    50% { transform: translateY(-8px); }
   }
 
   .animate-fade-in {
-    animation: fade-in 0.4s ease-out;
+    animation: fade-in 0.5s ease-out;
   }
 
   @keyframes fade-in {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* Glass effect */
+  /* Glass */
   .glass {
-    @apply bg-card/80 backdrop-blur-lg;
+    @apply bg-card/80 backdrop-blur-xl;
+  }
+
+  /* Divider */
+  .section-divider {
+    @apply w-16 h-0.5 bg-primary/30 mx-auto;
   }
 }

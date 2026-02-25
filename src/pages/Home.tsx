@@ -1,77 +1,130 @@
-import { Star, Truck, ChefHat, Flame, ArrowRight } from "lucide-react";
+import { Star, Truck, ChefHat, Flame, ArrowRight, Clock, Users, Pizza } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import PublicLayout from "@/components/layout/PublicLayout";
-import { FadeIn, StaggerContainer, StaggerItem, HoverCard, AnimatedButton } from "@/components/ui/animated";
+import {
+  FadeIn, StaggerContainer, StaggerItem, HoverCard, AnimatedButton,
+  ParallaxImage, AnimatedCounter, FloatingElement, RevealText,
+} from "@/components/ui/animated";
 import { motion } from "framer-motion";
 import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
+import heroPizza from "@/assets/hero-pizza.jpg";
+import restaurantInterior from "@/assets/restaurant-interior.jpg";
 
 const Home = () => {
   return (
     <PublicLayout>
-      {/* Hero Section */}
-      <section className="relative py-24 lg:py-36 overflow-hidden bg-gradient-hero">
-        {/* Decorative circles */}
-        <div className="absolute top-20 -right-20 w-96 h-96 rounded-full bg-primary/5 blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 w-72 h-72 rounded-full bg-accent/5 blur-3xl" />
+      {/* Hero Section — Full bleed with parallax image */}
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+        <ParallaxImage
+          src={heroPizza}
+          alt="Wood-fired pizza fresh from the oven"
+          className="absolute inset-0"
+        />
 
-        <div className="container mx-auto px-6 relative">
-          <div className="max-w-3xl mx-auto text-center">
-            <FadeIn>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/8 border border-primary/15 text-primary text-xs font-semibold mb-8 tracking-wide uppercase">
-                <ChefHat className="w-4 h-4" />
-                <span>Baguio's Favorite Since 2000</span>
-              </div>
-            </FadeIn>
+        <div className="container mx-auto px-6 relative z-10 text-center py-20">
+          <FadeIn>
+            <FloatingElement>
+              <img
+                src={pizzaVolanteLogo}
+                alt="Pizza Volante"
+                className="h-20 md:h-24 w-auto mx-auto mb-6 drop-shadow-2xl"
+              />
+            </FloatingElement>
+          </FadeIn>
 
-            <FadeIn delay={0.1}>
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold text-foreground mb-6 leading-[1.1] tracking-tight">
-                Authentic Pizza
-                <br />
-                <span className="text-gradient">in the City of Pines</span>
-              </h1>
-            </FadeIn>
-
-            <FadeIn delay={0.2}>
-              <p className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed">
-                Traditional recipes, fresh local ingredients, and wood-fired perfection. 
-                Every pizza handcrafted with love.
-              </p>
-            </FadeIn>
-
-            <FadeIn delay={0.3}>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <AnimatedButton>
-                  <Button asChild size="lg" className="px-8 py-6 text-base rounded-xl shadow-warm">
-                    <Link to="/menu">
-                      View Our Menu
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Link>
-                  </Button>
-                </AnimatedButton>
-                <AnimatedButton>
-                  <Button asChild variant="outline" size="lg" className="px-8 py-6 text-base rounded-xl">
-                    <Link to="/read-reviews">
-                      <Star className="w-4 h-4 mr-2" />
-                      Read Reviews
-                    </Link>
-                  </Button>
-                </AnimatedButton>
-              </div>
-            </FadeIn>
+          <div className="overflow-hidden mb-3">
+            <RevealText delay={0.2}>
+              <span className="inline-block text-xs font-semibold text-primary-foreground/80 uppercase tracking-[0.25em] bg-primary/30 backdrop-blur-sm px-4 py-1.5 rounded-full border border-primary-foreground/10">
+                Baguio's Favorite Since 2000
+              </span>
+            </RevealText>
           </div>
+
+          <RevealText delay={0.3}>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-bold text-white mb-6 leading-[1.05] tracking-tight drop-shadow-lg">
+              Authentic Italian
+              <br />
+              <span className="font-brand text-6xl md:text-8xl lg:text-9xl text-primary-foreground/90">Pizza</span>
+            </h1>
+          </RevealText>
+
+          <FadeIn delay={0.5}>
+            <p className="text-lg md:text-xl text-white/75 mb-10 max-w-lg mx-auto leading-relaxed">
+              Wood-fired perfection, traditional recipes, and the finest ingredients — 
+              in the heart of the City of Pines.
+            </p>
+          </FadeIn>
+
+          <FadeIn delay={0.6}>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <AnimatedButton>
+                <Button asChild size="lg" className="px-8 py-6 text-base rounded-xl shadow-glow btn-glow bg-primary hover:bg-primary/90">
+                  <Link to="/menu">
+                    View Our Menu
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Link>
+                </Button>
+              </AnimatedButton>
+              <AnimatedButton>
+                <Button asChild variant="outline" size="lg" className="px-8 py-6 text-base rounded-xl border-white/30 text-white hover:bg-white/10 hover:text-white backdrop-blur-sm">
+                  <Link to="/read-reviews">
+                    <Star className="w-4 h-4 mr-2" />
+                    Read Reviews
+                  </Link>
+                </Button>
+              </AnimatedButton>
+            </div>
+          </FadeIn>
+        </div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center pt-2">
+            <div className="w-1 h-2.5 bg-white/50 rounded-full" />
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Stats Counter Section */}
+      <section className="py-16 bg-card border-y border-border">
+        <div className="container mx-auto px-6">
+          <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto text-center">
+            {[
+              { value: 25, suffix: "+", label: "Years Serving", icon: Clock },
+              { value: 50000, suffix: "+", label: "Happy Customers", icon: Users },
+              { value: 30, suffix: "+", label: "Menu Items", icon: Pizza },
+              { value: 5, suffix: "★", label: "Average Rating", icon: Star },
+            ].map((stat) => (
+              <StaggerItem key={stat.label}>
+                <div className="space-y-2">
+                  <stat.icon className="w-5 h-5 text-primary mx-auto mb-1" />
+                  <div className="text-3xl md:text-4xl font-display font-bold text-foreground">
+                    <AnimatedCounter target={stat.value} suffix={stat.suffix} duration={2.5} />
+                  </div>
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{stat.label}</p>
+                </div>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
         </div>
       </section>
 
       {/* Features */}
-      <section className="py-24 bg-background">
+      <section className="py-28 bg-background">
         <div className="container mx-auto px-6">
           <FadeIn>
             <div className="text-center mb-16">
-              <p className="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-3">Why Choose Us</p>
-              <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
-                The Pizza Volante Difference
+              <p className="text-xs font-semibold text-primary uppercase tracking-[0.25em] mb-3">Why Choose Us</p>
+              <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-4">
+                The Pizza Volante
+                <span className="text-gradient block">Difference</span>
               </h2>
+              <div className="section-divider mt-6" />
             </div>
           </FadeIn>
 
@@ -101,8 +154,8 @@ const Home = () => {
             ].map((feature) => (
               <StaggerItem key={feature.title}>
                 <HoverCard className="h-full">
-                  <div className="bg-card rounded-2xl p-8 shadow-card border border-border h-full text-center">
-                    <div className={`w-14 h-14 rounded-xl ${feature.bg} flex items-center justify-center mx-auto mb-5`}>
+                  <div className="bg-card rounded-2xl p-8 shadow-card border border-border h-full text-center group">
+                    <div className={`w-14 h-14 rounded-xl ${feature.bg} flex items-center justify-center mx-auto mb-5 group-hover:scale-110 transition-transform duration-300`}>
                       <feature.icon className={`w-7 h-7 ${feature.color}`} />
                     </div>
                     <h3 className="text-lg font-display font-semibold text-foreground mb-3">{feature.title}</h3>
@@ -115,36 +168,64 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Interior Parallax Section */}
+      <section className="relative h-[50vh] md:h-[60vh]">
+        <ParallaxImage
+          src={restaurantInterior}
+          alt="Cozy Italian restaurant interior"
+          className="absolute inset-0"
+        />
+        <div className="relative z-10 h-full flex items-center justify-center text-center px-6">
+          <FadeIn>
+            <div className="max-w-2xl">
+              <p className="font-brand text-4xl md:text-5xl text-white/90 mb-4 drop-shadow-lg">
+                Benvenuti
+              </p>
+              <h2 className="text-2xl md:text-4xl font-display font-bold text-white mb-4 drop-shadow-lg">
+                A Taste of Italy in Baguio
+              </h2>
+              <p className="text-white/65 max-w-md mx-auto">
+                Step into our warm, rustic pizzeria and feel transported to the streets of Naples.
+              </p>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
       {/* CTA Section */}
-      <section className="py-24">
+      <section className="py-28">
         <div className="container mx-auto px-6">
           <FadeIn>
             <div className="bg-secondary rounded-3xl p-12 md:p-20 text-center relative overflow-hidden">
-              {/* Decorative elements */}
-              <div className="absolute top-0 left-0 w-full h-full opacity-5">
+              {/* Decorative */}
+              <div className="absolute top-0 left-0 w-full h-full opacity-[0.03]">
                 <div className="absolute top-10 left-10 w-40 h-40 rounded-full border border-secondary-foreground" />
                 <div className="absolute bottom-10 right-10 w-60 h-60 rounded-full border border-secondary-foreground" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full border border-secondary-foreground" />
               </div>
 
               <div className="relative">
                 <motion.img
                   src={pizzaVolanteLogo}
                   alt="Pizza Volante"
-                  className="h-20 w-auto mx-auto mb-8"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.3 }}
+                  className="h-16 w-auto mx-auto mb-8"
+                  whileHover={{ rotate: [0, -3, 3, 0] }}
+                  transition={{ duration: 0.5 }}
                 />
+                <p className="text-xs font-semibold text-secondary-foreground/40 uppercase tracking-[0.25em] mb-3">
+                  We'd Love Your Feedback
+                </p>
                 <h2 className="text-3xl md:text-4xl font-display font-bold text-secondary-foreground mb-4">
                   Love Our Pizza?
                 </h2>
-                <p className="text-secondary-foreground/60 mb-10 max-w-md mx-auto">
-                  Your feedback helps us serve you better. Share your experience with us.
+                <p className="text-secondary-foreground/50 mb-10 max-w-md mx-auto">
+                  Your reviews help us serve you better and make every pizza even more perfect.
                 </p>
                 <AnimatedButton>
                   <Button
                     asChild
                     size="lg"
-                    className="px-10 py-6 text-base rounded-xl shadow-warm"
+                    className="px-10 py-6 text-base rounded-xl shadow-glow btn-glow"
                   >
                     <Link to="/reviews">
                       <Star className="w-4 h-4 mr-2" />
