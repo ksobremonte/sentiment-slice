@@ -4,21 +4,27 @@ import { Button } from "@/components/ui/button";
 import PublicLayout from "@/components/layout/PublicLayout";
 import {
   FadeIn, StaggerContainer, StaggerItem, HoverCard, AnimatedButton,
-  ParallaxImage, AnimatedCounter, FloatingElement, RevealText,
+  ParallaxImage, AnimatedCounter, FloatingElement, RevealText, ZoomImage,
 } from "@/components/ui/animated";
 import { motion } from "framer-motion";
 import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
-import heroPizza from "@/assets/hero-pizza.jpg";
-import restaurantInterior from "@/assets/restaurant-interior.jpg";
+import foodSpread from "@/assets/food-spread.jpg";
+import pizzaSupreme from "@/assets/pizza-supreme.jpg";
+import restaurantExterior from "@/assets/restaurant-exterior.jpg";
+import pizzaClassic from "@/assets/pizza-classic.jpg";
+import pastaDish from "@/assets/pasta-dish.jpg";
+import pizzaSlice from "@/assets/pizza-slice.jpg";
+import saladFresh from "@/assets/salad-fresh.jpg";
+import restaurantInteriorReal from "@/assets/restaurant-interior-real.jpg";
 
 const Home = () => {
   return (
     <PublicLayout>
-      {/* Hero Section — Full bleed with parallax image */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+      {/* Hero Section — Full bleed with real food spread */}
+      <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
         <ParallaxImage
-          src={heroPizza}
-          alt="Wood-fired pizza fresh from the oven"
+          src={foodSpread}
+          alt="Pizza Volante food spread"
           className="absolute inset-0"
         />
 
@@ -28,15 +34,15 @@ const Home = () => {
               <img
                 src={pizzaVolanteLogo}
                 alt="Pizza Volante"
-                className="h-20 md:h-24 w-auto mx-auto mb-6 drop-shadow-2xl"
+                className="h-24 md:h-28 w-auto mx-auto mb-6 drop-shadow-2xl"
               />
             </FloatingElement>
           </FadeIn>
 
           <div className="overflow-hidden mb-3">
             <RevealText delay={0.2}>
-              <span className="inline-block text-xs font-semibold text-primary-foreground/80 uppercase tracking-[0.25em] bg-primary/30 backdrop-blur-sm px-4 py-1.5 rounded-full border border-primary-foreground/10">
-                Baguio's Favorite Since 2000
+              <span className="inline-block text-xs font-semibold text-white/90 uppercase tracking-[0.25em] bg-primary/50 backdrop-blur-md px-5 py-2 rounded-full border border-white/10">
+                🍕 Baguio's Favorite Since 2000
               </span>
             </RevealText>
           </div>
@@ -45,12 +51,12 @@ const Home = () => {
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-bold text-white mb-6 leading-[1.05] tracking-tight drop-shadow-lg">
               Authentic Italian
               <br />
-              <span className="font-brand text-6xl md:text-8xl lg:text-9xl text-primary-foreground/90">Pizza</span>
+              <span className="font-brand text-6xl md:text-8xl lg:text-9xl text-white/90">Pizza</span>
             </h1>
           </RevealText>
 
           <FadeIn delay={0.5}>
-            <p className="text-lg md:text-xl text-white/75 mb-10 max-w-lg mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-white/80 mb-10 max-w-lg mx-auto leading-relaxed">
               Wood-fired perfection, traditional recipes, and the finest ingredients — 
               in the heart of the City of Pines.
             </p>
@@ -114,15 +120,48 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Food Gallery — Real photos with hover zoom */}
+      <section className="py-24 bg-background">
+        <div className="container mx-auto px-6">
+          <FadeIn>
+            <div className="text-center mb-14">
+              <p className="text-xs font-semibold text-primary uppercase tracking-[0.25em] mb-3">From Our Kitchen</p>
+              <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-4">
+                Made Fresh
+                <span className="text-gradient block">Every Day</span>
+              </h2>
+              <div className="section-divider mt-6" />
+            </div>
+          </FadeIn>
+
+          <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-6xl mx-auto">
+            {[
+              { src: pizzaSupreme, alt: "Supreme pizza", span: "md:col-span-2 md:row-span-2" },
+              { src: pastaDish, alt: "Pasta dish", span: "" },
+              { src: saladFresh, alt: "Fresh salad", span: "" },
+              { src: pizzaClassic, alt: "Classic pizza", span: "" },
+              { src: pizzaSlice, alt: "Pizza slice", span: "" },
+            ].map((img, i) => (
+              <StaggerItem key={img.alt} className={img.span}>
+                <ZoomImage
+                  src={img.src}
+                  alt={img.alt}
+                  className={`rounded-2xl shadow-card ${img.span.includes("row-span-2") ? "h-full min-h-[280px] md:min-h-[400px]" : "aspect-square"}`}
+                />
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        </div>
+      </section>
+
       {/* Features */}
-      <section className="py-28 bg-background">
+      <section className="py-24 bg-card/50">
         <div className="container mx-auto px-6">
           <FadeIn>
             <div className="text-center mb-16">
               <p className="text-xs font-semibold text-primary uppercase tracking-[0.25em] mb-3">Why Choose Us</p>
-              <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-4">
-                The Pizza Volante
-                <span className="text-gradient block">Difference</span>
+              <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
+                The Pizza Volante Difference
               </h2>
               <div className="section-divider mt-6" />
             </div>
@@ -130,27 +169,9 @@ const Home = () => {
 
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {[
-              {
-                icon: Star,
-                title: "Premium Quality",
-                desc: "Only the finest ingredients sourced locally from Benguet farms and imported from Italy.",
-                color: "text-primary",
-                bg: "bg-primary/8",
-              },
-              {
-                icon: Flame,
-                title: "Wood-Fired Fresh",
-                desc: "Every pizza is baked to order in our traditional wood-fired oven for that authentic taste.",
-                color: "text-accent",
-                bg: "bg-accent/8",
-              },
-              {
-                icon: Truck,
-                title: "Fast Delivery",
-                desc: "Free delivery within Baguio City for orders above ₱500. Hot pizza at your doorstep!",
-                color: "text-success",
-                bg: "bg-success/8",
-              },
+              { icon: Star, title: "Premium Quality", desc: "Only the finest ingredients sourced locally from Benguet farms and imported from Italy.", color: "text-primary", bg: "bg-primary/8" },
+              { icon: Flame, title: "Wood-Fired Fresh", desc: "Every pizza is baked to order in our traditional wood-fired oven for that authentic taste.", color: "text-accent", bg: "bg-accent/8" },
+              { icon: Truck, title: "Fast Delivery", desc: "Free delivery within Baguio City for orders above ₱500. Hot pizza at your doorstep!", color: "text-success", bg: "bg-success/8" },
             ].map((feature) => (
               <StaggerItem key={feature.title}>
                 <HoverCard className="h-full">
@@ -168,11 +189,11 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Interior Parallax Section */}
+      {/* Interior Parallax — Real restaurant photo */}
       <section className="relative h-[50vh] md:h-[60vh]">
         <ParallaxImage
-          src={restaurantInterior}
-          alt="Cozy Italian restaurant interior"
+          src={restaurantInteriorReal}
+          alt="Inside Pizza Volante Baguio"
           className="absolute inset-0"
         />
         <div className="relative z-10 h-full flex items-center justify-center text-center px-6">
@@ -184,9 +205,17 @@ const Home = () => {
               <h2 className="text-2xl md:text-4xl font-display font-bold text-white mb-4 drop-shadow-lg">
                 A Taste of Italy in Baguio
               </h2>
-              <p className="text-white/65 max-w-md mx-auto">
-                Step into our warm, rustic pizzeria and feel transported to the streets of Naples.
+              <p className="text-white/70 max-w-md mx-auto mb-8">
+                Step into our warm, rustic pizzeria and enjoy authentic flavors with a view.
               </p>
+              <AnimatedButton>
+                <Button asChild size="lg" className="px-8 py-6 text-base rounded-xl shadow-glow btn-glow">
+                  <Link to="/about">
+                    Our Story
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Link>
+                </Button>
+              </AnimatedButton>
             </div>
           </FadeIn>
         </div>
@@ -197,11 +226,9 @@ const Home = () => {
         <div className="container mx-auto px-6">
           <FadeIn>
             <div className="bg-secondary rounded-3xl p-12 md:p-20 text-center relative overflow-hidden">
-              {/* Decorative */}
               <div className="absolute top-0 left-0 w-full h-full opacity-[0.03]">
                 <div className="absolute top-10 left-10 w-40 h-40 rounded-full border border-secondary-foreground" />
                 <div className="absolute bottom-10 right-10 w-60 h-60 rounded-full border border-secondary-foreground" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full border border-secondary-foreground" />
               </div>
 
               <div className="relative">
@@ -222,11 +249,7 @@ const Home = () => {
                   Your reviews help us serve you better and make every pizza even more perfect.
                 </p>
                 <AnimatedButton>
-                  <Button
-                    asChild
-                    size="lg"
-                    className="px-10 py-6 text-base rounded-xl shadow-glow btn-glow"
-                  >
+                  <Button asChild size="lg" className="px-10 py-6 text-base rounded-xl shadow-glow btn-glow">
                     <Link to="/reviews">
                       <Star className="w-4 h-4 mr-2" />
                       Leave a Review

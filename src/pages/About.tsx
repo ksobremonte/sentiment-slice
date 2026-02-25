@@ -1,25 +1,28 @@
 import { Pizza, Heart, Users, Award, Utensils, Leaf } from "lucide-react";
 import PublicLayout from "@/components/layout/PublicLayout";
 import {
-  FadeIn, StaggerContainer, StaggerItem, HoverCard, ParallaxImage, RevealText,
+  FadeIn, StaggerContainer, StaggerItem, HoverCard, ParallaxImage, ZoomImage,
 } from "@/components/ui/animated";
-import restaurantInterior from "@/assets/restaurant-interior.jpg";
+import restaurantExterior from "@/assets/restaurant-exterior.jpg";
+import restaurantInteriorReal from "@/assets/restaurant-interior-real.jpg";
+import foodSpread from "@/assets/food-spread.jpg";
+import riceMeal from "@/assets/rice-meal.jpg";
 
 const About = () => {
   return (
     <PublicLayout>
-      {/* Hero */}
-      <section className="relative h-[40vh] md:h-[45vh] flex items-center justify-center overflow-hidden">
+      {/* Hero — Real exterior photo */}
+      <section className="relative h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden">
         <ParallaxImage
-          src={restaurantInterior}
-          alt="Our cozy restaurant"
+          src={restaurantExterior}
+          alt="Pizza Volante Baguio exterior"
           className="absolute inset-0"
         />
         <div className="relative z-10 text-center px-6">
           <FadeIn>
             <p className="text-xs font-semibold text-white/60 uppercase tracking-[0.25em] mb-2">Our Story</p>
             <h1 className="text-4xl md:text-6xl font-display font-bold text-white drop-shadow-lg">
-              About Us
+              About Pizza Volante
             </h1>
           </FadeIn>
         </div>
@@ -27,10 +30,10 @@ const About = () => {
 
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-6">
-          {/* Story */}
-          <div className="max-w-3xl mx-auto mb-24">
+          {/* Story with images */}
+          <div className="max-w-5xl mx-auto mb-24">
             <FadeIn>
-              <div className="text-center mb-12">
+              <div className="text-center mb-14">
                 <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
                   From Family Kitchen to
                   <span className="text-gradient block">Baguio's Favorite</span>
@@ -39,39 +42,64 @@ const About = () => {
               </div>
             </FadeIn>
 
-            <div className="space-y-6">
-              {[
-                {
-                  icon: Utensils,
-                  iconColor: "text-primary",
-                  iconBg: "bg-primary/8",
-                  title: "How It All Began",
-                  text: "Pizza Volante started in 2020 when the Reyes family decided to share their grandmother's secret pizza recipes with Baguio. What began as a small home kitchen operation quickly grew as word spread about our authentic Italian-Filipino fusion pizzas.",
-                },
-                {
-                  icon: Leaf,
-                  iconColor: "text-accent",
-                  iconBg: "bg-accent/8",
-                  title: "Our Philosophy",
-                  text: "We believe great pizza starts with great ingredients. Every pizza is made with hand-stretched dough, san marzano tomatoes, fresh mozzarella, and locally-sourced vegetables from Benguet farms.",
-                },
-              ].map((card, i) => (
-                <FadeIn key={card.title} delay={i * 0.12}>
-                  <HoverCard>
-                    <div className="bg-card border border-border rounded-2xl p-8 shadow-card group">
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className={`w-10 h-10 rounded-lg ${card.iconBg} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
-                          <card.icon className={`w-5 h-5 ${card.iconColor}`} />
-                        </div>
-                        <h3 className="text-xl font-display font-semibold text-foreground pt-1">{card.title}</h3>
+            {/* Story card with image — alternating layout */}
+            <div className="space-y-8">
+              <FadeIn>
+                <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-card md:flex group">
+                  <div className="md:w-2/5">
+                    <ZoomImage
+                      src={restaurantInteriorReal}
+                      alt="Inside Pizza Volante"
+                      className="h-56 md:h-full w-full"
+                    />
+                  </div>
+                  <div className="md:w-3/5 p-8 flex flex-col justify-center">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/8 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <Utensils className="w-5 h-5 text-primary" />
                       </div>
-                      <p className="text-muted-foreground leading-relaxed pl-14">{card.text}</p>
+                      <h3 className="text-xl font-display font-semibold text-foreground">How It All Began</h3>
                     </div>
-                  </HoverCard>
-                </FadeIn>
-              ))}
+                    <p className="text-muted-foreground leading-relaxed">
+                      Pizza Volante started in 2020 when the Reyes family decided to share their grandmother's secret pizza recipes with Baguio. What began as a small home kitchen operation quickly grew as word spread about our authentic Italian-Filipino fusion pizzas. Today, we're proud to serve hundreds of happy customers every week.
+                    </p>
+                  </div>
+                </div>
+              </FadeIn>
+
+              <FadeIn delay={0.1}>
+                <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-card md:flex md:flex-row-reverse group">
+                  <div className="md:w-2/5">
+                    <ZoomImage
+                      src={riceMeal}
+                      alt="Our fresh ingredients"
+                      className="h-56 md:h-full w-full"
+                    />
+                  </div>
+                  <div className="md:w-3/5 p-8 flex flex-col justify-center">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-lg bg-accent/8 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <Leaf className="w-5 h-5 text-accent" />
+                      </div>
+                      <h3 className="text-xl font-display font-semibold text-foreground">Our Philosophy</h3>
+                    </div>
+                    <p className="text-muted-foreground leading-relaxed">
+                      We believe great food starts with great ingredients. Every pizza is made with hand-stretched dough, san marzano tomatoes, fresh mozzarella, and locally-sourced vegetables from Benguet farms. We never compromise on quality — every dish is made with the same care as if we were cooking for our own family.
+                    </p>
+                  </div>
+                </div>
+              </FadeIn>
             </div>
           </div>
+
+          {/* Full-width food image break */}
+          <FadeIn>
+            <ZoomImage
+              src={foodSpread}
+              alt="Our food selection"
+              className="rounded-2xl shadow-warm max-w-5xl mx-auto h-48 md:h-72 mb-24"
+            />
+          </FadeIn>
 
           {/* Values */}
           <FadeIn>
