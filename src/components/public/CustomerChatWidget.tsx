@@ -41,7 +41,7 @@ const CustomerChatWidget = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: `Buongiorno! 🍕 Welcome to ${STORE_INFO.name}! I'm here to help you with store hours, daily specials, and more. How can I assist you today?`,
+      content: `Welcome to ${STORE_INFO.name}! 🍕 I'm here to help you with store hours, daily specials, and more. How can I assist you today?`,
     },
   ]);
   const [input, setInput] = useState("");
@@ -223,7 +223,7 @@ const CustomerChatWidget = () => {
   }
 
   return (
-    <div className="fixed z-[9999] bg-card border-2 border-border rounded-3xl shadow-warm flex flex-col overflow-hidden right-2 left-2 top-2 bottom-[4.5rem] md:inset-auto md:bottom-6 md:right-6 md:left-auto md:top-auto md:w-96 md:h-[520px]">
+    <div className="fixed z-[9999] bg-card border-2 border-border rounded-3xl shadow-warm flex flex-col overflow-hidden right-2 left-2 top-auto bottom-[4.5rem] max-h-[70vh] md:inset-auto md:bottom-6 md:right-6 md:left-auto md:top-auto md:w-96 md:h-[480px]">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b-2 border-border bg-secondary">
         <div className="flex items-center gap-3">
