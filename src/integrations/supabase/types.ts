@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      alert_history: {
+        Row: {
+          alert_level: string
+          created_at: string
+          id: string
+          message: string
+          negative_count: number
+          negative_percentage: number
+          review_count: number
+          top_keyword: string | null
+        }
+        Insert: {
+          alert_level?: string
+          created_at?: string
+          id?: string
+          message: string
+          negative_count?: number
+          negative_percentage: number
+          review_count?: number
+          top_keyword?: string | null
+        }
+        Update: {
+          alert_level?: string
+          created_at?: string
+          id?: string
+          message?: string
+          negative_count?: number
+          negative_percentage?: number
+          review_count?: number
+          top_keyword?: string | null
+        }
+        Relationships: []
+      }
+      alert_settings: {
+        Row: {
+          id: string
+          threshold_percentage: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          threshold_percentage?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          threshold_percentage?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       chat_conversations: {
         Row: {
           created_at: string
