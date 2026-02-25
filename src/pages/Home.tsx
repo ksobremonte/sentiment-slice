@@ -16,6 +16,9 @@ import pastaDish from "@/assets/pasta-dish.jpg";
 import pizzaSlice from "@/assets/pizza-slice.jpg";
 import saladFresh from "@/assets/salad-fresh.jpg";
 import restaurantInteriorReal from "@/assets/restaurant-interior-real.jpg";
+import pastaSpread from "@/assets/pasta-spread.jpg";
+import foodTable from "@/assets/food-table.jpg";
+import pizzaRiceMeal from "@/assets/pizza-rice-meal.jpg";
 
 const Home = () => {
   return (
@@ -134,19 +137,22 @@ const Home = () => {
             </div>
           </FadeIn>
 
-          <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-6xl mx-auto">
+          <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-6xl mx-auto auto-rows-[200px] md:auto-rows-[220px]">
             {[
               { src: pizzaSupreme, alt: "Supreme pizza", span: "md:col-span-2 md:row-span-2" },
               { src: pastaDish, alt: "Pasta dish", span: "" },
               { src: saladFresh, alt: "Fresh salad", span: "" },
-              { src: pizzaClassic, alt: "Classic pizza", span: "" },
+              { src: pastaSpread, alt: "Pasta spread", span: "" },
+              { src: foodTable, alt: "Food table spread", span: "" },
+              { src: pizzaClassic, alt: "Classic pizza", span: "md:col-span-2" },
+              { src: pizzaRiceMeal, alt: "Pizza and rice meal", span: "" },
               { src: pizzaSlice, alt: "Pizza slice", span: "" },
             ].map((img, i) => (
               <StaggerItem key={img.alt} className={img.span}>
                 <ZoomImage
                   src={img.src}
                   alt={img.alt}
-                  className={`rounded-2xl shadow-card ${img.span.includes("row-span-2") ? "h-full min-h-[280px] md:min-h-[400px]" : "aspect-square"}`}
+                  className={`rounded-2xl shadow-card h-full w-full`}
                 />
               </StaggerItem>
             ))}
