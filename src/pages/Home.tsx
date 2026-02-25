@@ -9,6 +9,7 @@ import {
 import { motion } from "framer-motion";
 import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 import foodSpread from "@/assets/food-spread.jpg";
+import heroPizza from "@/assets/hero-pizza.jpg";
 import pizzaSupreme from "@/assets/pizza-supreme.jpg";
 import restaurantExterior from "@/assets/restaurant-exterior.jpg";
 import pizzaClassic from "@/assets/pizza-classic.jpg";
@@ -26,8 +27,8 @@ const Home = () => {
       {/* Hero Section — Full bleed with real food spread */}
       <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
         <ParallaxImage
-          src={foodSpread}
-          alt="Pizza Volante food spread"
+          src={heroPizza}
+          alt="Delicious Pizza Volante pizza"
           className="absolute inset-0"
         />
 
