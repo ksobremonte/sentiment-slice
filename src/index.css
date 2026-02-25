@@ -6,98 +6,96 @@
 
 @layer base {
   :root {
-    /* Warm Italian Pizzeria Theme */
-    /* Warm beige background */
-    --background: 35 35% 94%;
-    --foreground: 20 25% 15%;
+    /* Modern Italian Pizzeria — darker, richer, more contrast */
+    --background: 30 15% 97%;
+    --foreground: 20 30% 10%;
 
-    /* Wood brown cards */
-    --card: 30 30% 96%;
-    --card-foreground: 20 25% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 30% 10%;
 
-    /* Cream popover */
-    --popover: 35 40% 97%;
-    --popover-foreground: 20 25% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 30% 10%;
 
-    /* Brick red primary */
-    --primary: 8 65% 40%;
-    --primary-foreground: 35 40% 97%;
+    /* Deep brick red primary */
+    --primary: 6 72% 35%;
+    --primary-foreground: 0 0% 98%;
 
-    /* Chalkboard green secondary */
-    --secondary: 150 25% 25%;
-    --secondary-foreground: 35 40% 97%;
+    /* Dark forest green secondary */
+    --secondary: 152 32% 18%;
+    --secondary-foreground: 40 30% 95%;
 
-    /* Warm muted tones */
-    --muted: 30 20% 88%;
-    --muted-foreground: 20 15% 45%;
+    /* Refined muted tones */
+    --muted: 30 10% 92%;
+    --muted-foreground: 20 10% 45%;
 
-    /* Terracotta accent */
-    --accent: 18 60% 50%;
-    --accent-foreground: 35 40% 97%;
+    /* Rich terracotta accent */
+    --accent: 20 70% 48%;
+    --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 35 40% 97%;
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 98%;
 
-    --success: 142 60% 35%;
-    --success-foreground: 35 40% 97%;
+    --success: 142 55% 32%;
+    --success-foreground: 0 0% 98%;
 
-    --warning: 40 90% 50%;
-    --warning-foreground: 20 25% 15%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 20 30% 10%;
 
-    /* Wood brown border */
-    --border: 30 25% 80%;
-    --input: 30 25% 85%;
-    --ring: 8 65% 40%;
+    /* Refined borders */
+    --border: 30 15% 88%;
+    --input: 30 15% 90%;
+    --ring: 6 72% 35%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
 
-    /* Dashboard sidebar - darker wood theme */
-    --sidebar-background: 25 35% 18%;
+    /* Dashboard sidebar */
+    --sidebar-background: 20 30% 12%;
     --sidebar-foreground: 35 30% 92%;
-    --sidebar-primary: 18 60% 55%;
-    --sidebar-primary-foreground: 35 40% 97%;
-    --sidebar-accent: 25 30% 25%;
+    --sidebar-primary: 20 70% 48%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 20 25% 18%;
     --sidebar-accent-foreground: 35 30% 92%;
-    --sidebar-border: 25 25% 25%;
-    --sidebar-ring: 18 60% 55%;
+    --sidebar-border: 20 20% 18%;
+    --sidebar-ring: 20 70% 48%;
 
-    /* Custom gradients - warm Italian feel */
-    --gradient-primary: linear-gradient(135deg, hsl(8, 65%, 40%) 0%, hsl(18, 60%, 50%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(30, 30%, 98%) 0%, hsl(35, 35%, 94%) 100%);
-    --gradient-warm: linear-gradient(135deg, hsl(35, 40%, 95%) 0%, hsl(30, 35%, 90%) 100%);
-    --gradient-chalkboard: linear-gradient(180deg, hsl(150, 25%, 22%) 0%, hsl(150, 25%, 18%) 100%);
+    /* Premium gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(6, 72%, 35%) 0%, hsl(20, 70%, 48%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0, 0%, 100%) 0%, hsl(30, 15%, 97%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(30, 20%, 96%) 0%, hsl(25, 15%, 92%) 100%);
+    --gradient-chalkboard: linear-gradient(180deg, hsl(152, 32%, 18%) 0%, hsl(152, 32%, 12%) 100%);
+    --gradient-hero: linear-gradient(160deg, hsl(30, 15%, 97%) 0%, hsl(20, 20%, 93%) 50%, hsl(6, 25%, 93%) 100%);
 
-    /* Shadows - soft and warm */
-    --shadow-card: 0 4px 20px -4px hsl(25 30% 20% / 0.12);
-    --shadow-warm: 0 8px 30px -8px hsl(25 30% 20% / 0.15);
-    --shadow-subtle: 0 2px 8px -2px hsl(25 30% 20% / 0.08);
+    /* Premium shadows */
+    --shadow-card: 0 4px 24px -6px hsl(20 30% 15% / 0.08);
+    --shadow-warm: 0 12px 40px -12px hsl(20 30% 15% / 0.15);
+    --shadow-subtle: 0 2px 8px -2px hsl(20 30% 15% / 0.06);
+    --shadow-glow: 0 0 30px -5px hsl(6 72% 35% / 0.2);
   }
 
   .dark {
-    /* Dark mode - cozy evening pizzeria */
-    --background: 25 25% 12%;
-    --foreground: 35 30% 92%;
+    --background: 20 20% 8%;
+    --foreground: 35 20% 92%;
 
-    --card: 25 25% 16%;
-    --card-foreground: 35 30% 92%;
+    --card: 20 20% 12%;
+    --card-foreground: 35 20% 92%;
 
-    --popover: 25 25% 14%;
-    --popover-foreground: 35 30% 92%;
+    --popover: 20 20% 10%;
+    --popover-foreground: 35 20% 92%;
 
     --primary: 18 65% 55%;
     --primary-foreground: 20 25% 10%;
 
-    --secondary: 150 20% 30%;
-    --secondary-foreground: 35 30% 92%;
+    --secondary: 152 20% 22%;
+    --secondary-foreground: 35 20% 92%;
 
-    --muted: 25 20% 22%;
-    --muted-foreground: 35 20% 60%;
+    --muted: 20 15% 18%;
+    --muted-foreground: 35 15% 55%;
 
-    --accent: 18 55% 50%;
-    --accent-foreground: 35 40% 97%;
+    --accent: 20 55% 50%;
+    --accent-foreground: 0 0% 98%;
 
-    --border: 25 20% 25%;
-    --input: 25 20% 22%;
+    --border: 20 15% 20%;
+    --input: 20 15% 18%;
   }
 }
 
@@ -150,6 +148,10 @@
     background-image: var(--gradient-chalkboard);
   }
 
+  .bg-gradient-hero {
+    background-image: var(--gradient-hero);
+  }
+
   .shadow-warm {
     box-shadow: var(--shadow-warm);
   }
@@ -160,6 +162,10 @@
 
   .shadow-subtle {
     box-shadow: var(--shadow-subtle);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
   }
 
   /* Chalkboard text effect */
@@ -176,17 +182,14 @@
 
   /* Terracotta border accent */
   .border-terracotta {
-    border-color: hsl(18, 60%, 50%);
+    border-color: hsl(20, 70%, 48%);
   }
 
-  /* Brick texture overlay */
+  /* Subtle texture overlay */
   .brick-overlay {
     background-image: 
-      linear-gradient(135deg, hsl(8, 65%, 40%, 0.03) 25%, transparent 25%),
-      linear-gradient(225deg, hsl(8, 65%, 40%, 0.03) 25%, transparent 25%),
-      linear-gradient(45deg, hsl(8, 65%, 40%, 0.03) 25%, transparent 25%),
-      linear-gradient(315deg, hsl(8, 65%, 40%, 0.03) 25%, transparent 25%);
-    background-size: 20px 20px;
+      radial-gradient(circle at 20% 50%, hsl(6, 72%, 35%, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, hsl(20, 70%, 48%, 0.02) 0%, transparent 50%);
   }
 
   .animate-float {
@@ -194,12 +197,8 @@
   }
 
   @keyframes float {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-5px);
-    }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
   }
 
   .animate-fade-in {
@@ -207,13 +206,12 @@
   }
 
   @keyframes fade-in {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Glass effect */
+  .glass {
+    @apply bg-card/80 backdrop-blur-lg;
   }
 }

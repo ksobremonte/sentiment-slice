@@ -72,29 +72,24 @@ export default {
         },
         // Custom pizzeria colors
         brick: {
-          DEFAULT: "hsl(8 65% 40%)",
-          light: "hsl(8 60% 55%)",
-          dark: "hsl(8 70% 30%)",
+          DEFAULT: "hsl(6 72% 35%)",
+          light: "hsl(6 65% 50%)",
+          dark: "hsl(6 75% 25%)",
         },
         chalkboard: {
-          DEFAULT: "hsl(150 25% 25%)",
-          light: "hsl(150 20% 35%)",
-          dark: "hsl(150 30% 18%)",
+          DEFAULT: "hsl(152 32% 18%)",
+          light: "hsl(152 25% 28%)",
+          dark: "hsl(152 35% 12%)",
         },
         terracotta: {
-          DEFAULT: "hsl(18 60% 50%)",
-          light: "hsl(18 55% 60%)",
-          dark: "hsl(18 65% 40%)",
-        },
-        wood: {
-          DEFAULT: "hsl(30 30% 35%)",
-          light: "hsl(30 25% 50%)",
-          dark: "hsl(30 35% 25%)",
+          DEFAULT: "hsl(20 70% 48%)",
+          light: "hsl(20 60% 58%)",
+          dark: "hsl(20 75% 38%)",
         },
         cream: {
-          DEFAULT: "hsl(35 40% 97%)",
-          warm: "hsl(35 35% 94%)",
-          dark: "hsl(35 30% 88%)",
+          DEFAULT: "hsl(30 15% 97%)",
+          warm: "hsl(30 15% 94%)",
+          dark: "hsl(30 10% 88%)",
         },
       },
       borderRadius: {
