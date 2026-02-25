@@ -258,7 +258,7 @@ const Reviews = () => {
                           className={`w-10 h-10 transition-colors ${
                             star <= (hoveredRating || rating)
                               ? "fill-warning text-warning"
-                              : "text-muted-foreground/30"
+                              : "text-muted-foreground/60 stroke-[1.5]"
                           }`}
                         />
                       </button>
