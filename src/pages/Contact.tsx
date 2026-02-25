@@ -32,7 +32,7 @@ const Contact = () => {
             {[
               { icon: Phone, title: "Phone", primary: "+63 (074) 445-0777", secondary: "For orders & inquiries", color: "text-primary", bg: "bg-primary/8" },
               { icon: Mail, title: "Email", primary: "hello@pizzavolante.ph", secondary: "We reply within 24 hours", color: "text-accent", bg: "bg-accent/8" },
-              { icon: MapPin, title: "Address", primary: "123 Session Road", secondary: "Baguio City, 2600", color: "text-success", bg: "bg-success/8" },
+              { icon: MapPin, title: "Address", primary: "082, Diego Silang St, Baguio, Benguet", secondary: "Baguio City, 2600", color: "text-success", bg: "bg-success/8" },
               { icon: Clock, title: "Hours", primary: "Mon–Sat: 11AM–10PM", secondary: "Sunday: 12PM–8PM", color: "text-warning", bg: "bg-warning/8" },
             ].map((item) => (
               <StaggerItem key={item.title}>
