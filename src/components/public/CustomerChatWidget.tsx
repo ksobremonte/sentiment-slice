@@ -210,13 +210,15 @@ const CustomerChatWidget = () => {
 
   if (!isOpen) {
     return (
-      <Button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-20 right-4 md:bottom-6 md:right-6 left-auto h-14 w-14 md:h-16 md:w-16 rounded-full shadow-warm bg-primary hover:bg-primary/90 z-[9999]"
-        size="icon"
-      >
-        <MessageSquare className="h-6 w-6 md:h-7 md:w-7" />
-      </Button>
+      <div className="fixed z-[9999]" style={{ bottom: '5rem', right: '1rem', left: 'auto' }}>
+        <Button
+          onClick={() => setIsOpen(true)}
+          className="h-14 w-14 md:h-16 md:w-16 rounded-full shadow-warm bg-primary hover:bg-primary/90"
+          size="icon"
+        >
+          <MessageSquare className="h-6 w-6 md:h-7 md:w-7" />
+        </Button>
+      </div>
     );
   }
 
