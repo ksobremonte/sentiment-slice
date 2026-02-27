@@ -13,7 +13,7 @@ import DashboardOverview from "./pages/dashboard/DashboardOverview";
 import DashboardConversations from "./pages/dashboard/DashboardConversations";
 import DashboardSentiment from "./pages/dashboard/DashboardSentiment";
 import DashboardReviews from "./pages/dashboard/DashboardReviews";
-import DashboardAudit from "./pages/dashboard/DashboardAudit";
+
 import DashboardDetection from "./pages/dashboard/DashboardDetection";
 import DashboardAI from "./pages/dashboard/DashboardAI";
 import DashboardAlerts from "./pages/dashboard/DashboardAlerts";
@@ -49,7 +49,7 @@ const App = () => (
             <Route path="/pv-dashboard/conversations" element={<ProtectedRoute><DashboardConversations /></ProtectedRoute>} />
             <Route path="/pv-dashboard/sentiment" element={<ProtectedRoute><DashboardSentiment /></ProtectedRoute>} />
             <Route path="/pv-dashboard/reviews" element={<ProtectedRoute><DashboardReviews /></ProtectedRoute>} />
-            <Route path="/pv-dashboard/audit" element={<ProtectedRoute><DashboardAudit /></ProtectedRoute>} />
+            
             <Route path="/pv-dashboard/detection" element={<ProtectedRoute><DashboardDetection /></ProtectedRoute>} />
             <Route path="/pv-dashboard/ai" element={<ProtectedRoute><DashboardAI /></ProtectedRoute>} />
             <Route path="/pv-dashboard/alerts" element={<ProtectedRoute><DashboardAlerts /></ProtectedRoute>} />
