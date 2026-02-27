@@ -8,6 +8,7 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import DashboardOverview from "./pages/dashboard/DashboardOverview";
 import DashboardConversations from "./pages/dashboard/DashboardConversations";
 import DashboardSentiment from "./pages/dashboard/DashboardSentiment";
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/pv-admin" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/pv-dashboard" element={<ProtectedRoute><DashboardOverview /></ProtectedRoute>} />
             <Route path="/pv-dashboard/conversations" element={<ProtectedRoute><DashboardConversations /></ProtectedRoute>} />
             <Route path="/pv-dashboard/sentiment" element={<ProtectedRoute><DashboardSentiment /></ProtectedRoute>} />
