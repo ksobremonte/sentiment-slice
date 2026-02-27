@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, MessageSquare, PieChart, Star,
-  LogOut, Shield, Brain, Bell, History, Settings,
+  LogOut, Shield, Brain, Bell, Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/contexts/AuthContext";
@@ -38,7 +38,6 @@ const mainNavItems = [
 ];
 
 const adminNavItems = [
-  { label: "Audit Log", icon: History, path: "/pv-dashboard/audit" },
   { label: "Detection", icon: Shield, path: "/pv-dashboard/detection" },
   { label: "AI Config", icon: Brain, path: "/pv-dashboard/ai" },
   { label: "Alerts", icon: Bell, path: "/pv-dashboard/alerts" },
