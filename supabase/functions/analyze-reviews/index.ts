@@ -105,6 +105,15 @@ Only return the JSON array, no other text. Format: ["id1", "id2", "id3", ...]`;
 
 CRITICAL: Determine sentiment PURELY from the written text. DO NOT consider or be influenced by any star rating.
 
+LANGUAGE SUPPORT:
+The review may be in English, Filipino (Tagalog), or Ilocano. If the review is in Ilocano, first translate it to English before analyzing.
+
+Treat these Ilocano words as sentiment indicators:
+- POSITIVE: nalaing, nasayaat, napintas, nagpaspas
+- NEGATIVE: madi, saan a nasayaat, narigat, bassit
+
+Base the result on the meaning of the sentence, not unknown words.
+
 ANALYSIS FRAMEWORK:
 1. **Lexical Analysis**: Identify sentiment-bearing words, intensifiers (very, extremely), negations (not, never), and hedging language (somewhat, kind of)
 2. **Contextual Understanding**: Detect sarcasm, irony, and implicit sentiment (e.g., "interesting pizza" could be negative)
