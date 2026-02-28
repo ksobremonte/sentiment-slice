@@ -3,6 +3,7 @@ import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import SentimentChart from "@/components/dashboard/SentimentChart";
 import { useReviews } from "@/hooks/useReviews";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Star, MessageSquare } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -48,22 +49,31 @@ const DashboardSentiment = () => {
           onFilterChange={setFilterSentiment}
         />
 
-        {/* Comments by Sentiment */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {displayOrder.map((sentiment) => {
+        {/* Comments by Sentiment - Tabbed */}
+        <Tabs defaultValue="negative" className="w-full">
+          <TabsList className="w-full justify-start gap-2 bg-transparent p-0">
+            {["negative", "neutral", "positive"].map((sentiment) => {
+              const config = sentimentConfig[sentiment];
+              const items = groupedReviews[sentiment as keyof typeof groupedReviews] || [];
+              return (
+                <TabsTrigger
+                  key={sentiment}
+                  value={sentiment}
+                  className={`rounded-xl border-2 ${config.borderClass} data-[state=active]:${config.bgClass} px-4 py-2`}
+                >
+                  <span className={config.color}>{config.label}</span>
+                  <span className="ml-2 text-xs text-muted-foreground font-semibold">{items.length}</span>
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
+
+          {["negative", "neutral", "positive"].map((sentiment) => {
             const config = sentimentConfig[sentiment];
             const items = groupedReviews[sentiment as keyof typeof groupedReviews] || [];
-
             return (
-              <div key={sentiment} className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className={`${config.bgClass} ${config.color} ${config.borderClass} border`}>
-                    {config.label}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground font-semibold">{items.length}</span>
-                </div>
-
-                <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
+              <TabsContent key={sentiment} value={sentiment}>
+                <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
                   {items.length === 0 ? (
                     <div className="text-center py-8 bg-card border-2 border-border rounded-2xl">
                       <MessageSquare className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
@@ -73,7 +83,7 @@ const DashboardSentiment = () => {
                     items.map((review) => (
                       <div
                         key={review.id}
-                        className={`bg-card border-2 ${config.borderClass} rounded-xl p-3 space-y-1.5`}
+                        className={`bg-card border-2 ${config.borderClass} rounded-xl p-4 space-y-2`}
                       >
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-semibold text-foreground">{review.name}</span>
@@ -81,12 +91,12 @@ const DashboardSentiment = () => {
                             {Array.from({ length: 5 }).map((_, i) => (
                               <Star
                                 key={i}
-                                className={`w-3 h-3 ${i < review.rating ? "fill-warning text-warning" : "text-muted-foreground/30"}`}
+                                className={`w-3.5 h-3.5 ${i < review.rating ? "fill-warning text-warning" : "text-muted-foreground/30"}`}
                               />
                             ))}
                           </div>
                         </div>
-                        <p className="text-sm text-foreground/80 line-clamp-3">{review.feedback}</p>
+                        <p className="text-sm text-foreground/80">{review.feedback}</p>
                         <p className="text-[10px] text-muted-foreground">
                           {formatDistanceToNow(new Date(review.created_at), { addSuffix: true })}
                         </p>
@@ -94,10 +104,10 @@ const DashboardSentiment = () => {
                     ))
                   )}
                 </div>
-              </div>
+              </TabsContent>
             );
           })}
-        </div>
+        </Tabs>
       </div>
     </DashboardLayout>
   );
