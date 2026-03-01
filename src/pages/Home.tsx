@@ -37,6 +37,10 @@ const Home = () => {
             src={heroPizza}
             alt="Delicious Pizza Volante pizza"
             className="absolute inset-0 w-full h-full object-cover"
+            // @ts-ignore
+            fetchpriority="high"
+            width={1454}
+            height={1024}
           />
         </motion.div>
         {/* Cinematic gradient overlay */}
@@ -219,6 +223,9 @@ const Home = () => {
           src={restaurantInteriorReal}
           alt="Inside Pizza Volante Baguio"
           className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
+          width={1920}
+          height={879}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
         <div className="relative z-10 h-full flex items-center justify-center text-center px-6">
