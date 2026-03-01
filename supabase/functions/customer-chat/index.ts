@@ -240,16 +240,45 @@ Deno.serve(async (req) => {
       messageCount?: number;
     };
 
+    // Input validation
     if (!messages || !Array.isArray(messages)) {
-      throw new Error("Messages array is required");
+      return new Response(JSON.stringify({ error: "Messages array is required" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (messages.length > 50) {
+      return new Response(JSON.stringify({ error: "Too many messages (max 50)" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    for (const msg of messages) {
+      if (msg.content && typeof msg.content === "string" && msg.content.length > 10000) {
+        return new Response(JSON.stringify({ error: "Message too long (max 10000 chars)" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (msg.role && !["user", "assistant", "admin", "system"].includes(msg.role)) {
+        return new Response(JSON.stringify({ error: "Invalid message role" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+    if (sessionId && (typeof sessionId !== "string" || sessionId.length > 100)) {
+      return new Response(JSON.stringify({ error: "Invalid sessionId" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
     
-    if (!supabaseUrl || !supabaseKey) throw new Error("Supabase configuration missing");
-    if (!lovableApiKey) throw new Error("LOVABLE_API_KEY is not configured");
+    if (!supabaseUrl || !supabaseKey || !lovableApiKey) {
+      console.error("Missing required environment configuration");
+      return new Response(JSON.stringify({ error: "Service configuration error. Please try again later." }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -478,7 +507,7 @@ CRITICAL GUIDELINES:
   } catch (error) {
     console.error("Error:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "An error occurred" }),
+      JSON.stringify({ error: "An error occurred. Please try again later." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
