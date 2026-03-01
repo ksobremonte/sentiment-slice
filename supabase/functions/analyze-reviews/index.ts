@@ -24,7 +24,64 @@ Deno.serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+      console.error("LOVABLE_API_KEY is not configured");
+      return new Response(JSON.stringify({ error: "Service configuration error. Please try again later." }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Input validation
+    if (!Array.isArray(reviews)) {
+      return new Response(JSON.stringify({ error: "Invalid reviews format" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (reviews.length > 100) {
+      return new Response(JSON.stringify({ error: "Too many reviews (max 100)" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    for (const review of reviews) {
+      if (review.feedback && typeof review.feedback === "string" && review.feedback.length > 5000) {
+        return new Response(JSON.stringify({ error: "Review feedback too long (max 5000 chars)" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    const validActions = ["sort", "analyze-sentiment", "chat"];
+    if (!action || !validActions.includes(action)) {
+      return new Response(JSON.stringify({ error: "Invalid action" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (action === "chat") {
+      if (!Array.isArray(messages)) {
+        return new Response(JSON.stringify({ error: "Invalid messages format" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (messages.length > 50) {
+        return new Response(JSON.stringify({ error: "Too many messages (max 50)" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      for (const msg of messages) {
+        if (msg.content && typeof msg.content === "string" && msg.content.length > 10000) {
+          return new Response(JSON.stringify({ error: "Message too long (max 10000 chars)" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
     }
 
     if (action === "sort") {
@@ -321,7 +378,7 @@ Be concise and helpful. Use the actual data provided.`;
 
   } catch (error) {
     console.error("Error in analyze-reviews:", error);
-    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }), {
+    return new Response(JSON.stringify({ error: "An error occurred. Please try again later." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

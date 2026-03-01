@@ -104,7 +104,11 @@ Deno.serve(async (req) => {
     const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
     if (!supabaseUrl || !supabaseServiceRoleKey) {
-      throw new Error("Missing Supabase configuration");
+      console.error("Missing Supabase configuration");
+      return new Response(
+        JSON.stringify({ error: "Service configuration error. Please try again later." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
@@ -143,7 +147,7 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error("Error in upload-review-photo:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: "An error occurred. Please try again later." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
