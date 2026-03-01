@@ -152,12 +152,21 @@ export const ZoomImage = ({
   src,
   alt,
   className = "",
-}: { src: string; alt: string; className?: string }) => (
+  loading = "lazy" as "lazy" | "eager",
+  fetchPriority,
+  width,
+  height,
+}: { src: string; alt: string; className?: string; loading?: "lazy" | "eager"; fetchPriority?: "high" | "low" | "auto"; width?: number; height?: number }) => (
   <div className={`overflow-hidden ${className}`}>
     <motion.img
       src={src}
       alt={alt}
       className="w-full h-full object-cover"
+      loading={loading}
+      // @ts-ignore
+      fetchpriority={fetchPriority}
+      width={width}
+      height={height}
       whileHover={{ scale: 1.08 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
     />
