@@ -4,26 +4,28 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { lazy, Suspense } from "react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import DashboardOverview from "./pages/dashboard/DashboardOverview";
-import DashboardConversations from "./pages/dashboard/DashboardConversations";
-import DashboardSentiment from "./pages/dashboard/DashboardSentiment";
-import DashboardReviews from "./pages/dashboard/DashboardReviews";
-
-import DashboardDetection from "./pages/dashboard/DashboardDetection";
-import DashboardAI from "./pages/dashboard/DashboardAI";
-import DashboardAlerts from "./pages/dashboard/DashboardAlerts";
 import Home from "./pages/Home";
-import About from "./pages/About";
-import MenuPage from "./pages/MenuPage";
-import Reviews from "./pages/Reviews";
-import ReadReviews from "./pages/ReadReviews";
-import Contact from "./pages/Contact";
-import NotFound from "./pages/NotFound";
+
+// Lazy-loaded routes
+const Login = lazy(() => import("./pages/Login"));
+const Signup = lazy(() => import("./pages/Signup"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const DashboardOverview = lazy(() => import("./pages/dashboard/DashboardOverview"));
+const DashboardConversations = lazy(() => import("./pages/dashboard/DashboardConversations"));
+const DashboardSentiment = lazy(() => import("./pages/dashboard/DashboardSentiment"));
+const DashboardReviews = lazy(() => import("./pages/dashboard/DashboardReviews"));
+const DashboardDetection = lazy(() => import("./pages/dashboard/DashboardDetection"));
+const DashboardAI = lazy(() => import("./pages/dashboard/DashboardAI"));
+const DashboardAlerts = lazy(() => import("./pages/dashboard/DashboardAlerts"));
+const About = lazy(() => import("./pages/About"));
+const MenuPage = lazy(() => import("./pages/MenuPage"));
+const Reviews = lazy(() => import("./pages/Reviews"));
+const ReadReviews = lazy(() => import("./pages/ReadReviews"));
+const Contact = lazy(() => import("./pages/Contact"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
@@ -34,28 +36,28 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/menu" element={<MenuPage />} />
-            <Route path="/reviews" element={<Reviews />} />
-            <Route path="/read-reviews" element={<ReadReviews />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/pv-admin" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/pv-dashboard" element={<ProtectedRoute><DashboardOverview /></ProtectedRoute>} />
-            <Route path="/pv-dashboard/conversations" element={<ProtectedRoute><DashboardConversations /></ProtectedRoute>} />
-            <Route path="/pv-dashboard/sentiment" element={<ProtectedRoute><DashboardSentiment /></ProtectedRoute>} />
-            <Route path="/pv-dashboard/reviews" element={<ProtectedRoute><DashboardReviews /></ProtectedRoute>} />
-            
-            <Route path="/pv-dashboard/detection" element={<ProtectedRoute><DashboardDetection /></ProtectedRoute>} />
-            <Route path="/pv-dashboard/ai" element={<ProtectedRoute><DashboardAI /></ProtectedRoute>} />
-            <Route path="/pv-dashboard/alerts" element={<ProtectedRoute><DashboardAlerts /></ProtectedRoute>} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<div className="min-h-screen" />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/menu" element={<MenuPage />} />
+              <Route path="/reviews" element={<Reviews />} />
+              <Route path="/read-reviews" element={<ReadReviews />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/pv-admin" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/pv-dashboard" element={<ProtectedRoute><DashboardOverview /></ProtectedRoute>} />
+              <Route path="/pv-dashboard/conversations" element={<ProtectedRoute><DashboardConversations /></ProtectedRoute>} />
+              <Route path="/pv-dashboard/sentiment" element={<ProtectedRoute><DashboardSentiment /></ProtectedRoute>} />
+              <Route path="/pv-dashboard/reviews" element={<ProtectedRoute><DashboardReviews /></ProtectedRoute>} />
+              <Route path="/pv-dashboard/detection" element={<ProtectedRoute><DashboardDetection /></ProtectedRoute>} />
+              <Route path="/pv-dashboard/ai" element={<ProtectedRoute><DashboardAI /></ProtectedRoute>} />
+              <Route path="/pv-dashboard/alerts" element={<ProtectedRoute><DashboardAlerts /></ProtectedRoute>} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
