@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard, MessageSquare, PieChart, Star,
+  LayoutDashboard, MessageSquare, PieChart, Star, TrendingUp,
   LogOut, Shield, Brain, Bell, Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,7 @@ const mainNavItems = [
   { label: "Chats", icon: MessageSquare, path: "/pv-dashboard/conversations" },
   { label: "Sentiment", icon: PieChart, path: "/pv-dashboard/sentiment" },
   { label: "Reviews", icon: Star, path: "/pv-dashboard/reviews" },
+  { label: "Trends", icon: TrendingUp, path: "/pv-dashboard/trends" },
 ];
 
 const adminNavItems = [
