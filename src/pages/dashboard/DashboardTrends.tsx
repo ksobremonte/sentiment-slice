@@ -39,7 +39,13 @@ const DashboardTrends = () => {
   const { chartData, summary } = useMemo(() => {
     const config = rangeConfig[timeRange];
     const cutoff = subDays(new Date(), config.days);
-    const filtered = reviews.filter((r) => isAfter(new Date(r.created_at), cutoff));
+    const filtered = reviews.filter((r) => {
+      if (!isAfter(new Date(r.created_at), cutoff)) return false;
+      // Void: positive sentiment but 1-star rating (contradictory)
+      const s = (r.sentiment || "neutral").toLowerCase();
+      if (s === "positive" && r.rating === 1) return false;
+      return true;
+    });
 
     // Group by granularity
     const buckets = new Map<string, { positive: number; neutral: number; negative: number; total: number; ratingSum: number }>();
