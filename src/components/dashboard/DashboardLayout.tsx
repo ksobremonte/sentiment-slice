@@ -166,7 +166,10 @@ const DashboardSidebar = () => {
           <DropdownMenuContent side="top" align="start" className="w-56">
             <DropdownMenuLabel className="flex items-center gap-2">
               <User className="h-4 w-4" />
-              User
+              <div className="flex flex-col">
+                <span>User</span>
+                <span className="text-[10px] font-normal text-muted-foreground truncate">{user?.email}</span>
+              </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
