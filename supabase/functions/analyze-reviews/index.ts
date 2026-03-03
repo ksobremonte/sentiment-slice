@@ -175,7 +175,13 @@ Translate non-English before classifying.
 CLASSIFICATION (text only, ignore star ratings):
 - POSITIVE: praise, satisfaction, enthusiasm, recommendations
 - NEGATIVE: complaints, disappointment, frustration, criticism
-- NEUTRAL: mixed feelings, factual descriptions, ambiguous
+- NEUTRAL: factual descriptions, ambiguous, no clear emotion
+
+MIXED SENTIMENT RULES:
+1. Identify the Strongest Emotion: Base your primary sentiment on the most dominant feeling in the comment.
+2. Handle Conflict: If the comment contains both positive and negative elements, you must list both (e.g., "positive, negative" or "positive, neutral").
+3. Decisiveness: If one sentiment is clearly stronger, pick that one only. If it is a clear split, use two separated by comma.
+4. Output: Provide only the label(s) in the sentiment field.
 
 Detect sarcasm and emoji sentiment. Base result on meaning, not unknown words.`;
 
@@ -201,8 +207,7 @@ Detect sarcasm and emoji sentiment. Base result on meaning, not unknown words.`;
                   properties: {
                     sentiment: {
                       type: "string",
-                      enum: ["positive", "negative", "neutral"],
-                      description: "The overall sentiment classification based on text analysis only"
+                      description: "The overall sentiment. Use one label if one emotion dominates (e.g. 'positive'), or comma-separated if clearly mixed (e.g. 'positive, negative'). Allowed values: positive, negative, neutral, or combinations."
                     },
                     confidence: {
                       type: "number",
