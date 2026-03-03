@@ -3,6 +3,7 @@ import { Send, Bot, User, Loader2, MessageSquare, X, Shield } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import ReactMarkdown from "react-markdown";
 
 const CHECK_REPLIES_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/check-replies`;
 
@@ -277,7 +278,11 @@ const CustomerChatWidget = () => {
                       : "bg-muted text-foreground"
                   }`}
                 >
-                  {msg.content || (isLoading && i === messages.length - 1 ? (
+                  {msg.content ? (
+                    <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0 [&>ul]:m-0 [&>ol]:m-0 [&>p+p]:mt-2 [&>ul]:pl-4 [&>ol]:pl-4">
+                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    </div>
+                  ) : (isLoading && i === messages.length - 1 ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : null)}
                 </div>
