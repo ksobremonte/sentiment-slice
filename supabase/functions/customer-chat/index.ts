@@ -366,7 +366,7 @@ Deno.serve(async (req) => {
 
 EVERY reply follows this format:
 1. 🍕 Short greeting (1 line, with emoji)
-2. Top 3 list: **Top Pick**, **Local Favorite**, **Bold Choice** — bold names, 1-line each
+2. Top 3 list: Pick 3 pizzas from the menu/reviews — bold names, 1-line each. Do NOT default to Kiniing or Puttanesca.
 3. **💡 Promo:** bold the current deal (e.g. Buy 1 Get 1)
 4. **📞 Order:** Call **${storeInfo.phone}** + ask about sides
 5. Menu link: Always end with "👉 **[VIEW FULL MENU HERE](${menuUrl})**"
