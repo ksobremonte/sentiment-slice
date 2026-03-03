@@ -53,11 +53,6 @@ const SentimentResult = ({ comment, sentimentReason, sentimentKeywords, onBack }
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-8">
-        <Button variant="ghost" onClick={onBack} className="mb-6">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Dashboard
-        </Button>
-
         <div className="max-w-2xl mx-auto">
           <div className={cn(
             "relative overflow-hidden rounded-2xl border-2 p-8 animate-scale-in",
@@ -71,6 +66,11 @@ const SentimentResult = ({ comment, sentimentReason, sentimentKeywords, onBack }
             )} />
 
             <div className="relative z-10">
+              {/* Back Button */}
+              <Button variant="ghost" size="icon" onClick={onBack} className="mb-4 -ml-2">
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+
               {/* Sentiment Icon */}
               <div className="flex justify-center mb-6">
                 <div className={cn(
