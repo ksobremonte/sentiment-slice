@@ -57,12 +57,19 @@ const DashboardReviews = () => {
         throw new Error(errorData.error || "Failed to analyze sentiment");
       }
 
-      const { sentiment } = await response.json();
-      const { error } = await supabase.from("reviews").update({ sentiment }).eq("id", review.id);
+      const { sentiment, reasoning, keyPhrases } = await response.json();
+      const { error } = await supabase
+        .from("reviews")
+        .update({
+          sentiment,
+          sentiment_reason: reasoning || null,
+          sentiment_keywords: keyPhrases || null,
+        })
+        .eq("id", review.id);
       if (error) { toast.error("Failed to save analysis"); return; }
 
       refetch();
-      setSentimentView({ ...review, sentiment });
+      setSentimentView({ ...review, sentiment, sentiment_reason: reasoning || null, sentiment_keywords: keyPhrases || null });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to analyze review");
     }
@@ -95,6 +102,8 @@ const DashboardReviews = () => {
             timestamp: sentimentView.created_at,
             sentiment: sentimentView.sentiment as "positive" | "negative" | "neutral" | undefined,
           }}
+          sentimentReason={sentimentView.sentiment_reason}
+          sentimentKeywords={sentimentView.sentiment_keywords}
           onBack={() => setSentimentView(null)}
         />
       </DashboardLayout>

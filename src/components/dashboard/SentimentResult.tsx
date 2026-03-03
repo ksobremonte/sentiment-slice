@@ -1,14 +1,17 @@
-import { ArrowLeft, ThumbsUp, ThumbsDown, Minus, Sparkles } from "lucide-react";
+import { ArrowLeft, ThumbsUp, ThumbsDown, Minus, Sparkles, Quote, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Comment } from "./CommentCard";
+import { Badge } from "@/components/ui/badge";
 
 interface SentimentResultProps {
   comment: Comment;
+  sentimentReason?: string | null;
+  sentimentKeywords?: string[] | null;
   onBack: () => void;
 }
 
-const SentimentResult = ({ comment, onBack }: SentimentResultProps) => {
+const SentimentResult = ({ comment, sentimentReason, sentimentKeywords, onBack }: SentimentResultProps) => {
   const getSentimentData = () => {
     switch (comment.sentiment) {
       case "positive":
@@ -89,6 +92,47 @@ const SentimentResult = ({ comment, onBack }: SentimentResultProps) => {
                 </h2>
                 <p className="text-muted-foreground">{sentimentData.description}</p>
               </div>
+
+              {/* Why This Result? Section */}
+              {(sentimentReason || (sentimentKeywords && sentimentKeywords.length > 0)) && (
+                <div className="bg-card/60 backdrop-blur-sm rounded-xl p-6 border border-border mb-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Quote className="w-4 h-4 text-primary" />
+                    <h3 className="text-sm font-semibold text-primary">Why this result?</h3>
+                  </div>
+
+                  {sentimentReason && (
+                    <p className="text-foreground/90 leading-relaxed text-sm mb-4">
+                      {sentimentReason}
+                    </p>
+                  )}
+
+                  {sentimentKeywords && sentimentKeywords.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+                        <span className="text-xs font-semibold text-muted-foreground">Key Phrases</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {sentimentKeywords.map((keyword, i) => (
+                          <Badge
+                            key={i}
+                            variant="secondary"
+                            className={cn(
+                              "text-xs font-medium",
+                              comment.sentiment === "positive" && "bg-success/15 text-success border-success/20",
+                              comment.sentiment === "negative" && "bg-destructive/15 text-destructive border-destructive/20",
+                              comment.sentiment === "neutral" && "bg-warning/15 text-warning border-warning/20"
+                            )}
+                          >
+                            "{keyword}"
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Original Comment */}
               <div className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border">

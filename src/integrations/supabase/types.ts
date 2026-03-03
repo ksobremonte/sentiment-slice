@@ -185,6 +185,8 @@ export type Database = {
           rating: number
           receipt_number: string | null
           sentiment: string | null
+          sentiment_keywords: string[] | null
+          sentiment_reason: string | null
         }
         Insert: {
           admin_response?: string | null
@@ -201,6 +203,8 @@ export type Database = {
           rating: number
           receipt_number?: string | null
           sentiment?: string | null
+          sentiment_keywords?: string[] | null
+          sentiment_reason?: string | null
         }
         Update: {
           admin_response?: string | null
@@ -217,6 +221,8 @@ export type Database = {
           rating?: number
           receipt_number?: string | null
           sentiment?: string | null
+          sentiment_keywords?: string[] | null
+          sentiment_reason?: string | null
         }
         Relationships: [
           {
