@@ -143,18 +143,21 @@ const DashboardSidebar = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
-              className={cn("w-full justify-start gap-2 rounded-xl hover:bg-primary/5", collapsed && "justify-center px-0")}
+              className={cn(
+                "w-full justify-start gap-2 rounded-xl border-2 border-border bg-card/50 hover:bg-accent/80 h-auto py-2",
+                collapsed && "justify-center px-0"
+              )}
             >
-              <Avatar className="h-7 w-7">
-                <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+              <Avatar className="h-7 w-7 shrink-0">
+                <AvatarFallback className="bg-primary/20 text-primary text-xs font-bold">
                   {user?.email?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
               {!collapsed && (
                 <>
-                  <span className="text-xs text-foreground truncate flex-1 text-left">{user?.email}</span>
+                  <span className="text-xs text-foreground truncate flex-1 text-left font-medium">{user?.email}</span>
                   <ChevronsUpDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                 </>
               )}
