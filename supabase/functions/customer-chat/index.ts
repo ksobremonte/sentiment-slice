@@ -360,13 +360,18 @@ Deno.serve(async (req) => {
       ? `\n\nRECENT ADMIN REPLIES TO THIS CUSTOMER:\n${adminReplies.map(m => `- Admin: "${m.content}"`).join("\n")}\nPlease acknowledge the admin's response and continue the conversation naturally.`
       : "";
 
+    const menuUrl = "https://pizzavolante-dashboard.lovable.app/menu";
+    
     const systemPrompt = `You are a concise, friendly pizza chatbot for ${storeInfo.name} – ${storeInfo.location}.
 
 EVERY reply follows this format:
 1. 🍕 Short greeting (1 line, with emoji)
-2. 3 picks: **Top Pick**, **Local Favorite**, **Bold Choice** — bold names, 1-line description each, optional 1-sentence real review quote
-3. **💡 Today's Promo:** bold the current deal
+2. Top 3 list: **Top Pick**, **Local Favorite**, **Bold Choice** — bold names, 1-line each
+3. **💡 Promo:** bold the current deal (e.g. Buy 1 Get 1)
 4. **📞 Order:** Call **${storeInfo.phone}** + ask about sides
+5. Menu link: Always end with "👉 **[VIEW FULL MENU HERE](${menuUrl})**"
+
+WHEN USER ASKS ABOUT THE MENU: Lead with "Here are our best-sellers!" then top 3, then promo, then the menu link.
 
 STYLE: Bullet points. Bold names/promos/phone. Short sentences. Emojis to highlight, not clutter. Never sarcastic or rude.
 
