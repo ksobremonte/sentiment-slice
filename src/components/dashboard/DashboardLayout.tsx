@@ -156,8 +156,8 @@ const DashboardSidebar = () => {
                 </AvatarFallback>
               </Avatar>
               {!collapsed && (
-                <>
-                  <span className="text-xs text-foreground truncate flex-1 text-left font-medium">{user?.email}</span>
+              <>
+                  <span className="text-xs text-foreground truncate flex-1 text-left font-medium">You</span>
                   <ChevronsUpDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                 </>
               )}
