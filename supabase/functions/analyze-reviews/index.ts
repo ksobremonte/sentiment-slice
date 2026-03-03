@@ -158,40 +158,26 @@ Only return the JSON array, no other text. Format: ["id1", "id2", "id3", ...]`;
       // Pure text-based NLP sentiment analysis - no star rating influence
       const review = reviews[0] as Review;
       
-      const systemPrompt = `You are an advanced sentiment analysis system for a pizza restaurant. Analyze customer review TEXT ONLY to determine sentiment.
+      const systemPrompt = `You are a sentiment analysis assistant for a pizza restaurant dashboard.
 
-CRITICAL: Determine sentiment PURELY from the written text. DO NOT consider or be influenced by any star rating.
+Rules:
+- Do NOT write paragraphs.
+- Do NOT exceed 3 bullet points for main points.
+- Reason must be ONE sentence only.
+- Focus only on what affects sentiment.
+- Ignore unnecessary details.
 
-LANGUAGE SUPPORT:
-The review may be in English, Filipino (Tagalog), or Ilocano. If the review is in Ilocano, first translate it to English before analyzing.
+LANGUAGE SUPPORT: Reviews may be in English, Filipino (Tagalog), or Ilocano.
+Ilocano positive: nalaing, nasayaat, napintas, nagpaspas
+Ilocano negative: madi, saan a nasayaat, narigat, bassit
+Translate non-English before classifying.
 
-Treat these Ilocano words as sentiment indicators:
-- POSITIVE: nalaing, nasayaat, napintas, nagpaspas
-- NEGATIVE: madi, saan a nasayaat, narigat, bassit
+CLASSIFICATION (text only, ignore star ratings):
+- POSITIVE: praise, satisfaction, enthusiasm, recommendations
+- NEGATIVE: complaints, disappointment, frustration, criticism
+- NEUTRAL: mixed feelings, factual descriptions, ambiguous
 
-Base the result on the meaning of the sentence, not unknown words.
-
-ANALYSIS FRAMEWORK:
-1. **Lexical Analysis**: Identify sentiment-bearing words, intensifiers (very, extremely), negations (not, never), and hedging language (somewhat, kind of)
-2. **Contextual Understanding**: Detect sarcasm, irony, and implicit sentiment (e.g., "interesting pizza" could be negative)
-3. **Aspect-Based Sentiment**: Evaluate sentiment for different aspects:
-   - Food quality (taste, freshness, portion size)
-   - Service (staff attitude, speed, accuracy)
-   - Value (price vs quality)
-   - Ambiance/experience
-4. **Emotional Intensity**: Measure how strongly positive or negative the language is
-5. **Language Patterns**: Consider exclamation marks, capitalization, emoji sentiment
-
-CLASSIFICATION RULES (based on TEXT ONLY):
-- POSITIVE: Predominantly positive language, satisfaction indicators, praise, enthusiasm, recommendation language
-- NEGATIVE: Complaints, disappointment, frustration, criticism, warnings, negative adjectives
-- NEUTRAL: Mixed feelings, balanced pros/cons, lukewarm language, factual descriptions without emotion, ambiguous statements
-
-EDGE CASES:
-- Sarcasm: Detect through context (e.g., "Oh great, cold pizza again" = negative)
-- Short reviews: Analyze word choice carefully ("OK" = neutral, "Amazing!" = positive, "Terrible" = negative)
-- Emoji-heavy reviews: Interpret emoji sentiment (😊 = positive, 😠 = negative)
-- Constructive criticism with positive tone: Consider overall emotional valence`;
+Detect sarcasm and emoji sentiment. Base result on meaning, not unknown words.`;
 
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
@@ -202,8 +188,7 @@ EDGE CASES:
         body: JSON.stringify({
           model: "google/gemini-2.5-flash",
           messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: `Analyze the sentiment of this review text ONLY (ignore any rating information):\n\n"${review.feedback}"\n\nClassify the sentiment based purely on the words and language used.` }
+            { role: "user", content: `Analyze this review text (ignore any rating):\n\n"${review.feedback}"\n\nProvide: sentiment classification, one-sentence reason, and up to 3 key phrases.` }
           ],
           tools: [
             {
@@ -244,7 +229,7 @@ EDGE CASES:
                     },
                     reasoning: {
                       type: "string",
-                      description: "Brief explanation of why this sentiment was chosen based on the text"
+                      description: "ONE sentence only explaining why this sentiment was chosen"
                     }
                   },
                   required: ["sentiment", "confidence", "language", "aspects", "reasoning"]
