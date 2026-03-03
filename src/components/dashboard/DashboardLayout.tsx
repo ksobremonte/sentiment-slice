@@ -3,16 +3,16 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, MessageSquare, PieChart, Star, TrendingUp,
   LogOut, Shield, Brain, Bell, Settings, User, HelpCircle,
-  ChevronsUpDown, ArrowLeftRight,
-} from "lucide-react";
+  ChevronsUpDown, ArrowLeftRight } from
+"lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  DropdownMenuTrigger } from
+"@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/contexts/AuthContext";
@@ -33,26 +33,26 @@ import {
   SidebarMenuButton,
   SidebarTrigger,
   SidebarSeparator,
-  useSidebar,
-} from "@/components/ui/sidebar";
+  useSidebar } from
+"@/components/ui/sidebar";
 
 interface DashboardLayoutProps {
   children: ReactNode;
 }
 
 const mainNavItems = [
-  { label: "Overview", icon: LayoutDashboard, path: "/pv-dashboard" },
-  { label: "Chats", icon: MessageSquare, path: "/pv-dashboard/conversations" },
-  { label: "Sentiment", icon: PieChart, path: "/pv-dashboard/sentiment" },
-  { label: "Reviews", icon: Star, path: "/pv-dashboard/reviews" },
-  { label: "Trends", icon: TrendingUp, path: "/pv-dashboard/trends" },
-];
+{ label: "Overview", icon: LayoutDashboard, path: "/pv-dashboard" },
+{ label: "Chats", icon: MessageSquare, path: "/pv-dashboard/conversations" },
+{ label: "Sentiment", icon: PieChart, path: "/pv-dashboard/sentiment" },
+{ label: "Reviews", icon: Star, path: "/pv-dashboard/reviews" },
+{ label: "Trends", icon: TrendingUp, path: "/pv-dashboard/trends" }];
+
 
 const adminNavItems = [
-  { label: "Detection", icon: Shield, path: "/pv-dashboard/detection" },
-  { label: "AI Config", icon: Brain, path: "/pv-dashboard/ai" },
-  { label: "Alerts", icon: Bell, path: "/pv-dashboard/alerts" },
-];
+{ label: "Detection", icon: Shield, path: "/pv-dashboard/detection" },
+{ label: "AI Config", icon: Brain, path: "/pv-dashboard/ai" },
+{ label: "Alerts", icon: Bell, path: "/pv-dashboard/alerts" }];
+
 
 const DashboardSidebar = () => {
   const { signOut, user } = useAuthContext();
@@ -71,7 +71,7 @@ const DashboardSidebar = () => {
     }
   };
 
-  const NavItem = ({ item }: { item: typeof mainNavItems[0] }) => {
+  const NavItem = ({ item }: {item: typeof mainNavItems[0];}) => {
     const isActive = location.pathname === item.path;
     return (
       <SidebarMenuItem>
@@ -81,13 +81,13 @@ const DashboardSidebar = () => {
           onClick={() => navigate(item.path)}
           className={cn(
             isActive && "bg-primary/10 text-primary font-semibold"
-          )}
-        >
+          )}>
+          
           <item.icon className="h-4 w-4" />
           {!collapsed && <span>{item.label}</span>}
         </SidebarMenuButton>
-      </SidebarMenuItem>
-    );
+      </SidebarMenuItem>);
+
   };
 
   return (
@@ -97,14 +97,14 @@ const DashboardSidebar = () => {
           <img
             src={pizzaVolanteLogo}
             alt="Pizza Volante Logo"
-            className={cn("w-auto transition-all", collapsed ? "h-8" : "h-12")}
-          />
-          {!collapsed && (
-            <div>
+            className={cn("w-auto transition-all", collapsed ? "h-8" : "h-12")} />
+          
+          {!collapsed &&
+          <div>
               <h1 className="font-brand text-lg text-foreground leading-tight">Pizza Volante</h1>
               <p className="text-[10px] text-muted-foreground font-medium tracking-wide">Baguio City</p>
             </div>
-          )}
+          }
         </div>
       </SidebarHeader>
 
@@ -115,9 +115,9 @@ const DashboardSidebar = () => {
           <SidebarGroupLabel>Main</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainNavItems.map((item) => (
-                <NavItem key={item.path} item={item} />
-              ))}
+              {mainNavItems.map((item) =>
+              <NavItem key={item.path} item={item} />
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -129,9 +129,9 @@ const DashboardSidebar = () => {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {adminNavItems.map((item) => (
-                <NavItem key={item.path} item={item} />
-              ))}
+              {adminNavItems.map((item) =>
+              <NavItem key={item.path} item={item} />
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -148,19 +148,19 @@ const DashboardSidebar = () => {
               className={cn(
                 "w-full justify-start gap-2 rounded-xl border-2 border-border bg-card/50 hover:bg-accent/80 h-auto py-2",
                 collapsed && "justify-center px-0"
-              )}
-            >
+              )}>
+              
               <Avatar className="h-7 w-7 shrink-0">
                 <AvatarFallback className="bg-primary/20 text-primary text-xs font-bold">
                   {user?.email?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
-              {!collapsed && (
+              {!collapsed &&
               <>
                   <span className="text-xs text-foreground truncate flex-1 text-left font-medium">You</span>
                   <ChevronsUpDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                 </>
-              )}
+              }
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent side="top" align="start" className="w-56">
@@ -168,7 +168,7 @@ const DashboardSidebar = () => {
               <User className="h-4 w-4" />
               <div className="flex flex-col">
                 <span>User</span>
-                <span className="text-[10px] font-normal text-muted-foreground truncate">{user?.email}</span>
+                <span className="text-[10px] truncate font-sans text-left font-normal text-popover-foreground">{user?.email}</span>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -202,8 +202,8 @@ const DashboardSidebar = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarFooter>
-    </Sidebar>
-  );
+    </Sidebar>);
+
 };
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
@@ -221,8 +221,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </main>
         </div>
       </div>
-    </SidebarProvider>
-  );
+    </SidebarProvider>);
+
 };
 
 export default DashboardLayout;
