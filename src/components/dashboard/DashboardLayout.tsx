@@ -2,8 +2,18 @@ import { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, MessageSquare, PieChart, Star, TrendingUp,
-  LogOut, Shield, Brain, Bell, Settings,
+  LogOut, Shield, Brain, Bell, Settings, User, HelpCircle,
+  ChevronsUpDown, ArrowLeftRight,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -130,20 +140,61 @@ const DashboardSidebar = () => {
       <SidebarSeparator />
 
       <SidebarFooter className="p-3">
-        {!collapsed && (
-          <p className="text-xs text-muted-foreground truncate mb-2 px-2">
-            {user?.email}
-          </p>
-        )}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleLogout}
-          className={cn("w-full rounded-xl border-2 font-semibold", collapsed && "px-0")}
-        >
-          <LogOut className="h-4 w-4" />
-          {!collapsed && <span className="ml-2">Sign Out</span>}
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn("w-full justify-start gap-2 rounded-xl hover:bg-primary/5", collapsed && "justify-center px-0")}
+            >
+              <Avatar className="h-7 w-7">
+                <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+                  {user?.email?.charAt(0).toUpperCase() || "U"}
+                </AvatarFallback>
+              </Avatar>
+              {!collapsed && (
+                <>
+                  <span className="text-xs text-foreground truncate flex-1 text-left">{user?.email}</span>
+                  <ChevronsUpDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                </>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="top" align="start" className="w-56">
+            <DropdownMenuLabel className="flex items-center gap-2">
+              <User className="h-4 w-4" />
+              User
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <Settings className="h-4 w-4 mr-2" />
+              User Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <HelpCircle className="h-4 w-4 mr-2" />
+              Help Center
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="flex items-center gap-2">
+              <User className="h-4 w-4" />
+              Account
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <Settings className="h-4 w-4 mr-2" />
+              Account Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <ArrowLeftRight className="h-4 w-4 mr-2" />
+              Switch Account
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </SidebarFooter>
     </Sidebar>
   );
