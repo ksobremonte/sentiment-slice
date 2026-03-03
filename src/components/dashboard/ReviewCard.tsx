@@ -96,6 +96,31 @@ const ReviewCard = ({ review, onAnalyze }: ReviewCardProps) => {
           
           <p className="text-foreground leading-relaxed">{review.feedback}</p>
           
+          {/* Sentiment Explanation */}
+          {review.sentiment && review.sentiment_reason && (
+            <div className="mt-3 p-3 bg-muted/50 rounded-xl border border-border">
+              <p className="text-xs font-semibold text-muted-foreground mb-1">Why {review.sentiment}?</p>
+              <p className="text-sm text-foreground/80 leading-relaxed">{review.sentiment_reason}</p>
+              {review.sentiment_keywords && review.sentiment_keywords.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {review.sentiment_keywords.map((kw, i) => (
+                    <span
+                      key={i}
+                      className={cn(
+                        "text-xs px-2 py-0.5 rounded-full font-medium",
+                        review.sentiment === "positive" && "bg-success/10 text-success",
+                        review.sentiment === "negative" && "bg-destructive/10 text-destructive",
+                        review.sentiment === "neutral" && "bg-warning/10 text-warning"
+                      )}
+                    >
+                      {kw}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          
           {/* Admin Response */}
           {review.admin_response && (
             <div className="mt-4 p-3 bg-secondary/50 rounded-xl border border-border">
