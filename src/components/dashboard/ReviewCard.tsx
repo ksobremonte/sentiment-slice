@@ -13,9 +13,10 @@ import AdminResponseDialog from "./AdminResponseDialog";
 interface ReviewCardProps {
   review: Review;
   onAnalyze: (review: Review) => void;
+  onViewSentiment?: (review: Review) => void;
 }
 
-const ReviewCard = ({ review, onAnalyze }: ReviewCardProps) => {
+const ReviewCard = ({ review, onAnalyze, onViewSentiment }: ReviewCardProps) => {
   const getSentimentStyles = () => {
     if (!review.sentiment) return "border-l-4 border-l-muted";
     
@@ -98,8 +99,17 @@ const ReviewCard = ({ review, onAnalyze }: ReviewCardProps) => {
           
           {/* Sentiment Explanation */}
           {review.sentiment && review.sentiment_reason && (
-            <div className="mt-3 p-3 bg-muted/50 rounded-xl border border-border">
-              <p className="text-xs font-semibold text-muted-foreground mb-1">Why {review.sentiment}?</p>
+            <div
+              onClick={() => onViewSentiment?.(review)}
+              className={cn(
+                "mt-3 p-3 bg-muted/50 rounded-xl border border-border transition-all",
+                onViewSentiment && "cursor-pointer hover:bg-muted/80 hover:border-primary/30"
+              )}
+            >
+              <p className="text-xs font-semibold text-muted-foreground mb-1">
+                Why {review.sentiment}?
+                {onViewSentiment && <span className="ml-1 text-primary">→ View details</span>}
+              </p>
               <p className="text-sm text-foreground/80 leading-relaxed">{review.sentiment_reason}</p>
               {review.sentiment_keywords && review.sentiment_keywords.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-2">
