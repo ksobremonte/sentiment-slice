@@ -61,6 +61,8 @@ const Reviews = () => {
       let sentiment: string | null = null;
       let language: string | null = null;
       let approved: boolean = true;
+      let sentimentReason: string | null = null;
+      let sentimentKeywords: string[] | null = null;
 
       if (photoFile) {
         const formData = new FormData();
@@ -78,13 +80,21 @@ const Reviews = () => {
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
           body: JSON.stringify({ reviews: [reviewForAnalysis], action: "analyze-sentiment" }),
         });
-        if (response.ok) { const json = await response.json(); sentiment = json?.sentiment ?? null; language = json?.language ?? null; approved = json?.approved ?? true; }
+        if (response.ok) {
+          const json = await response.json();
+          sentiment = json?.sentiment ?? null;
+          language = json?.language ?? null;
+          approved = json?.approved ?? true;
+          sentimentReason = json?.reasoning ?? null;
+          sentimentKeywords = json?.keyPhrases ?? null;
+        }
       } catch (analyzeError) { console.error("Auto-analyze failed:", analyzeError); }
 
       const { error } = await supabase.from("reviews").insert({
         name: validation.data.name, email: validation.data.email, rating: validation.data.rating,
         feedback: validation.data.feedback, receipt_number: validation.data.receipt_number,
         photo_url: photoUrl, sentiment, language, approved,
+        sentiment_reason: sentimentReason, sentiment_keywords: sentimentKeywords,
       });
       if (error) throw error;
 
