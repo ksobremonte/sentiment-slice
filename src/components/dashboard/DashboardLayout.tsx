@@ -146,12 +146,12 @@ const DashboardSidebar = () => {
               variant="outline"
               size="sm"
               className={cn(
-                "w-full justify-start gap-2 rounded-xl border-2 border-border bg-card/50 hover:bg-accent/80 h-auto py-2",
+                "w-full justify-start gap-3 rounded-xl border-2 border-border bg-card/50 hover:bg-accent/80 h-auto py-3 px-3",
                 collapsed && "justify-center px-0"
               )}
             >
-              <Avatar className="h-7 w-7 shrink-0">
-                <AvatarFallback className="bg-primary/20 text-primary text-xs font-bold">
+              <Avatar className="h-9 w-9 shrink-0">
+                <AvatarFallback className="bg-primary/20 text-primary text-sm font-bold">
                   {user?.email?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
