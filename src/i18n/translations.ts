@@ -9,6 +9,7 @@ export const SUPPORTED_LANGUAGES = [
   { code: "ar", label: "العربية", dir: "rtl" },
   { code: "hi", label: "हिन्दी", dir: "ltr" },
   { code: "it", label: "Italiano", dir: "ltr" },
+  { code: "fil", label: "Filipino", dir: "ltr" },
 ] as const;
 
 export type LangCode = (typeof SUPPORTED_LANGUAGES)[number]["code"];
