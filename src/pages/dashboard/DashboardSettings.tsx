@@ -115,14 +115,32 @@ const DashboardSettings = () => {
           <CardContent className="space-y-4">
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16">
+                {avatarPreview ? (
+                  <AvatarImage src={avatarPreview} alt="Profile" className="object-cover" />
+                ) : null}
                 <AvatarFallback className="bg-primary/20 text-primary text-xl font-bold">
-                  {user?.email?.charAt(0).toUpperCase() || "U"}
+                  {displayName?.charAt(0)?.toUpperCase() || user?.email?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
-              <Button variant="outline" size="sm" className="gap-2">
-                <Camera className="h-4 w-4" />
-                Change Photo
-              </Button>
+              <div className="space-y-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Camera className="h-4 w-4" />
+                  Change Photo
+                </Button>
+                <p className="text-xs text-muted-foreground">JPG or PNG, max 2MB</p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png"
+                  className="hidden"
+                  onChange={handleFileSelect}
+                />
+              </div>
             </div>
             <Separator />
             <div className="grid gap-4 sm:grid-cols-2">
@@ -136,8 +154,9 @@ const DashboardSettings = () => {
               </div>
             </div>
             <div className="flex justify-end">
-              <Button size="sm" onClick={() => handleSave("Profile")} className="gap-2">
-                <Save className="h-4 w-4" /> Save Profile
+              <Button size="sm" onClick={handleSaveProfile} disabled={saving} className="gap-2">
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                {saving ? "Saving..." : "Save Profile"}
               </Button>
             </div>
           </CardContent>
