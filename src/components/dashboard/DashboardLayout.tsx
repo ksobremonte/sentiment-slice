@@ -155,13 +155,14 @@ const DashboardSidebar = () => {
               )}>
               
               <Avatar className="h-7 w-7 shrink-0">
+                {avatarUrl && <AvatarImage src={avatarUrl} alt="Profile" className="object-cover" />}
                 <AvatarFallback className="bg-primary/20 text-primary text-xs font-bold">
-                  {user?.email?.charAt(0).toUpperCase() || "U"}
+                  {displayName?.charAt(0)?.toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
               {!collapsed &&
               <>
-                  <span className="text-xs text-foreground truncate flex-1 text-left font-medium">You</span>
+                  <span className="text-xs text-foreground truncate flex-1 text-left font-medium">{displayName}</span>
                   <ChevronsUpDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                 </>
               }
