@@ -30,7 +30,14 @@ const SectionHeader = ({ icon: Icon, title, description }: { icon: React.Element
 
 const DashboardSettings = () => {
   const { user } = useAuthContext();
+  const { profile, loading: profileLoading, updateProfile, uploadAvatar } = useProfile();
+
   const [displayName, setDisplayName] = useState("");
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [theme, setTheme] = useState("light");
   const [fontSize, setFontSize] = useState("medium");
   const [language, setLanguage] = useState("en");
@@ -42,6 +49,53 @@ const DashboardSettings = () => {
   const [appAlerts, setAppAlerts] = useState(true);
   const [weeklyDigest, setWeeklyDigest] = useState(false);
   const [mentionAlerts, setMentionAlerts] = useState(true);
+
+  // Sync profile data when loaded
+  useEffect(() => {
+    if (profile) {
+      setDisplayName(profile.display_name || "");
+      setAvatarPreview(profile.avatar_url || null);
+    }
+  }, [profile]);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!["image/jpeg", "image/png"].includes(file.type)) {
+      toast.error("Only JPG and PNG images are allowed.");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Image must be under 2MB.");
+      return;
+    }
+
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  };
+
+  const handleSaveProfile = async () => {
+    if (!displayName.trim()) {
+      toast.error("Display name cannot be empty.");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      let newAvatarUrl = profile?.avatar_url || null;
+      if (avatarFile) {
+        newAvatarUrl = await uploadAvatar(avatarFile);
+        setAvatarFile(null);
+      }
+      await updateProfile({ display_name: displayName.trim(), avatar_url: newAvatarUrl });
+      toast.success("Profile updated successfully.");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to update profile.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleSave = (section: string) => {
     toast.success(`${section} saved successfully`);
