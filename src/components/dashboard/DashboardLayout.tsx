@@ -172,7 +172,7 @@ const DashboardSidebar = () => {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/pv-dashboard/settings")}>
               <Settings className="h-4 w-4 mr-2" />
               User Settings
             </DropdownMenuItem>
