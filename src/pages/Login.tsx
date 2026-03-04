@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { z } from "zod";
 import { useHcaptchaSiteKey } from "@/hooks/useHcaptchaSiteKey";
+import { logLoginActivity } from "@/lib/logLoginActivity";
 
 const loginSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }),
