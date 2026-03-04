@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "next-themes";
 import { lazy, Suspense } from "react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import LanguageFromProfile from "@/components/LanguageFromProfile";
 import Home from "./pages/Home";
 
 // Lazy-loaded routes
@@ -43,6 +44,7 @@ const App = () => (
         <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <LanguageFromProfile>
           <Suspense fallback={<div className="min-h-screen" />}>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -70,6 +72,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
+          </LanguageFromProfile>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
