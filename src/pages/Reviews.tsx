@@ -166,16 +166,24 @@ const Reviews = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-foreground font-medium text-sm">Upload Photo (Optional)</Label>
+                    <Label className="text-foreground font-medium text-sm">Receipt Photo <span className="text-destructive">*</span></Label>
                     {photoPreview ? (
                       <div className="relative inline-block">
                         <img src={photoPreview} alt="Preview" className="max-h-40 rounded-xl border border-border object-cover" />
                         <button type="button" onClick={removePhoto} className="absolute -top-2 -right-2 p-1.5 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90"><X className="w-3 h-3" /></button>
                       </div>
                     ) : (
-                      <div onClick={() => fileInputRef.current?.click()} className="border border-dashed border-border rounded-xl p-6 text-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all">
-                        <ImageIcon className="w-8 h-8 mx-auto text-muted-foreground/40 mb-2" />
-                        <p className="text-xs text-muted-foreground">Click to upload • Max 5MB</p>
+                      <div className="flex gap-2">
+                        <div onClick={() => { if (fileInputRef.current) { fileInputRef.current.setAttribute("capture", "environment"); fileInputRef.current.click(); } }} className="flex-1 border border-dashed border-border rounded-xl p-6 text-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all">
+                          <ImageIcon className="w-8 h-8 mx-auto text-muted-foreground/40 mb-2" />
+                          <p className="text-xs text-muted-foreground font-medium">📷 Take Photo</p>
+                          <p className="text-xs text-muted-foreground mt-1">Opens camera on mobile</p>
+                        </div>
+                        <div onClick={() => { if (fileInputRef.current) { fileInputRef.current.removeAttribute("capture"); fileInputRef.current.click(); } }} className="flex-1 border border-dashed border-border rounded-xl p-6 text-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all">
+                          <ImageIcon className="w-8 h-8 mx-auto text-muted-foreground/40 mb-2" />
+                          <p className="text-xs text-muted-foreground font-medium">📁 Browse Files</p>
+                          <p className="text-xs text-muted-foreground mt-1">Max 5MB</p>
+                        </div>
                       </div>
                     )}
                     <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
