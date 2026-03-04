@@ -295,7 +295,7 @@ const CustomerChatWidget = () => {
             </div>
           ))}
         </div>
-      </ScrollArea>
+      </div>
 
       {/* Input */}
       <div className="p-4 border-t-2 border-border">
