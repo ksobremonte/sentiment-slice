@@ -18,6 +18,7 @@ const reviewSchema = z.object({
   rating: z.number().min(1, "Please select a rating").max(5),
   feedback: z.string().trim().min(1, "Feedback is required").max(1000, "Feedback must be less than 1000 characters"),
   receipt_number: z.string().trim().min(1, "Receipt number is required").max(50, "Receipt number must be less than 50 characters"),
+  has_photo: z.literal(true, { errorMap: () => ({ message: "Receipt photo is required" }) }),
 });
 
 const Reviews = () => {
