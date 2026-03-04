@@ -224,9 +224,9 @@ const CustomerChatWidget = () => {
   }
 
   return (
-    <div className="fixed z-[9999] bg-card border-2 border-border rounded-3xl shadow-warm flex flex-col overflow-hidden right-2 left-2 top-auto bottom-[4.5rem] max-h-[70vh] md:inset-auto md:bottom-6 md:right-6 md:left-auto md:top-auto md:w-96 md:h-[480px]">
+    <div className="fixed z-[9999] bg-card border-2 border-border rounded-3xl shadow-warm flex flex-col overflow-hidden right-2 left-2 bottom-[4.5rem] md:inset-auto md:bottom-6 md:right-6 md:left-auto md:top-auto md:w-96 md:h-[520px]" style={{ top: 'auto', maxHeight: 'calc(100dvh - 6rem)' }}>
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b-2 border-border bg-secondary">
+      <div className="flex items-center justify-between px-4 py-3 border-b-2 border-border bg-secondary flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
             <Bot className="h-5 w-5 text-primary" />
@@ -247,7 +247,7 @@ const CustomerChatWidget = () => {
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4" ref={scrollRef}>
         <div className="space-y-4">
           {messages.map((msg, i) => (
             <div
