@@ -57,10 +57,13 @@ const adminNavItems = [
 
 const DashboardSidebar = () => {
   const { signOut, user } = useAuthContext();
+  const { profile } = useProfile();
   const navigate = useNavigate();
   const location = useLocation();
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
+  const displayName = profile?.display_name || "You";
+  const avatarUrl = profile?.avatar_url;
 
   const handleLogout = async () => {
     const { error } = await signOut();
