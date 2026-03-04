@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,13 +7,15 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 import {
   User, Shield, Palette, Bell, SlidersHorizontal, AlertTriangle,
   Camera, KeyRound, Smartphone, Activity, Sun, Moon, Type, Globe,
   Mail, BellRing, LayoutDashboard, ArrowUpDown, UserX, Trash2, Save,
+  Loader2,
 } from "lucide-react";
 
 const SectionHeader = ({ icon: Icon, title, description }: { icon: React.ElementType; title: string; description: string }) => (
@@ -28,7 +30,14 @@ const SectionHeader = ({ icon: Icon, title, description }: { icon: React.Element
 
 const DashboardSettings = () => {
   const { user } = useAuthContext();
+  const { profile, loading: profileLoading, updateProfile, uploadAvatar } = useProfile();
+
   const [displayName, setDisplayName] = useState("");
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [theme, setTheme] = useState("light");
   const [fontSize, setFontSize] = useState("medium");
   const [language, setLanguage] = useState("en");
@@ -40,6 +49,53 @@ const DashboardSettings = () => {
   const [appAlerts, setAppAlerts] = useState(true);
   const [weeklyDigest, setWeeklyDigest] = useState(false);
   const [mentionAlerts, setMentionAlerts] = useState(true);
+
+  // Sync profile data when loaded
+  useEffect(() => {
+    if (profile) {
+      setDisplayName(profile.display_name || "");
+      setAvatarPreview(profile.avatar_url || null);
+    }
+  }, [profile]);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!["image/jpeg", "image/png"].includes(file.type)) {
+      toast.error("Only JPG and PNG images are allowed.");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Image must be under 2MB.");
+      return;
+    }
+
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  };
+
+  const handleSaveProfile = async () => {
+    if (!displayName.trim()) {
+      toast.error("Display name cannot be empty.");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      let newAvatarUrl = profile?.avatar_url || null;
+      if (avatarFile) {
+        newAvatarUrl = await uploadAvatar(avatarFile);
+        setAvatarFile(null);
+      }
+      await updateProfile({ display_name: displayName.trim(), avatar_url: newAvatarUrl });
+      toast.success("Profile updated successfully.");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to update profile.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleSave = (section: string) => {
     toast.success(`${section} saved successfully`);
@@ -59,14 +115,32 @@ const DashboardSettings = () => {
           <CardContent className="space-y-4">
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16">
+                {avatarPreview ? (
+                  <AvatarImage src={avatarPreview} alt="Profile" className="object-cover" />
+                ) : null}
                 <AvatarFallback className="bg-primary/20 text-primary text-xl font-bold">
-                  {user?.email?.charAt(0).toUpperCase() || "U"}
+                  {displayName?.charAt(0)?.toUpperCase() || user?.email?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
-              <Button variant="outline" size="sm" className="gap-2">
-                <Camera className="h-4 w-4" />
-                Change Photo
-              </Button>
+              <div className="space-y-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Camera className="h-4 w-4" />
+                  Change Photo
+                </Button>
+                <p className="text-xs text-muted-foreground">JPG or PNG, max 2MB</p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png"
+                  className="hidden"
+                  onChange={handleFileSelect}
+                />
+              </div>
             </div>
             <Separator />
             <div className="grid gap-4 sm:grid-cols-2">
@@ -80,8 +154,9 @@ const DashboardSettings = () => {
               </div>
             </div>
             <div className="flex justify-end">
-              <Button size="sm" onClick={() => handleSave("Profile")} className="gap-2">
-                <Save className="h-4 w-4" /> Save Profile
+              <Button size="sm" onClick={handleSaveProfile} disabled={saving} className="gap-2">
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                {saving ? "Saving..." : "Save Profile"}
               </Button>
             </div>
           </CardContent>

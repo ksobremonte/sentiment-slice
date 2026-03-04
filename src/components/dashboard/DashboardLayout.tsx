@@ -13,11 +13,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger } from
 "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useProfile } from "@/hooks/useProfile";
 import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 import {
   SidebarProvider,
@@ -56,10 +57,13 @@ const adminNavItems = [
 
 const DashboardSidebar = () => {
   const { signOut, user } = useAuthContext();
+  const { profile } = useProfile();
   const navigate = useNavigate();
   const location = useLocation();
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
+  const displayName = profile?.display_name || "You";
+  const avatarUrl = profile?.avatar_url;
 
   const handleLogout = async () => {
     const { error } = await signOut();
@@ -151,13 +155,14 @@ const DashboardSidebar = () => {
               )}>
               
               <Avatar className="h-7 w-7 shrink-0">
+                {avatarUrl && <AvatarImage src={avatarUrl} alt="Profile" className="object-cover" />}
                 <AvatarFallback className="bg-primary/20 text-primary text-xs font-bold">
-                  {user?.email?.charAt(0).toUpperCase() || "U"}
+                  {displayName?.charAt(0)?.toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
               {!collapsed &&
               <>
-                  <span className="text-xs text-foreground truncate flex-1 text-left font-medium">You</span>
+                  <span className="text-xs text-foreground truncate flex-1 text-left font-medium">{displayName}</span>
                   <ChevronsUpDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                 </>
               }
@@ -167,7 +172,7 @@ const DashboardSidebar = () => {
             <DropdownMenuLabel className="flex items-center gap-2">
               <User className="h-4 w-4" />
               <div className="flex flex-col">
-                <span>User</span>
+                <span>{displayName}</span>
                 <span className="text-[10px] truncate font-sans text-left font-normal text-popover-foreground">{user?.email}</span>
               </div>
             </DropdownMenuLabel>
