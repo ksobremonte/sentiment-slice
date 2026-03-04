@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useProfile } from "@/hooks/useProfile";
 import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 import {
   SidebarProvider,
