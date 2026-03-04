@@ -172,7 +172,7 @@ const DashboardSidebar = () => {
             <DropdownMenuLabel className="flex items-center gap-2">
               <User className="h-4 w-4" />
               <div className="flex flex-col">
-                <span>User</span>
+                <span>{displayName}</span>
                 <span className="text-[10px] truncate font-sans text-left font-normal text-popover-foreground">{user?.email}</span>
               </div>
             </DropdownMenuLabel>
