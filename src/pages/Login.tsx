@@ -50,6 +50,10 @@ const Login = () => {
       captchaRef.current?.resetCaptcha();
       setCaptchaToken(null);
     } else {
+      // Log login activity
+      if (data?.user?.id) {
+        logLoginActivity(data.user.id);
+      }
       toast.success("Welcome back!");
       navigate("/pv-dashboard");
     }
