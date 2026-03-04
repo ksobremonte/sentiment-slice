@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTheme } from "next-themes";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   User, Shield, Palette, Bell, SlidersHorizontal, AlertTriangle,
@@ -17,6 +19,9 @@ import {
   Mail, BellRing, LayoutDashboard, ArrowUpDown, UserX, Trash2, Save,
   Loader2,
 } from "lucide-react";
+import ChangePasswordDialog from "@/components/dashboard/ChangePasswordDialog";
+import TwoFactorDialog from "@/components/dashboard/TwoFactorDialog";
+import LoginActivityDialog from "@/components/dashboard/LoginActivityDialog";
 
 const SectionHeader = ({ icon: Icon, title, description }: { icon: React.ElementType; title: string; description: string }) => (
   <CardHeader>
@@ -28,9 +33,16 @@ const SectionHeader = ({ icon: Icon, title, description }: { icon: React.Element
   </CardHeader>
 );
 
+const FONT_SIZE_MAP: Record<string, string> = {
+  small: "14px",
+  medium: "16px",
+  large: "18px",
+};
+
 const DashboardSettings = () => {
   const { user } = useAuthContext();
   const { profile, loading: profileLoading, updateProfile, uploadAvatar } = useProfile();
+  const { theme: currentTheme, setTheme: applyTheme } = useTheme();
 
   const [displayName, setDisplayName] = useState("");
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -38,9 +50,12 @@ const DashboardSettings = () => {
   const [saving, setSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Appearance state
   const [theme, setTheme] = useState("light");
   const [fontSize, setFontSize] = useState("medium");
   const [language, setLanguage] = useState("en");
+  const [savingAppearance, setSavingAppearance] = useState(false);
+
   const [dashboardView, setDashboardView] = useState("grid");
   const [sortOrder, setSortOrder] = useState("newest");
 
@@ -50,13 +65,48 @@ const DashboardSettings = () => {
   const [weeklyDigest, setWeeklyDigest] = useState(false);
   const [mentionAlerts, setMentionAlerts] = useState(true);
 
+  // Dialog states
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+  const [twoFactorOpen, setTwoFactorOpen] = useState(false);
+  const [loginActivityOpen, setLoginActivityOpen] = useState(false);
+  const [is2FAEnrolled, setIs2FAEnrolled] = useState(false);
+
+  // Check 2FA status
+  useEffect(() => {
+    const check2FA = async () => {
+      const { data } = await supabase.auth.mfa.listFactors();
+      const verifiedFactors = data?.totp?.filter((f) => f.status === "verified") || [];
+      setIs2FAEnrolled(verifiedFactors.length > 0);
+    };
+    check2FA();
+  }, []);
+
   // Sync profile data when loaded
   useEffect(() => {
     if (profile) {
       setDisplayName(profile.display_name || "");
       setAvatarPreview(profile.avatar_url || null);
+      setTheme(profile.theme || "light");
+      setFontSize(profile.font_size || "medium");
+      setLanguage(profile.language || "en");
+      // Apply theme instantly
+      applyTheme(profile.theme || "light");
+      // Apply font size
+      document.documentElement.style.fontSize = FONT_SIZE_MAP[profile.font_size || "medium"];
     }
   }, [profile]);
+
+  // Apply theme in real-time when dropdown changes
+  const handleThemeChange = (val: string) => {
+    setTheme(val);
+    applyTheme(val);
+  };
+
+  // Apply font size in real-time
+  const handleFontSizeChange = (val: string) => {
+    setFontSize(val);
+    document.documentElement.style.fontSize = FONT_SIZE_MAP[val];
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -97,8 +147,30 @@ const DashboardSettings = () => {
     }
   };
 
+  const handleSaveAppearance = async () => {
+    setSavingAppearance(true);
+    try {
+      await updateProfile({ theme, font_size: fontSize, language });
+      toast.success("Appearance preferences saved successfully.");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to save appearance.");
+    } finally {
+      setSavingAppearance(false);
+    }
+  };
+
   const handleSave = (section: string) => {
     toast.success(`${section} saved successfully`);
+  };
+
+  const handle2FAToggle = (checked: boolean) => {
+    setTwoFactorOpen(true);
+  };
+
+  const on2FAComplete = async () => {
+    const { data } = await supabase.auth.mfa.listFactors();
+    const verifiedFactors = data?.totp?.filter((f) => f.status === "verified") || [];
+    setIs2FAEnrolled(verifiedFactors.length > 0);
   };
 
   return (
@@ -123,23 +195,12 @@ const DashboardSettings = () => {
                 </AvatarFallback>
               </Avatar>
               <div className="space-y-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  onClick={() => fileInputRef.current?.click()}
-                >
+                <Button variant="outline" size="sm" className="gap-2" onClick={() => fileInputRef.current?.click()}>
                   <Camera className="h-4 w-4" />
                   Change Photo
                 </Button>
                 <p className="text-xs text-muted-foreground">JPG or PNG, max 2MB</p>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png"
-                  className="hidden"
-                  onChange={handleFileSelect}
-                />
+                <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" className="hidden" onChange={handleFileSelect} />
               </div>
             </div>
             <Separator />
@@ -174,7 +235,7 @@ const DashboardSettings = () => {
                   <p className="text-xs text-muted-foreground">Update your password regularly for security.</p>
                 </div>
               </div>
-              <Button variant="outline" size="sm">Update</Button>
+              <Button variant="outline" size="sm" onClick={() => setChangePasswordOpen(true)}>Update</Button>
             </div>
             <Separator />
             <div className="flex items-center justify-between">
@@ -182,10 +243,12 @@ const DashboardSettings = () => {
                 <Smartphone className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">Two-Factor Authentication</p>
-                  <p className="text-xs text-muted-foreground">Add an extra layer of security to your account.</p>
+                  <p className="text-xs text-muted-foreground">
+                    {is2FAEnrolled ? "2FA is enabled. Click to manage." : "Add an extra layer of security to your account."}
+                  </p>
                 </div>
               </div>
-              <Switch />
+              <Switch checked={is2FAEnrolled} onCheckedChange={handle2FAToggle} />
             </div>
             <Separator />
             <div className="flex items-center justify-between">
@@ -196,7 +259,7 @@ const DashboardSettings = () => {
                   <p className="text-xs text-muted-foreground">View recent sign-in sessions.</p>
                 </div>
               </div>
-              <Button variant="outline" size="sm">View</Button>
+              <Button variant="outline" size="sm" onClick={() => setLoginActivityOpen(true)}>View</Button>
             </div>
           </CardContent>
         </Card>
@@ -211,12 +274,11 @@ const DashboardSettings = () => {
                   {theme === "dark" ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
                   Theme
                 </Label>
-                <Select value={theme} onValueChange={setTheme}>
+                <Select value={theme} onValueChange={handleThemeChange}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="light">Light</SelectItem>
                     <SelectItem value="dark">Dark</SelectItem>
-                    <SelectItem value="system">System</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -224,7 +286,7 @@ const DashboardSettings = () => {
                 <Label className="flex items-center gap-2 text-sm">
                   <Type className="h-3.5 w-3.5" /> Font Size
                 </Label>
-                <Select value={fontSize} onValueChange={setFontSize}>
+                <Select value={fontSize} onValueChange={handleFontSizeChange}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="small">Small</SelectItem>
@@ -247,8 +309,9 @@ const DashboardSettings = () => {
               </div>
             </div>
             <div className="flex justify-end">
-              <Button size="sm" onClick={() => handleSave("Appearance")} className="gap-2">
-                <Save className="h-4 w-4" /> Save Appearance
+              <Button size="sm" onClick={handleSaveAppearance} disabled={savingAppearance} className="gap-2">
+                {savingAppearance ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                {savingAppearance ? "Saving..." : "Save Appearance"}
               </Button>
             </div>
           </CardContent>
@@ -354,6 +417,11 @@ const DashboardSettings = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Dialogs */}
+      <ChangePasswordDialog open={changePasswordOpen} onOpenChange={setChangePasswordOpen} />
+      <TwoFactorDialog open={twoFactorOpen} onOpenChange={setTwoFactorOpen} isEnrolled={is2FAEnrolled} onComplete={on2FAComplete} />
+      <LoginActivityDialog open={loginActivityOpen} onOpenChange={setLoginActivityOpen} />
     </DashboardLayout>
   );
 };
