@@ -18,6 +18,7 @@ const reviewSchema = z.object({
   rating: z.number().min(1, "Please select a rating").max(5),
   feedback: z.string().trim().min(1, "Feedback is required").max(1000, "Feedback must be less than 1000 characters"),
   receipt_number: z.string().trim().min(1, "Receipt number is required").max(50, "Receipt number must be less than 50 characters"),
+  has_photo: z.literal(true, { errorMap: () => ({ message: "Receipt photo is required" }) }),
 });
 
 const Reviews = () => {
@@ -36,12 +37,14 @@ const Reviews = () => {
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) { toast.error("Photo must be less than 5MB"); return; }
-      if (!file.type.startsWith("image/")) { toast.error("Please upload an image file"); return; }
-      setPhotoFile(file);
-      setPhotoPreview(URL.createObjectURL(file));
+    if (!file) {
+      toast.error("Camera access was denied or no photo was captured.");
+      return;
     }
+    if (file.size > 5 * 1024 * 1024) { toast.error("Photo must be less than 5MB"); return; }
+    if (!file.type.startsWith("image/")) { toast.error("Please upload an image file"); return; }
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
   };
 
   const removePhoto = () => {
@@ -52,7 +55,7 @@ const Reviews = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const validation = reviewSchema.safeParse({ name, email, rating, feedback, receipt_number: receiptNumber });
+    const validation = reviewSchema.safeParse({ name, email, rating, feedback, receipt_number: receiptNumber, has_photo: !!photoFile as true });
     if (!validation.success) { toast.error(validation.error.errors[0].message); return; }
 
     setIsSubmitting(true);
@@ -100,7 +103,7 @@ const Reviews = () => {
 
       await queryClient.invalidateQueries({ queryKey: ["public-reviews"] });
       setIsSubmitted(true);
-      toast.success("Thank you for your feedback!");
+      toast.success("Review submitted successfully with receipt photo!");
     } catch (error) {
       console.error("Error submitting review:", error);
       const message = error && typeof error === "object" && "message" in error && typeof (error as any).message === "string" ? (error as any).message : "Failed to submit review. Please try again.";
@@ -165,16 +168,24 @@ const Reviews = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-foreground font-medium text-sm">Upload Photo (Optional)</Label>
+                    <Label className="text-foreground font-medium text-sm">Receipt Photo <span className="text-destructive">*</span></Label>
                     {photoPreview ? (
                       <div className="relative inline-block">
                         <img src={photoPreview} alt="Preview" className="max-h-40 rounded-xl border border-border object-cover" />
                         <button type="button" onClick={removePhoto} className="absolute -top-2 -right-2 p-1.5 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90"><X className="w-3 h-3" /></button>
                       </div>
                     ) : (
-                      <div onClick={() => fileInputRef.current?.click()} className="border border-dashed border-border rounded-xl p-6 text-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all">
-                        <ImageIcon className="w-8 h-8 mx-auto text-muted-foreground/40 mb-2" />
-                        <p className="text-xs text-muted-foreground">Click to upload • Max 5MB</p>
+                      <div className="flex gap-2">
+                        <div onClick={() => { if (fileInputRef.current) { fileInputRef.current.setAttribute("capture", "environment"); fileInputRef.current.click(); } }} className="flex-1 border border-dashed border-border rounded-xl p-6 text-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all">
+                          <ImageIcon className="w-8 h-8 mx-auto text-muted-foreground/40 mb-2" />
+                          <p className="text-xs text-muted-foreground font-medium">📷 Take Photo</p>
+                          <p className="text-xs text-muted-foreground mt-1">Opens camera on mobile</p>
+                        </div>
+                        <div onClick={() => { if (fileInputRef.current) { fileInputRef.current.removeAttribute("capture"); fileInputRef.current.click(); } }} className="flex-1 border border-dashed border-border rounded-xl p-6 text-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all">
+                          <ImageIcon className="w-8 h-8 mx-auto text-muted-foreground/40 mb-2" />
+                          <p className="text-xs text-muted-foreground font-medium">📁 Browse Files</p>
+                          <p className="text-xs text-muted-foreground mt-1">Max 5MB</p>
+                        </div>
                       </div>
                     )}
                     <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
