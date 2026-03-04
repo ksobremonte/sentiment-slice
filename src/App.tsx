@@ -60,6 +60,7 @@ const App = () => (
               <Route path="/pv-dashboard/alerts" element={<ProtectedRoute><DashboardAlerts /></ProtectedRoute>} />
               <Route path="/pv-dashboard/trends" element={<ProtectedRoute><DashboardTrends /></ProtectedRoute>} />
               <Route path="/pv-dashboard/settings" element={<ProtectedRoute><DashboardSettings /></ProtectedRoute>} />
+              <Route path="/pv-dashboard/help" element={<ProtectedRoute><DashboardHelp /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
