@@ -5,6 +5,9 @@ import { useAuthContext } from "@/contexts/AuthContext";
 export interface Profile {
   display_name: string | null;
   avatar_url: string | null;
+  theme: string;
+  font_size: string;
+  language: string;
 }
 
 export const useProfile = () => {
@@ -17,20 +20,19 @@ export const useProfile = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("profiles")
-      .select("display_name, avatar_url")
+      .select("display_name, avatar_url, theme, font_size, language")
       .eq("user_id", user.id)
       .maybeSingle();
 
     if (!error && data) {
-      setProfile(data);
+      setProfile(data as Profile);
     } else if (!error && !data) {
-      // Profile doesn't exist yet (for users created before the trigger)
       const { data: inserted } = await supabase
         .from("profiles")
         .insert({ user_id: user.id })
-        .select("display_name, avatar_url")
+        .select("display_name, avatar_url, theme, font_size, language")
         .single();
-      if (inserted) setProfile(inserted);
+      if (inserted) setProfile(inserted as Profile);
     }
     setLoading(false);
   }, [user]);
@@ -44,7 +46,7 @@ export const useProfile = () => {
       .update({ ...updates, updated_at: new Date().toISOString() })
       .eq("user_id", user.id);
     if (error) throw error;
-    setProfile((prev) => prev ? { ...prev, ...updates } : { display_name: null, avatar_url: null, ...updates });
+    setProfile((prev) => prev ? { ...prev, ...updates } : { display_name: null, avatar_url: null, theme: "light", font_size: "medium", language: "en", ...updates });
   };
 
   const uploadAvatar = async (file: File): Promise<string> => {
@@ -61,7 +63,6 @@ export const useProfile = () => {
       .from("profile-avatars")
       .getPublicUrl(path);
 
-    // Add cache-busting param
     return `${urlData.publicUrl}?t=${Date.now()}`;
   };
 

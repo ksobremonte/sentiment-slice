@@ -136,25 +136,58 @@ export type Database = {
           },
         ]
       }
+      login_activity: {
+        Row: {
+          id: string
+          ip_address: string | null
+          logged_in_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          ip_address?: string | null
+          logged_in_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          ip_address?: string | null
+          logged_in_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           display_name: string | null
+          font_size: string
           id: string
+          language: string
+          theme: string
           updated_at: string
           user_id: string
         }
         Insert: {
           avatar_url?: string | null
           display_name?: string | null
+          font_size?: string
           id?: string
+          language?: string
+          theme?: string
           updated_at?: string
           user_id: string
         }
         Update: {
           avatar_url?: string | null
           display_name?: string | null
+          font_size?: string
           id?: string
+          language?: string
+          theme?: string
           updated_at?: string
           user_id?: string
         }

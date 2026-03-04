@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { z } from "zod";
 import { useHcaptchaSiteKey } from "@/hooks/useHcaptchaSiteKey";
+import { logLoginActivity } from "@/lib/logLoginActivity";
 
 const loginSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }),
@@ -41,7 +42,7 @@ const Login = () => {
     }
 
     setLoading(true);
-    const { error } = await signIn(email, password, captchaToken);
+    const { data, error } = await signIn(email, password, captchaToken);
     setLoading(false);
 
     if (error) {
@@ -49,6 +50,10 @@ const Login = () => {
       captchaRef.current?.resetCaptcha();
       setCaptchaToken(null);
     } else {
+      // Log login activity
+      if (data?.user?.id) {
+        logLoginActivity(data.user.id);
+      }
       toast.success("Welcome back!");
       navigate("/pv-dashboard");
     }
