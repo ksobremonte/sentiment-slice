@@ -176,7 +176,7 @@ const DashboardSidebar = () => {
               <Settings className="h-4 w-4 mr-2" />
               User Settings
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/pv-dashboard/help")}>
               <HelpCircle className="h-4 w-4 mr-2" />
               Help Center
             </DropdownMenuItem>
