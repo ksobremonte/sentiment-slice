@@ -164,15 +164,6 @@ const DashboardSidebar = () => {
               {t("user.helpCenter")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuLabel className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              {t("user.account")}
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate("/pv-dashboard/settings")}>
-              <Settings className="h-4 w-4 mr-2" />
-              {t("user.accountSettings")}
-            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate("/pv-dashboard/switch-account")}>
               <ArrowLeftRight className="h-4 w-4 mr-2" />
               {t("user.switchAccount")}
