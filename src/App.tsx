@@ -23,6 +23,7 @@ const DashboardAlerts = lazy(() => import("./pages/dashboard/DashboardAlerts"));
 const DashboardTrends = lazy(() => import("./pages/dashboard/DashboardTrends"));
 const DashboardSettings = lazy(() => import("./pages/dashboard/DashboardSettings"));
 const DashboardHelp = lazy(() => import("./pages/dashboard/DashboardHelp"));
+const DashboardSwitchAccount = lazy(() => import("./pages/dashboard/DashboardSwitchAccount"));
 const About = lazy(() => import("./pages/About"));
 const MenuPage = lazy(() => import("./pages/MenuPage"));
 const Reviews = lazy(() => import("./pages/Reviews"));
@@ -61,6 +62,7 @@ const App = () => (
               <Route path="/pv-dashboard/trends" element={<ProtectedRoute><DashboardTrends /></ProtectedRoute>} />
               <Route path="/pv-dashboard/settings" element={<ProtectedRoute><DashboardSettings /></ProtectedRoute>} />
               <Route path="/pv-dashboard/help" element={<ProtectedRoute><DashboardHelp /></ProtectedRoute>} />
+              <Route path="/pv-dashboard/switch-account" element={<ProtectedRoute><DashboardSwitchAccount /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

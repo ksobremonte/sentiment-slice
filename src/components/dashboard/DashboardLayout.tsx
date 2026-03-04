@@ -190,7 +190,7 @@ const DashboardSidebar = () => {
               <Settings className="h-4 w-4 mr-2" />
               Account Settings
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/pv-dashboard/switch-account")}>
               <ArrowLeftRight className="h-4 w-4 mr-2" />
               Switch Account
             </DropdownMenuItem>
