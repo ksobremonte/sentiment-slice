@@ -42,7 +42,7 @@ const Login = () => {
     }
 
     setLoading(true);
-    const { error } = await signIn(email, password, captchaToken);
+    const { data, error } = await signIn(email, password, captchaToken);
     setLoading(false);
 
     if (error) {
