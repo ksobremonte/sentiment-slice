@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "next-themes";
 import { lazy, Suspense } from "react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import LanguageFromProfile from "@/components/LanguageFromProfile";
 import Home from "./pages/Home";
 
 // Lazy-loaded routes
