@@ -21,6 +21,7 @@ const DashboardDetection = lazy(() => import("./pages/dashboard/DashboardDetecti
 const DashboardAI = lazy(() => import("./pages/dashboard/DashboardAI"));
 const DashboardAlerts = lazy(() => import("./pages/dashboard/DashboardAlerts"));
 const DashboardTrends = lazy(() => import("./pages/dashboard/DashboardTrends"));
+const DashboardSettings = lazy(() => import("./pages/dashboard/DashboardSettings"));
 const About = lazy(() => import("./pages/About"));
 const MenuPage = lazy(() => import("./pages/MenuPage"));
 const Reviews = lazy(() => import("./pages/Reviews"));
