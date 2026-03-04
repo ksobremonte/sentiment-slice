@@ -172,11 +172,18 @@ const Reviews = () => {
                         <button type="button" onClick={removePhoto} className="absolute -top-2 -right-2 p-1.5 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90"><X className="w-3 h-3" /></button>
                       </div>
                     ) : (
-                      <div onClick={() => fileInputRef.current?.click()} className="border border-dashed border-border rounded-xl p-6 text-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all">
-                        <ImageIcon className="w-8 h-8 mx-auto text-muted-foreground/40 mb-2" />
-                        <p className="text-xs text-muted-foreground">Click to upload • Max 5MB</p>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div onClick={() => cameraInputRef.current?.click()} className="border border-dashed border-border rounded-xl p-5 text-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all">
+                          <Camera className="w-7 h-7 mx-auto text-muted-foreground/40 mb-1.5" />
+                          <p className="text-xs text-muted-foreground font-medium">Take Photo</p>
+                        </div>
+                        <div onClick={() => fileInputRef.current?.click()} className="border border-dashed border-border rounded-xl p-5 text-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all">
+                          <ImageIcon className="w-7 h-7 mx-auto text-muted-foreground/40 mb-1.5" />
+                          <p className="text-xs text-muted-foreground font-medium">Upload Photo</p>
+                        </div>
                       </div>
                     )}
+                    <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" onChange={handlePhotoChange} className="hidden" />
                     <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
                   </div>
 
