@@ -213,7 +213,7 @@ const DashboardSwitchAccount = () => {
           </CardContent>
         </Card>
 
-        <Button onClick={handleAddAccount} className="w-full gap-2">
+        <Button onClick={() => navigate("/pv-dashboard/add-account")} className="w-full gap-2">
           <Plus className="h-4 w-4" />
           Add Another Account
         </Button>
