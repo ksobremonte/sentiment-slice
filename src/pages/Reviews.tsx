@@ -101,7 +101,7 @@ const Reviews = () => {
 
       await queryClient.invalidateQueries({ queryKey: ["public-reviews"] });
       setIsSubmitted(true);
-      toast.success("Thank you for your feedback!");
+      toast.success("Review submitted successfully with receipt photo!");
     } catch (error) {
       console.error("Error submitting review:", error);
       const message = error && typeof error === "object" && "message" in error && typeof (error as any).message === "string" ? (error as any).message : "Failed to submit review. Please try again.";
