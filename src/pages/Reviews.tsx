@@ -53,7 +53,7 @@ const Reviews = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const validation = reviewSchema.safeParse({ name, email, rating, feedback, receipt_number: receiptNumber });
+    const validation = reviewSchema.safeParse({ name, email, rating, feedback, receipt_number: receiptNumber, has_photo: !!photoFile as true });
     if (!validation.success) { toast.error(validation.error.errors[0].message); return; }
 
     setIsSubmitting(true);
