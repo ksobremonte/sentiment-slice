@@ -37,12 +37,14 @@ const Reviews = () => {
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) { toast.error("Photo must be less than 5MB"); return; }
-      if (!file.type.startsWith("image/")) { toast.error("Please upload an image file"); return; }
-      setPhotoFile(file);
-      setPhotoPreview(URL.createObjectURL(file));
+    if (!file) {
+      toast.error("Camera access was denied or no photo was captured.");
+      return;
     }
+    if (file.size > 5 * 1024 * 1024) { toast.error("Photo must be less than 5MB"); return; }
+    if (!file.type.startsWith("image/")) { toast.error("Please upload an image file"); return; }
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
   };
 
   const removePhoto = () => {
