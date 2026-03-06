@@ -47,13 +47,7 @@ const ReviewCard = ({ review, onAnalyze, onViewSentiment }: ReviewCardProps) => 
           <div className="flex items-center justify-between gap-2 flex-wrap mb-2">
             <div className="flex items-center gap-2 flex-wrap">
               <h4 className="font-display font-semibold text-lg text-foreground">{review.name}</h4>
-              {isVoid && (
-                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-muted-foreground/10 text-muted-foreground flex items-center gap-1">
-                  <Ban className="w-3 h-3" />
-                  Void
-                </span>
-              )}
-              {review.sentiment && !isVoid && (
+              {review.sentiment && (
                 <span className={cn(
                   "text-xs font-semibold px-3 py-1 rounded-full",
                   review.sentiment === "positive" && "bg-success/10 text-success",
