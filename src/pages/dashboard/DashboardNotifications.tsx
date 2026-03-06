@@ -1,12 +1,15 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Search, Bell, AlertTriangle, Star, MessageSquare, TrendingDown, ShieldAlert } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, Bell, AlertTriangle, Star, MessageSquare, TrendingDown, ShieldAlert, CheckCheck } from "lucide-react";
 import { useReviews } from "@/hooks/useReviews";
-import { format, isToday, isYesterday, subDays } from "date-fns";
+import { useNotificationReads } from "@/hooks/useNotificationReads";
+import { format, isToday, isYesterday } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface NotificationItem {
@@ -24,6 +27,8 @@ interface NotificationItem {
 const DashboardNotifications = () => {
   const [search, setSearch] = useState("");
   const { data: reviews } = useReviews();
+  const { isRead, markAsRead, markAllAsRead, unreadCount } = useNotificationReads();
+  const navigate = useNavigate();
 
   const notifications = useMemo<NotificationItem[]>(() => {
     if (!reviews) return [];
@@ -94,6 +99,11 @@ const DashboardNotifications = () => {
       type: "review" as const,
     })) ?? [];
 
+  const handleNotificationClick = (item: NotificationItem) => {
+    markAsRead.mutate(item.id);
+    navigate("/pv-dashboard/reviews");
+  };
+
   const renderGroup = (label: string, items: NotificationItem[]) => {
     if (items.length === 0) return null;
     return (
@@ -102,22 +112,45 @@ const DashboardNotifications = () => {
           {label}
         </h3>
         <div className="space-y-2">
-          {items.map((item) => (
-            <Card key={item.id} className="border border-border/60 shadow-none hover:shadow-sm transition-shadow">
-              <CardContent className="flex items-start gap-4 p-4">
-                <div className={cn("rounded-full p-2.5 shrink-0", item.iconBg)}>
-                  <item.icon className={cn("h-4 w-4", item.iconColor)} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground">{item.title}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{item.message}</p>
-                </div>
-                <span className="text-[11px] text-muted-foreground whitespace-nowrap shrink-0 pt-0.5">
-                  {item.time}
-                </span>
-              </CardContent>
-            </Card>
-          ))}
+          {items.map((item) => {
+            const read = isRead(item.id);
+            return (
+              <Card
+                key={item.id}
+                className={cn(
+                  "border border-border/60 shadow-none hover:shadow-sm transition-all cursor-pointer hover:border-primary/30",
+                  !read && "bg-primary/[0.03] border-primary/20"
+                )}
+                onClick={() => handleNotificationClick(item)}
+              >
+                <CardContent className="flex items-start gap-4 p-4">
+                  {/* Unread dot */}
+                  <div className="flex items-center pt-1.5">
+                    <div className={cn(
+                      "h-2 w-2 rounded-full shrink-0 transition-colors",
+                      read ? "bg-transparent" : "bg-destructive"
+                    )} />
+                  </div>
+                  <div className={cn("rounded-full p-2.5 shrink-0", item.iconBg)}>
+                    <item.icon className={cn("h-4 w-4", item.iconColor)} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={cn(
+                      "text-sm text-foreground",
+                      read ? "font-medium" : "font-bold"
+                    )}>{item.title}</p>
+                    <p className={cn(
+                      "text-xs mt-0.5 line-clamp-2",
+                      read ? "text-muted-foreground" : "text-foreground/80"
+                    )}>{item.message}</p>
+                  </div>
+                  <span className="text-[11px] text-muted-foreground whitespace-nowrap shrink-0 pt-0.5">
+                    {item.time}
+                  </span>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
     );
@@ -134,11 +167,25 @@ const DashboardNotifications = () => {
               Stay updated on negative reviews and sentiment alerts
             </p>
           </div>
-          {filtered.length > 0 && (
-            <Badge variant="secondary" className="self-start">
-              {filtered.length} alert{filtered.length !== 1 ? "s" : ""}
-            </Badge>
-          )}
+          <div className="flex items-center gap-2 self-start">
+            {unreadCount > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 text-xs"
+                onClick={() => markAllAsRead.mutate()}
+                disabled={markAllAsRead.isPending}
+              >
+                <CheckCheck className="h-3.5 w-3.5" />
+                Mark all read
+              </Button>
+            )}
+            {filtered.length > 0 && (
+              <Badge variant={unreadCount > 0 ? "destructive" : "secondary"}>
+                {unreadCount > 0 ? `${unreadCount} unread` : `${filtered.length} alert${filtered.length !== 1 ? "s" : ""}`}
+              </Badge>
+            )}
+          </div>
         </div>
 
         {/* Search */}
@@ -196,7 +243,11 @@ const DashboardNotifications = () => {
             ) : (
               <div className="space-y-2">
                 {activityItems.map((item) => (
-                  <Card key={item.id} className="border border-border/60 shadow-none hover:shadow-sm transition-shadow">
+                  <Card
+                    key={item.id}
+                    className="border border-border/60 shadow-none hover:shadow-sm transition-shadow cursor-pointer hover:border-primary/30"
+                    onClick={() => navigate("/pv-dashboard/reviews")}
+                  >
                     <CardContent className="flex items-start gap-4 p-4">
                       <div className={cn("rounded-full p-2.5 shrink-0", item.iconBg)}>
                         <item.icon className={cn("h-4 w-4", item.iconColor)} />
