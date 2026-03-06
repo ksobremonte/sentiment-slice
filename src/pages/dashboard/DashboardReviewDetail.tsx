@@ -144,12 +144,6 @@ const DashboardReviewDetail = () => {
               <p className="text-foreground leading-relaxed">{review.feedback}</p>
             </div>
 
-            {/* Language */}
-            {review.language && (
-              <div className="text-xs text-muted-foreground">
-                Language: <span className="font-medium text-foreground">{review.language}</span>
-              </div>
-            )}
 
             {/* Photo */}
             {review.photo_url && (
