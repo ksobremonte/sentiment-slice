@@ -17,10 +17,7 @@ interface ReviewCardProps {
 }
 
 const ReviewCard = ({ review, onAnalyze, onViewSentiment }: ReviewCardProps) => {
-  const isVoid = review.sentiment === "positive" && review.rating === 1;
-
   const getSentimentStyles = () => {
-    if (isVoid) return "border-l-4 border-l-muted-foreground/40 opacity-60";
     if (!review.sentiment) return "border-l-4 border-l-muted";
     
     switch (review.sentiment) {
