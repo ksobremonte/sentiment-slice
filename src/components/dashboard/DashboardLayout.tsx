@@ -218,7 +218,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <Button
                 variant={isOnNotifications ? "default" : "outline"}
                 size="icon"
-                className="h-9 w-9 rounded-full relative"
+                className="h-9 w-9 rounded-full relative !overflow-visible"
                 onClick={() => navigate("/pv-dashboard/notifications")}
                 title="Notifications"
               >
