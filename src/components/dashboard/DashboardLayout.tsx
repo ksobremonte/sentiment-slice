@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, MessageSquare, PieChart, Star, TrendingUp,
@@ -16,6 +16,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/useProfile";
+import { useReviews } from "@/hooks/useReviews";
 import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 import {
   SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter,
@@ -183,6 +184,19 @@ const DashboardSidebar = () => {
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { data: reviews } = useReviews();
+
+  const negativeCount = useMemo(() => {
+    if (!reviews) return 0;
+    return reviews.filter(
+      (r) => r.sentiment === "negative" || r.sentiment === "mixed" || r.rating <= 2
+    ).length;
+  }, [reviews]);
+
+  const isOnNotifications = location.pathname === "/pv-dashboard/notifications";
+  const isOnConversations = location.pathname === "/pv-dashboard/conversations";
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-cream-warm">
@@ -191,24 +205,29 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <header className="sticky top-0 z-40 flex items-center gap-2 border-b border-border bg-cream-warm/95 backdrop-blur-sm px-4 py-3">
             <SidebarTrigger />
             <div className="text-sm font-semibold text-foreground flex-1">{t("nav.sentimentDashboard")}</div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <Button
-                variant="ghost"
+                variant={isOnConversations ? "default" : "outline"}
                 size="icon"
-                className="h-9 w-9"
+                className="h-9 w-9 rounded-full"
                 onClick={() => navigate("/pv-dashboard/conversations")}
                 title="Conversations"
               >
-                <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                <MessageSquare className="h-4 w-4" />
               </Button>
               <Button
-                variant="ghost"
+                variant={isOnNotifications ? "default" : "outline"}
                 size="icon"
-                className="h-9 w-9"
+                className="h-9 w-9 rounded-full relative"
                 onClick={() => navigate("/pv-dashboard/notifications")}
                 title="Notifications"
               >
-                <BellDot className="h-4 w-4 text-muted-foreground" />
+                <Bell className="h-4 w-4" />
+                {negativeCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
+                    {negativeCount > 99 ? "99+" : negativeCount}
+                  </span>
+                )}
               </Button>
             </div>
           </header>
