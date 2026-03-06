@@ -167,10 +167,17 @@ Rules:
 - Focus only on what affects sentiment.
 - Ignore unnecessary details.
 
-LANGUAGE SUPPORT: Reviews may be in English, Filipino (Tagalog), or Ilocano.
-Ilocano positive: nalaing, nasayaat, napintas, nagpaspas
-Ilocano negative: madi, saan a nasayaat, narigat, bassit
-Translate non-English before classifying.
+LANGUAGE SUPPORT: Reviews may be in English, Filipino (Tagalog), Ilocano, Cebuano (Bisaya), Pangasinan, Kapampangan, Bicolano, Waray, or other Philippine languages.
+
+Key vocabulary:
+- Ilocano positive: nalaing, nasayaat, napintas, nagpaspas, naimas
+- Ilocano negative: madi, saan a nasayaat, narigat, bassit
+- Cebuano/Bisaya positive: lami, nindot, maayo, ganahan, sarap
+- Cebuano/Bisaya negative: dili maayo, lain, wala, dili ganahan, way lami
+- Tagalog positive: masarap, maganda, magaling, mahusay, masaya
+- Tagalog negative: hindi masarap, pangit, masamâ, walang kwenta
+
+IMPORTANT: You MUST first translate any non-English review to English to fully understand the meaning, then classify the sentiment based on the translated meaning. Include the English translation in your reasoning so the admin understands what the review says.
 
 CLASSIFICATION (text only, ignore star ratings):
 - POSITIVE: praise, satisfaction, enthusiasm, recommendations
@@ -194,7 +201,7 @@ Detect sarcasm and emoji sentiment. Base result on meaning, not unknown words.`;
         body: JSON.stringify({
           model: "google/gemini-2.5-flash",
           messages: [
-            { role: "user", content: `Analyze this review text (ignore any rating):\n\n"${review.feedback}"\n\nProvide: sentiment classification, one-sentence reason, and up to 3 key phrases.` }
+            { role: "user", content: `Analyze this review text (ignore any rating). If the text is NOT in English, first translate it to English, then analyze the translated meaning.\n\nReview text: "${review.feedback}"\n\nProvide: sentiment classification, one-sentence reason (MUST include the English translation if non-English), and up to 3 key phrases from the original text.` }
           ],
           tools: [
             {
@@ -234,7 +241,7 @@ Detect sarcasm and emoji sentiment. Base result on meaning, not unknown words.`;
                     },
                     reasoning: {
                       type: "string",
-                      description: "ONE sentence only explaining why this sentiment was chosen"
+                      description: "ONE sentence explaining why this sentiment was chosen. If the review is in a non-English language, MUST start with the English translation in quotes, then explain. Example: '\"The pizza is delicious\" - The reviewer expresses satisfaction with the food quality.'"
                     }
                   },
                   required: ["sentiment", "confidence", "language", "aspects", "reasoning"]
