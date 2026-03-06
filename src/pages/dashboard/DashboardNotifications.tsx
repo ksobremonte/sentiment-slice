@@ -101,7 +101,7 @@ const DashboardNotifications = () => {
 
   const handleNotificationClick = (item: NotificationItem) => {
     markAsRead.mutate(item.id);
-    navigate("/pv-dashboard/reviews");
+    navigate(`/pv-dashboard/reviews/${item.id}`);
   };
 
   const renderGroup = (label: string, items: NotificationItem[]) => {

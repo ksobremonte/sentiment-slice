@@ -28,6 +28,7 @@ const DashboardHelp = lazy(() => import("./pages/dashboard/DashboardHelp"));
 const DashboardSwitchAccount = lazy(() => import("./pages/dashboard/DashboardSwitchAccount"));
 const DashboardAddAccount = lazy(() => import("./pages/dashboard/DashboardAddAccount"));
 const DashboardNotifications = lazy(() => import("./pages/dashboard/DashboardNotifications"));
+const DashboardReviewDetail = lazy(() => import("./pages/dashboard/DashboardReviewDetail"));
 const About = lazy(() => import("./pages/About"));
 const MenuPage = lazy(() => import("./pages/MenuPage"));
 const Reviews = lazy(() => import("./pages/Reviews"));
@@ -71,6 +72,7 @@ const App = () => (
               <Route path="/pv-dashboard/switch-account" element={<ProtectedRoute><DashboardSwitchAccount /></ProtectedRoute>} />
               <Route path="/pv-dashboard/add-account" element={<ProtectedRoute><DashboardAddAccount /></ProtectedRoute>} />
               <Route path="/pv-dashboard/notifications" element={<ProtectedRoute><DashboardNotifications /></ProtectedRoute>} />
+              <Route path="/pv-dashboard/reviews/:reviewId" element={<ProtectedRoute><DashboardReviewDetail /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
