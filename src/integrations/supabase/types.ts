@@ -160,6 +160,42 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_reads: {
+        Row: {
+          id: string
+          read_at: string
+          review_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          read_at?: string
+          review_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          read_at?: string
+          review_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_reads_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_reads_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null

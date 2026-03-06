@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from "react";
+import { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, MessageSquare, PieChart, Star, TrendingUp,
@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/useProfile";
 import { useReviews } from "@/hooks/useReviews";
+import { useNotificationReads } from "@/hooks/useNotificationReads";
 import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 import {
   SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter,
@@ -185,14 +186,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
-  const { data: reviews } = useReviews();
-
-  const negativeCount = useMemo(() => {
-    if (!reviews) return 0;
-    return reviews.filter(
-      (r) => r.sentiment === "negative" || r.sentiment === "mixed" || r.rating <= 2
-    ).length;
-  }, [reviews]);
+  const { unreadCount } = useNotificationReads();
 
   const isOnNotifications = location.pathname === "/pv-dashboard/notifications";
   const isOnConversations = location.pathname === "/pv-dashboard/conversations";
@@ -223,9 +217,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 title="Notifications"
               >
                 <Bell className="h-4 w-4" />
-                {negativeCount > 0 && (
+                {unreadCount > 0 && (
                   <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
-                    {negativeCount > 99 ? "99+" : negativeCount}
+                    {unreadCount > 99 ? "99+" : unreadCount}
                   </span>
                 )}
               </Button>
