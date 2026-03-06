@@ -186,14 +186,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
-  const { data: reviews } = useReviews();
-
-  const negativeCount = useMemo(() => {
-    if (!reviews) return 0;
-    return reviews.filter(
-      (r) => r.sentiment === "negative" || r.sentiment === "mixed" || r.rating <= 2
-    ).length;
-  }, [reviews]);
+  const { unreadCount } = useNotificationReads();
 
   const isOnNotifications = location.pathname === "/pv-dashboard/notifications";
   const isOnConversations = location.pathname === "/pv-dashboard/conversations";
