@@ -201,7 +201,7 @@ Detect sarcasm and emoji sentiment. Base result on meaning, not unknown words.`;
         body: JSON.stringify({
           model: "google/gemini-2.5-flash",
           messages: [
-            { role: "user", content: `Analyze this review text (ignore any rating):\n\n"${review.feedback}"\n\nProvide: sentiment classification, one-sentence reason, and up to 3 key phrases.` }
+            { role: "user", content: `Analyze this review text (ignore any rating). If the text is NOT in English, first translate it to English, then analyze the translated meaning.\n\nReview text: "${review.feedback}"\n\nProvide: sentiment classification, one-sentence reason (MUST include the English translation if non-English), and up to 3 key phrases from the original text.` }
           ],
           tools: [
             {
