@@ -230,6 +230,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             {children}
           </main>
         </div>
+        <RealtimeNotificationPopup />
       </div>
     </SidebarProvider>
   );
