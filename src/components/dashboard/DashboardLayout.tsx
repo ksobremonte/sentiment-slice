@@ -189,7 +189,27 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <div className="flex-1 flex flex-col min-w-0">
           <header className="sticky top-0 z-40 flex items-center gap-2 border-b border-border bg-cream-warm/95 backdrop-blur-sm px-4 py-3">
             <SidebarTrigger />
-            <div className="text-sm font-semibold text-foreground">{t("nav.sentimentDashboard")}</div>
+            <div className="text-sm font-semibold text-foreground flex-1">{t("nav.sentimentDashboard")}</div>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 relative"
+                onClick={() => window.location.href = "/pv-dashboard/conversations"}
+                title="Conversations"
+              >
+                <MessageSquare className="h-4 w-4 text-muted-foreground" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 relative"
+                onClick={() => window.location.href = "/pv-dashboard/notifications"}
+                title="Notifications"
+              >
+                <BellDot className="h-4 w-4 text-muted-foreground" />
+              </Button>
+            </div>
           </header>
           <main className="flex-1 p-4 md:p-6 brick-overlay">
             {children}

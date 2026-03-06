@@ -70,6 +70,7 @@ const App = () => (
               <Route path="/pv-dashboard/help" element={<ProtectedRoute><DashboardHelp /></ProtectedRoute>} />
               <Route path="/pv-dashboard/switch-account" element={<ProtectedRoute><DashboardSwitchAccount /></ProtectedRoute>} />
               <Route path="/pv-dashboard/add-account" element={<ProtectedRoute><DashboardAddAccount /></ProtectedRoute>} />
+              <Route path="/pv-dashboard/notifications" element={<ProtectedRoute><DashboardNotifications /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
