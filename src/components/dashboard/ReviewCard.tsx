@@ -1,4 +1,4 @@
-import { Send, User, Star, Image as ImageIcon, MessageSquare, Ban } from "lucide-react";
+import { Send, User, Star, Image as ImageIcon, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Review } from "@/hooks/useReviews";
