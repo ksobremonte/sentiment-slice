@@ -241,7 +241,7 @@ Detect sarcasm and emoji sentiment. Base result on meaning, not unknown words.`;
                     },
                     reasoning: {
                       type: "string",
-                      description: "ONE sentence only explaining why this sentiment was chosen"
+                      description: "ONE sentence explaining why this sentiment was chosen. If the review is in a non-English language, MUST start with the English translation in quotes, then explain. Example: '\"The pizza is delicious\" - The reviewer expresses satisfaction with the food quality.'"
                     }
                   },
                   required: ["sentiment", "confidence", "language", "aspects", "reasoning"]
