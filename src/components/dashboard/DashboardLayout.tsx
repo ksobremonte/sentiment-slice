@@ -19,6 +19,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useReviews } from "@/hooks/useReviews";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
+import RealtimeNotificationPopup from "@/components/dashboard/RealtimeNotificationPopup";
 import {
   SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter,
   SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarMenu,
@@ -229,6 +230,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             {children}
           </main>
         </div>
+        <RealtimeNotificationPopup />
       </div>
     </SidebarProvider>
   );
