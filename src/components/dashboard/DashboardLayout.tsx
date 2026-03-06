@@ -183,7 +183,8 @@ const DashboardSidebar = () => {
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-    return (
+  return (
+    <SidebarProvider>
       <div className="min-h-screen flex w-full bg-cream-warm">
         <DashboardSidebar />
         <div className="flex-1 flex flex-col min-w-0">
@@ -194,8 +195,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-9 w-9 relative"
-                onClick={() => window.location.href = "/pv-dashboard/conversations"}
+                className="h-9 w-9"
+                onClick={() => navigate("/pv-dashboard/conversations")}
                 title="Conversations"
               >
                 <MessageSquare className="h-4 w-4 text-muted-foreground" />
@@ -203,8 +204,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-9 w-9 relative"
-                onClick={() => window.location.href = "/pv-dashboard/notifications"}
+                className="h-9 w-9"
+                onClick={() => navigate("/pv-dashboard/notifications")}
                 title="Notifications"
               >
                 <BellDot className="h-4 w-4 text-muted-foreground" />
