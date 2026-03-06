@@ -167,9 +167,10 @@ Rules:
 - Focus only on what affects sentiment.
 - Ignore unnecessary details.
 
-LANGUAGE SUPPORT: Reviews may be in English, Filipino (Tagalog), or Ilocano.
-Ilocano positive: nalaing, nasayaat, napintas, nagpaspas
-Ilocano negative: madi, saan a nasayaat, narigat, bassit
+LANGUAGE SUPPORT: Reviews may be in English, Filipino (Tagalog), Ilocano, or Cebuano.
+Ilocano positive: nalaing, nasayaat, napintas, nagpaspas, naimas
+Ilocano negative: madi, saan a nasayaat, narigat, bassit, tamnay (meaning "kulang sa lasa" / bland / lacks flavor)
+Cebuano/Bisaya: treat as Filipino dialect, translate before classifying.
 Translate non-English before classifying.
 
 CLASSIFICATION (text only, ignore star ratings):
