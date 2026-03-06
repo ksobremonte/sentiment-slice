@@ -217,9 +217,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 title="Notifications"
               >
                 <Bell className="h-4 w-4" />
-                {negativeCount > 0 && (
+                {unreadCount > 0 && (
                   <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
-                    {negativeCount > 99 ? "99+" : negativeCount}
+                    {unreadCount > 99 ? "99+" : unreadCount}
                   </span>
                 )}
               </Button>
