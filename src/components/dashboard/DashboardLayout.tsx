@@ -183,7 +183,7 @@ const DashboardSidebar = () => {
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-    <SidebarProvider>
+    return (
       <div className="min-h-screen flex w-full bg-cream-warm">
         <DashboardSidebar />
         <div className="flex-1 flex flex-col min-w-0">
