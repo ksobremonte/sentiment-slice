@@ -4,7 +4,7 @@ import {
   FadeIn, StaggerContainer, StaggerItem, HoverCard, ParallaxImage, ZoomImage,
 } from "@/components/ui/animated";
 import restaurantExterior from "@/assets/restaurant-exterior.jpg";
-import restaurantInteriorReal from "@/assets/restaurant-interior-real.jpg";
+import restaurantInteriorReal from "@/assets/restaurant-interior-real.webp";
 import foodSpread from "@/assets/food-spread.jpg";
 import riceMeal from "@/assets/rice-meal.jpg";
 

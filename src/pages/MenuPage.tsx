@@ -6,12 +6,12 @@ import {
   FadeIn, StaggerContainer, StaggerItem, HoverCard, ParallaxImage, AnimatedButton, ZoomImage,
 } from "@/components/ui/animated";
 import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
-import pizzaSupreme from "@/assets/pizza-supreme.jpg";
-import pizzaClassic from "@/assets/pizza-classic.jpg";
-import pastaDish from "@/assets/pasta-dish.jpg";
-import saladFresh from "@/assets/salad-fresh.jpg";
+import pizzaSupreme from "@/assets/pizza-supreme.webp";
+import pizzaClassic from "@/assets/pizza-classic.webp";
+import pastaDish from "@/assets/pasta-dish.webp";
+import saladFresh from "@/assets/salad-fresh.webp";
 import riceMeal from "@/assets/rice-meal.jpg";
-import pizzaSlice from "@/assets/pizza-slice.jpg";
+import pizzaSlice from "@/assets/pizza-slice.webp";
 
 // Each category now has a featured image
 const menuItems = [
