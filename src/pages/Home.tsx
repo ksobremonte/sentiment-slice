@@ -9,17 +9,17 @@ import {
 import { motion } from "framer-motion";
 import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 import foodSpread from "@/assets/food-spread.jpg";
-const heroPizza = "/images/hero-pizza.png";
-import pizzaSupreme from "@/assets/pizza-supreme.jpg";
+const heroPizza = "/images/hero-pizza.webp";
+import pizzaSupreme from "@/assets/pizza-supreme.webp";
 import restaurantExterior from "@/assets/restaurant-exterior.jpg";
-import pizzaClassic from "@/assets/pizza-classic.jpg";
-import pastaDish from "@/assets/pasta-dish.jpg";
-import pizzaSlice from "@/assets/pizza-slice.jpg";
-import saladFresh from "@/assets/salad-fresh.jpg";
-import restaurantInteriorReal from "@/assets/restaurant-interior-real.jpg";
-import pastaSpread from "@/assets/pasta-spread.jpg";
-import foodTable from "@/assets/food-table.jpg";
-import pizzaRiceMeal from "@/assets/pizza-rice-meal.jpg";
+import pizzaClassic from "@/assets/pizza-classic.webp";
+import pastaDish from "@/assets/pasta-dish.webp";
+import pizzaSlice from "@/assets/pizza-slice.webp";
+import saladFresh from "@/assets/salad-fresh.webp";
+import restaurantInteriorReal from "@/assets/restaurant-interior-real.webp";
+import pastaSpread from "@/assets/pasta-spread.webp";
+import foodTable from "@/assets/food-table.webp";
+import pizzaRiceMeal from "@/assets/pizza-rice-meal.webp";
 
 const Home = () => {
   return (
