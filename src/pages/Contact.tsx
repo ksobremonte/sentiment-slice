@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/animated";
 import { Button } from "@/components/ui/button";
 import restaurantExterior from "@/assets/restaurant-exterior.jpg";
-import restaurantInteriorReal from "@/assets/restaurant-interior-real.jpg";
+import restaurantInteriorReal from "@/assets/restaurant-interior-real.webp";
 
 const Contact = () => {
   return (
