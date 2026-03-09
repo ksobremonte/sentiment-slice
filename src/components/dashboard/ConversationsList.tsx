@@ -2,9 +2,9 @@ import { useState } from "react";
 import { MessageSquare, AlertTriangle, CheckCircle, Clock, ChevronRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useConversations, ChatConversation } from "@/hooks/useConversations";
 import ConversationThread from "./ConversationThread";
 import { formatDistanceToNow } from "date-fns";
@@ -24,7 +24,6 @@ const ConversationsList = () => {
     }
   };
 
-  // Sort conversations: pending_admin first, then by updated_at
   const sortedConversations = [...(conversations || [])].sort((a, b) => {
     if (a.status === "pending_admin" && b.status !== "pending_admin") return -1;
     if (a.status !== "pending_admin" && b.status === "pending_admin") return 1;
@@ -42,7 +41,7 @@ const ConversationsList = () => {
         </div>
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-20 w-full rounded-xl" />
+            <Skeleton key={i} className="h-16 w-full rounded-xl" />
           ))}
         </div>
       </Card>
@@ -71,7 +70,7 @@ const ConversationsList = () => {
           )}
         </div>
 
-        <ScrollArea className="h-[400px] pr-2">
+        <div className="max-h-[400px] overflow-y-auto pr-1">
           {sortedConversations.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <MessageSquare className="h-12 w-12 mx-auto mb-3 opacity-30" />
@@ -88,35 +87,33 @@ const ConversationsList = () => {
                   <button
                     key={conv.id}
                     onClick={() => setSelectedConversation(conv)}
-                    className="w-full text-left p-4 rounded-xl border-2 border-border hover:border-primary/50 hover:bg-secondary/50 transition-all group"
+                    className="w-full text-left p-3 rounded-xl border-2 border-border hover:border-primary/50 hover:bg-secondary/50 transition-all group"
                   >
                     <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <Badge variant={statusInfo.variant} className={`gap-1 ${statusInfo.className}`}>
-                            <StatusIcon className="h-3 w-3" />
-                            {statusInfo.label}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">
-                            {formatDistanceToNow(new Date(conv.updated_at), { addSuffix: true })}
-                          </span>
-                        </div>
-                        <p className="text-sm text-muted-foreground truncate max-w-[300px]">
-                          Session: {conv.session_id.slice(0, 8)}...
-                        </p>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={statusInfo.variant} className={`gap-1 text-[10px] px-1.5 py-0.5 ${statusInfo.className}`}>
+                          <StatusIcon className="h-3 w-3" />
+                          {statusInfo.label}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">
+                          {formatDistanceToNow(new Date(conv.updated_at), { addSuffix: true })}
+                        </span>
                       </div>
-                      <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>
                   </button>
                 );
               })}
             </div>
           )}
-        </ScrollArea>
+        </div>
       </Card>
 
       <Dialog open={!!selectedConversation} onOpenChange={() => setSelectedConversation(null)}>
         <DialogContent className="max-w-2xl h-[80vh] p-0 rounded-3xl overflow-hidden">
+          <VisuallyHidden>
+            <DialogTitle>Conversation Thread</DialogTitle>
+          </VisuallyHidden>
           {selectedConversation && (
             <ConversationThread 
               conversation={selectedConversation} 
