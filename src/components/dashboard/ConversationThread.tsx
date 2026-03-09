@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Send, Loader2, Bot, User, Shield, CheckCircle, Clock, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea } from "@/components/ui/scroll-area";
+
 import { Badge } from "@/components/ui/badge";
 import { 
   ChatConversation, 
