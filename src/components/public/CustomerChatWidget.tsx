@@ -2,7 +2,6 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Bot, User, Loader2, MessageSquare, X, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import ReactMarkdown from "react-markdown";
 
 const CHECK_REPLIES_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/check-replies`;
@@ -14,7 +13,6 @@ interface Message {
 
 const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/customer-chat`;
 
-// Store info for the chatbot to reference
 const STORE_INFO = {
   name: "Pizza Volante",
   location: "Baguio City, Philippines",
@@ -26,7 +24,6 @@ const STORE_INFO = {
   delivery: "Free delivery within Baguio City for orders above ₱500",
 };
 
-// Generate or retrieve session ID
 const getSessionId = () => {
   const storageKey = "pv-chat-session-id";
   let sessionId = localStorage.getItem(storageKey);
@@ -37,25 +34,59 @@ const getSessionId = () => {
   return sessionId;
 };
 
+// Extract [SUGGESTIONS]...[/SUGGESTIONS] from message content
+function parseSuggestions(content: string): { cleanContent: string; suggestions: string[] } {
+  const regex = /\[SUGGESTIONS\]\s*([\s\S]*?)\s*\[\/SUGGESTIONS\]/i;
+  const match = content.match(regex);
+  if (!match) {
+    // Also strip markdown-style "Suggested Questions:" sections as fallback
+    const fallbackRegex = /(\*{0,2}Suggested\s+(?:Follow-Up\s+)?Questions:?\*{0,2}[\s\S]*$)/i;
+    const fallbackMatch = content.match(fallbackRegex);
+    if (fallbackMatch) {
+      const suggestionsText = fallbackMatch[1];
+      const lines = suggestionsText.split("\n").filter(l => l.trim());
+      const questions = lines
+        .slice(1) // skip header
+        .map(l => l.replace(/^[-•❓*\s]+/, "").replace(/\*+/g, "").trim())
+        .filter(l => l.length > 5 && l.endsWith("?"));
+      return {
+        cleanContent: content.replace(fallbackRegex, "").trim(),
+        suggestions: questions.slice(0, 5),
+      };
+    }
+    return { cleanContent: content, suggestions: [] };
+  }
+
+  const suggestionsBlock = match[1];
+  const suggestions = suggestionsBlock
+    .split("\n")
+    .map(l => l.trim())
+    .filter(l => l.length > 0);
+
+  const cleanContent = content.replace(regex, "").trim();
+  return { cleanContent, suggestions: suggestions.slice(0, 5) };
+}
+
 const CustomerChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: `Welcome to ${STORE_INFO.name}! 🍕 I'm here to help you with store hours, daily specials, and more. How can I assist you today?`,
+      content: `Welcome to ${STORE_INFO.name}! 🍕 How can I help you today?`,
     },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId] = useState(getSessionId);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, suggestions]);
 
   // Poll for admin replies
   const lastSeenTimestampRef = useRef<string | null>(null);
@@ -101,18 +132,19 @@ const CustomerChatWidget = () => {
     };
 
     const interval = setInterval(pollReplies, 5000);
-    pollReplies(); // Initial check
+    pollReplies();
 
     return () => clearInterval(interval);
   }, [conversationId, isOpen]);
 
-  const sendMessage = useCallback(async () => {
-    if (!input.trim() || isLoading) return;
+  const sendMessageWithText = useCallback(async (text: string) => {
+    if (!text.trim() || isLoading) return;
 
-    const userMessage: Message = { role: "user", content: input };
+    const userMessage: Message = { role: "user", content: text };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setInput("");
+    setSuggestions([]);
     setIsLoading(true);
 
     let assistantContent = "";
@@ -132,7 +164,6 @@ const CustomerChatWidget = () => {
         }),
       });
 
-      // Capture conversation ID from response headers
       const newConversationId = response.headers.get("X-Conversation-Id");
       if (newConversationId && !conversationId) {
         setConversationId(newConversationId);
@@ -174,10 +205,12 @@ const CustomerChatWidget = () => {
             const content = parsed.choices?.[0]?.delta?.content as string | undefined;
             if (content) {
               assistantContent += content;
+              // Parse out suggestions and show clean content during streaming
+              const { cleanContent } = parseSuggestions(assistantContent);
               setMessages((prev) => {
                 const newMessages = [...prev];
                 if (newMessages[newMessages.length - 1]?.role === "assistant") {
-                  newMessages[newMessages.length - 1].content = assistantContent;
+                  newMessages[newMessages.length - 1].content = cleanContent;
                 }
                 return newMessages;
               });
@@ -188,19 +221,38 @@ const CustomerChatWidget = () => {
           }
         }
       }
+
+      // Final parse to extract suggestions
+      const { cleanContent, suggestions: parsed } = parseSuggestions(assistantContent);
+      setMessages((prev) => {
+        const newMessages = [...prev];
+        if (newMessages[newMessages.length - 1]?.role === "assistant") {
+          newMessages[newMessages.length - 1].content = cleanContent;
+        }
+        return newMessages;
+      });
+      setSuggestions(parsed);
     } catch (err) {
       console.error("Chat error:", err);
       setMessages((prev) => [
         ...prev.slice(0, -1),
         {
           role: "assistant",
-          content: "I'm sorry, I'm having trouble connecting right now. Please call us at (074) 123-4567 for immediate assistance!",
+          content: "I'm sorry, I'm having trouble connecting right now. Please try again later.",
         },
       ]);
     } finally {
       setIsLoading(false);
     }
-  }, [input, isLoading, messages, sessionId, conversationId]);
+  }, [isLoading, messages, sessionId, conversationId]);
+
+  const sendMessage = useCallback(() => {
+    sendMessageWithText(input);
+  }, [input, sendMessageWithText]);
+
+  const handleSuggestionClick = (suggestion: string) => {
+    sendMessageWithText(suggestion);
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -294,6 +346,21 @@ const CustomerChatWidget = () => {
               )}
             </div>
           ))}
+
+          {/* Suggestion buttons */}
+          {suggestions.length > 0 && !isLoading && (
+            <div className="flex flex-wrap gap-2 pt-1 pl-12">
+              {suggestions.map((s, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleSuggestionClick(s)}
+                  className="text-xs px-3 py-1.5 rounded-full border-2 border-primary/30 text-primary bg-primary/5 hover:bg-primary/15 hover:border-primary/50 transition-colors text-left leading-snug"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -304,7 +371,7 @@ const CustomerChatWidget = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask about hours, specials..."
+            placeholder="Ask a question..."
             disabled={isLoading}
             className="flex-1 rounded-xl border-2"
           />

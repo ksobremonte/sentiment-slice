@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Send, Bot, User, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import ReactMarkdown from "react-markdown";
 
 interface Message {
@@ -9,10 +8,32 @@ interface Message {
   content: string;
 }
 
+// Extract [SUGGESTIONS]...[/SUGGESTIONS] from message content
+function parseSuggestions(content: string): { cleanContent: string; suggestions: string[] } {
+  const regex = /\[SUGGESTIONS\]\s*([\s\S]*?)\s*\[\/SUGGESTIONS\]/i;
+  const match = content.match(regex);
+  if (!match) {
+    const fallbackRegex = /(\*{0,2}Suggested\s+(?:Follow-Up\s+)?Questions:?\*{0,2}[\s\S]*$)/i;
+    const fallbackMatch = content.match(fallbackRegex);
+    if (fallbackMatch) {
+      const lines = fallbackMatch[1].split("\n").filter(l => l.trim());
+      const questions = lines
+        .slice(1)
+        .map(l => l.replace(/^[-•❓*\s]+/, "").replace(/\*+/g, "").trim())
+        .filter(l => l.length > 5 && l.endsWith("?"));
+      return { cleanContent: content.replace(fallbackRegex, "").trim(), suggestions: questions.slice(0, 5) };
+    }
+    return { cleanContent: content, suggestions: [] };
+  }
+  const suggestions = match[1].split("\n").map(l => l.trim()).filter(l => l.length > 0);
+  return { cleanContent: content.replace(regex, "").trim(), suggestions: suggestions.slice(0, 5) };
+}
+
 const HelpAssistantChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -20,16 +41,16 @@ const HelpAssistantChat = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, suggestions]);
 
-  const handleSend = async () => {
-    const text = input.trim();
-    if (!text || isStreaming) return;
+  const handleSendText = async (text: string) => {
+    if (!text.trim() || isStreaming) return;
 
-    const userMessage: Message = { role: "user", content: text };
+    const userMessage: Message = { role: "user", content: text.trim() };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     setInput("");
+    setSuggestions([]);
     setIsStreaming(true);
 
     try {
@@ -74,15 +95,25 @@ const HelpAssistantChat = () => {
               const parsed = JSON.parse(data);
               const delta = parsed.choices?.[0]?.delta?.content || "";
               assistantContent += delta;
+              const { cleanContent } = parseSuggestions(assistantContent);
               setMessages((prev) => {
                 const updated = [...prev];
-                updated[updated.length - 1] = { role: "assistant", content: assistantContent };
+                updated[updated.length - 1] = { role: "assistant", content: cleanContent };
                 return updated;
               });
             } catch {}
           }
         }
       }
+
+      // Final parse
+      const { cleanContent, suggestions: parsed } = parseSuggestions(assistantContent);
+      setMessages((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1] = { role: "assistant", content: cleanContent };
+        return updated;
+      });
+      setSuggestions(parsed);
     } catch (err) {
       setMessages((prev) => [
         ...prev,
@@ -96,6 +127,8 @@ const HelpAssistantChat = () => {
       inputRef.current?.focus();
     }
   };
+
+  const handleSend = () => handleSendText(input);
 
   return (
     <div className="flex flex-col border-2 border-border rounded-2xl bg-card overflow-hidden" style={{ height: 420 }}>
@@ -144,6 +177,22 @@ const HelpAssistantChat = () => {
             )}
           </div>
         ))}
+
+        {/* Suggestion buttons */}
+        {suggestions.length > 0 && !isStreaming && (
+          <div className="flex flex-wrap gap-2 pt-1 pl-7">
+            {suggestions.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => handleSendText(s)}
+                className="text-xs px-3 py-1.5 rounded-full border-2 border-primary/30 text-primary bg-primary/5 hover:bg-primary/15 hover:border-primary/50 transition-colors text-left leading-snug"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
+
         {isStreaming && messages[messages.length - 1]?.role !== "assistant" && (
           <div className="flex gap-2">
             <Bot className="h-5 w-5 text-primary mt-1" />
