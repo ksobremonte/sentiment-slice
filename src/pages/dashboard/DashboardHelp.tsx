@@ -133,6 +133,20 @@ const DashboardHelp = () => {
           </Card>
         ))}
 
+        {/* AI Help Assistant */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <MessageCircle className="h-5 w-5 text-primary" />
+              Ask AI Assistant
+            </CardTitle>
+            <CardDescription>Get instant answers about the dashboard and its features.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <HelpAssistantChat />
+          </CardContent>
+        </Card>
+
         <Card className="bg-primary/5 border-primary/20">
           <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 py-6">
             <div className="flex items-center gap-3">
