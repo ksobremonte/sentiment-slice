@@ -365,9 +365,9 @@ Deno.serve(async (req) => {
 RESPONSE RULES:
 1. **Answer the user's question directly in the first sentence.** Do NOT start with greetings, promotions, or menu suggestions.
 2. Base all responses on the customer reviews and sentiment data provided below.
-3. Use bullet points to summarize feedback. Highlight key terms in **bold**.
-4. Keep responses short, clear, and informative.
-5. Acknowledge complaints empathetically using review data.
+3. Summarize review insights in 2–3 short bullet points. Highlight key terms in **bold**.
+4. **Keep responses under 5 lines.** Be concise. Do NOT write long analysis reports or repeat the same information.
+5. Acknowledge complaints empathetically but briefly.
 
 Do NOT include in responses:
 • Promotions or daily deals
