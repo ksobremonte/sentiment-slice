@@ -8,6 +8,7 @@ import {
   Search, Rocket, Settings, Star, Wrench, MessageCircle,
   Mail,
 } from "lucide-react";
+import HelpAssistantChat from "@/components/dashboard/HelpAssistantChat";
 
 const categories = [
   {
