@@ -110,7 +110,7 @@ const ConversationsList = () => {
       </Card>
 
       <Dialog open={!!selectedConversation} onOpenChange={() => setSelectedConversation(null)}>
-        <DialogContent className="max-w-2xl h-[80vh] p-0 rounded-3xl overflow-hidden">
+        <DialogContent className="max-w-2xl h-[80vh] p-0 rounded-3xl overflow-hidden flex flex-col">
           <VisuallyHidden>
             <DialogTitle>Conversation Thread</DialogTitle>
           </VisuallyHidden>
