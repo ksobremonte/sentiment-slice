@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Send, Bot, User, Loader2, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/input";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ReactMarkdown from "react-markdown";
 
