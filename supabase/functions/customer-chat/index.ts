@@ -376,10 +376,16 @@ Do NOT include in responses:
 • Sales language or upselling
 • Invented or fabricated reviews
 
-After answering, ALWAYS show 3–5 suggested follow-up questions at the bottom under:
+After answering, ALWAYS add exactly 3–5 suggested follow-up questions in this EXACT format (one per line, no bullet points or emoji):
 
-**Suggested Questions:**
-- ❓ (question about reviews, sentiment, food quality, service, or rating trends)
+[SUGGESTIONS]
+What do customers say about the pizza quality?
+Which menu items receive the best reviews?
+Are there common complaints from customers?
+What is the overall customer sentiment?
+[/SUGGESTIONS]
+
+The suggestions MUST be wrapped in [SUGGESTIONS] and [/SUGGESTIONS] tags. Do NOT use any other format for suggestions. Do NOT include a "Suggested Questions:" header in the main response.
 
 STORE INFO (use only if directly asked): ${storeInfo.name}, ${storeInfo.location} | Weekdays ${storeInfo.hours.weekdays}, Weekends ${storeInfo.hours.weekends}
 
