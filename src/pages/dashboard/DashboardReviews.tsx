@@ -91,7 +91,7 @@ const DashboardReviews = () => {
   const paginatedReviews = filteredReviews.slice((page - 1) * REVIEWS_PER_PAGE, page * REVIEWS_PER_PAGE);
 
   // Reset page when filters change
-  useEffect(() => { setPage(1); }, [searchQuery, filterSentiment, isAISorted]);
+  useEffect(() => { setPage(1); }, [searchQuery, filterSentiment, filterRating, isAISorted]);
 
   if (sentimentView) {
     return (
