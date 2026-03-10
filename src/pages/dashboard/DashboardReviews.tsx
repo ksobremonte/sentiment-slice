@@ -136,6 +136,20 @@ const DashboardReviews = () => {
             {isSorting ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1.5" />}
             {isAISorted ? "Reset Sort" : "AI Sort"}
           </Button>
+          <Select value={filterRating} onValueChange={setFilterRating}>
+            <SelectTrigger className="w-40 rounded-xl border-2">
+              <Star className="w-4 h-4 mr-1.5 text-muted-foreground" />
+              <SelectValue placeholder="Rating" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Ratings</SelectItem>
+              <SelectItem value="5">5 Stars</SelectItem>
+              <SelectItem value="4">4 Stars</SelectItem>
+              <SelectItem value="3">3 Stars</SelectItem>
+              <SelectItem value="2">2 Stars</SelectItem>
+              <SelectItem value="1">1 Star</SelectItem>
+            </SelectContent>
+          </Select>
           <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -145,8 +159,8 @@ const DashboardReviews = () => {
               className="pl-11 rounded-xl border-2"
             />
           </div>
-          {filterSentiment && (
-            <Button variant="ghost" size="sm" onClick={() => setFilterSentiment(null)} className="rounded-xl font-semibold">
+          {(filterSentiment || filterRating !== "all") && (
+            <Button variant="ghost" size="sm" onClick={() => { setFilterSentiment(null); setFilterRating("all"); }} className="rounded-xl font-semibold">
               <Filter className="w-4 h-4 mr-1.5" />
               Clear
             </Button>
