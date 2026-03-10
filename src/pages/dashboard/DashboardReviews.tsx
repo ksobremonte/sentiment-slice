@@ -83,7 +83,8 @@ const DashboardReviews = () => {
       review.feedback.toLowerCase().includes(searchQuery.toLowerCase()) ||
       review.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = !filterSentiment || review.sentiment === filterSentiment;
-    return matchesSearch && matchesFilter;
+    const matchesRating = filterRating === "all" || review.rating === Number(filterRating);
+    return matchesSearch && matchesFilter && matchesRating;
   });
 
   const totalPages = Math.ceil(filteredReviews.length / REVIEWS_PER_PAGE);
