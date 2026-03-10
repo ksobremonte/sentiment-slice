@@ -130,6 +130,7 @@ const es: Record<string, string> = {
   "nav.sentiment": "Sentimiento",
   "nav.reviews": "Reseñas",
   "nav.trends": "Tendencias",
+  "nav.users": "Usuarios",
   "nav.detection": "Detección",
   "nav.aiConfig": "Config IA",
   "nav.alerts": "Alertas",
