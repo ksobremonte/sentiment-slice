@@ -39,6 +39,7 @@ const mainNavKeys = [
 ];
 
 const adminNavKeys = [
+  { key: "nav.users", icon: User, path: "/pv-dashboard/users" },
   { key: "nav.detection", icon: Shield, path: "/pv-dashboard/detection" },
   { key: "nav.aiConfig", icon: Brain, path: "/pv-dashboard/ai" },
   { key: "nav.alerts", icon: Bell, path: "/pv-dashboard/alerts" },
