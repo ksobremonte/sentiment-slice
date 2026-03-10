@@ -222,6 +222,7 @@ const de: Record<string, string> = {
   "nav.sentiment": "Stimmung",
   "nav.reviews": "Bewertungen",
   "nav.trends": "Trends",
+  "nav.users": "Benutzer",
   "nav.detection": "Erkennung",
   "nav.aiConfig": "KI-Konfig",
   "nav.alerts": "Warnungen",
