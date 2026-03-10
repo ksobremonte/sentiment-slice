@@ -590,6 +590,7 @@ const zh: Record<string, string> = {
   "nav.sentiment": "情感分析",
   "nav.reviews": "评论",
   "nav.trends": "趋势",
+  "nav.users": "用户",
   "nav.detection": "检测",
   "nav.aiConfig": "AI配置",
   "nav.alerts": "警报",
