@@ -16,6 +16,7 @@ const REVIEWS_PER_PAGE = 10;
 const DashboardReviews = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSentiment, setFilterSentiment] = useState<string | null>(null);
+  const [filterRating, setFilterRating] = useState<string>("all");
   const [sortedReviews, setSortedReviews] = useState<Review[]>([]);
   const [isAISorted, setIsAISorted] = useState(false);
   const [page, setPage] = useState(1);
