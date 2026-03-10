@@ -314,6 +314,7 @@ const ja: Record<string, string> = {
   "nav.sentiment": "感情分析",
   "nav.reviews": "レビュー",
   "nav.trends": "トレンド",
+  "nav.users": "ユーザー",
   "nav.detection": "検出",
   "nav.aiConfig": "AI設定",
   "nav.alerts": "アラート",
