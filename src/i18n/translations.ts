@@ -26,6 +26,7 @@ const en = {
   "nav.sentiment": "Sentiment",
   "nav.reviews": "Reviews",
   "nav.trends": "Trends",
+  "nav.users": "Users",
   "nav.detection": "Detection",
   "nav.aiConfig": "AI Config",
   "nav.alerts": "Alerts",
