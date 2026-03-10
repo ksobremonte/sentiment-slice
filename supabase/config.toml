@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.check-replies]
 verify_jwt = false
+
+[functions.list-users]
+verify_jwt = false
