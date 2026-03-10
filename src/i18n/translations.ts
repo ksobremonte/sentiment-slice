@@ -774,6 +774,7 @@ const hi: Record<string, string> = {
   "nav.sentiment": "भावना",
   "nav.reviews": "समीक्षाएँ",
   "nav.trends": "रुझान",
+  "nav.users": "उपयोगकर्ता",
   "nav.detection": "पहचान",
   "nav.aiConfig": "AI कॉन्फ़िग",
   "nav.alerts": "अलर्ट",
