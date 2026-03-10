@@ -406,6 +406,7 @@ const fr: Record<string, string> = {
   "nav.sentiment": "Sentiment",
   "nav.reviews": "Avis",
   "nav.trends": "Tendances",
+  "nav.users": "Utilisateurs",
   "nav.detection": "Détection",
   "nav.aiConfig": "Config IA",
   "nav.alerts": "Alertes",
