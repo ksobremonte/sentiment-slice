@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MessageSquare, Search, Filter, Sparkles, Loader2 } from "lucide-react";
+import { MessageSquare, Search, Filter, Sparkles, Loader2, Star } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import ReviewCard from "@/components/dashboard/ReviewCard";
 import SentimentResult from "@/components/dashboard/SentimentResult";
@@ -7,6 +7,7 @@ import { useReviews, Review } from "@/hooks/useReviews";
 import { useAIReviewSort } from "@/hooks/useAIReviewSort";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -15,6 +16,7 @@ const REVIEWS_PER_PAGE = 10;
 const DashboardReviews = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSentiment, setFilterSentiment] = useState<string | null>(null);
+  const [filterRating, setFilterRating] = useState<string>("all");
   const [sortedReviews, setSortedReviews] = useState<Review[]>([]);
   const [isAISorted, setIsAISorted] = useState(false);
   const [page, setPage] = useState(1);
@@ -81,14 +83,15 @@ const DashboardReviews = () => {
       review.feedback.toLowerCase().includes(searchQuery.toLowerCase()) ||
       review.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = !filterSentiment || review.sentiment === filterSentiment;
-    return matchesSearch && matchesFilter;
+    const matchesRating = filterRating === "all" || review.rating === Number(filterRating);
+    return matchesSearch && matchesFilter && matchesRating;
   });
 
   const totalPages = Math.ceil(filteredReviews.length / REVIEWS_PER_PAGE);
   const paginatedReviews = filteredReviews.slice((page - 1) * REVIEWS_PER_PAGE, page * REVIEWS_PER_PAGE);
 
   // Reset page when filters change
-  useEffect(() => { setPage(1); }, [searchQuery, filterSentiment, isAISorted]);
+  useEffect(() => { setPage(1); }, [searchQuery, filterSentiment, filterRating, isAISorted]);
 
   if (sentimentView) {
     return (
@@ -133,6 +136,20 @@ const DashboardReviews = () => {
             {isSorting ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1.5" />}
             {isAISorted ? "Reset Sort" : "AI Sort"}
           </Button>
+          <Select value={filterRating} onValueChange={setFilterRating}>
+            <SelectTrigger className="w-40 rounded-xl border-2">
+              <Star className="w-4 h-4 mr-1.5 text-muted-foreground" />
+              <SelectValue placeholder="Rating" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Ratings</SelectItem>
+              <SelectItem value="5">5 Stars</SelectItem>
+              <SelectItem value="4">4 Stars</SelectItem>
+              <SelectItem value="3">3 Stars</SelectItem>
+              <SelectItem value="2">2 Stars</SelectItem>
+              <SelectItem value="1">1 Star</SelectItem>
+            </SelectContent>
+          </Select>
           <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -142,8 +159,8 @@ const DashboardReviews = () => {
               className="pl-11 rounded-xl border-2"
             />
           </div>
-          {filterSentiment && (
-            <Button variant="ghost" size="sm" onClick={() => setFilterSentiment(null)} className="rounded-xl font-semibold">
+          {(filterSentiment || filterRating !== "all") && (
+            <Button variant="ghost" size="sm" onClick={() => { setFilterSentiment(null); setFilterRating("all"); }} className="rounded-xl font-semibold">
               <Filter className="w-4 h-4 mr-1.5" />
               Clear
             </Button>
