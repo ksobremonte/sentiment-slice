@@ -682,6 +682,7 @@ const ar: Record<string, string> = {
   "nav.sentiment": "التحليل العاطفي",
   "nav.reviews": "المراجعات",
   "nav.trends": "الاتجاهات",
+  "nav.users": "المستخدمون",
   "nav.detection": "الكشف",
   "nav.aiConfig": "إعدادات الذكاء",
   "nav.alerts": "التنبيهات",
