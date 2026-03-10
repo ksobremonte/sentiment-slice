@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MessageSquare, Search, Filter, Sparkles, Loader2 } from "lucide-react";
+import { MessageSquare, Search, Filter, Sparkles, Loader2, Star } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import ReviewCard from "@/components/dashboard/ReviewCard";
 import SentimentResult from "@/components/dashboard/SentimentResult";
