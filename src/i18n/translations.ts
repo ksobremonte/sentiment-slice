@@ -961,6 +961,7 @@ const fil: Record<string, string> = {
   "nav.sentiment": "Damdamin",
   "nav.reviews": "Mga Review",
   "nav.trends": "Mga Trend",
+  "nav.users": "Mga User",
   "nav.detection": "Deteksiyon",
   "nav.aiConfig": "AI Config",
   "nav.alerts": "Mga Alerto",
