@@ -2,16 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { ShieldAlert, X, Clock } from "lucide-react";
+import { ShieldAlert, X, Clock, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface NotificationPopup {
   id: string;
-  reviewId: string;
+  reviewId?: string;
+  navigateTo?: string;
   title: string;
   message: string;
   time: string;
+  type?: "review" | "alert";
 }
 
 const RealtimeNotificationPopup = () => {
@@ -40,11 +42,9 @@ const RealtimeNotificationPopup = () => {
             created_at: string;
           };
 
-          // Avoid duplicates
           if (processedIds.current.has(review.id)) return;
           processedIds.current.add(review.id);
 
-          // Show popup for negative/mixed sentiment or low ratings
           const isNegative = review.sentiment === "negative" || review.sentiment === "mixed";
           const isLowRating = review.rating <= 2;
 
@@ -64,21 +64,19 @@ const RealtimeNotificationPopup = () => {
             title,
             message: `${review.name}: "${feedback}"`,
             time: "Just now",
+            type: "review",
           };
 
           setPopups((prev) => [...prev, popup]);
 
-          // Invalidate queries to update badge count
           queryClient.invalidateQueries({ queryKey: ["reviews"] });
           queryClient.invalidateQueries({ queryKey: ["notification-reads"] });
 
-          // Auto-dismiss after 6 seconds
           setTimeout(() => {
             setPopups((prev) => prev.filter((p) => p.id !== popup.id));
           }, 6000);
         }
       )
-      // Also listen for UPDATE events (sentiment might be set after insert)
       .on(
         "postgres_changes",
         {
@@ -97,7 +95,6 @@ const RealtimeNotificationPopup = () => {
           };
           const old = payload.old as { sentiment: string | null };
 
-          // Only show popup when sentiment changes TO negative/mixed (not already set)
           if (old.sentiment === review.sentiment) return;
           if (processedIds.current.has(`update-${review.id}`)) return;
 
@@ -116,6 +113,7 @@ const RealtimeNotificationPopup = () => {
             title: "Negative Sentiment Detected",
             message: `${review.name}: "${feedback}"`,
             time: "Just now",
+            type: "review",
           };
 
           setPopups((prev) => [...prev, popup]);
@@ -128,6 +126,48 @@ const RealtimeNotificationPopup = () => {
           }, 6000);
         }
       )
+      // Listen for threshold alert inserts
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "alert_history",
+        },
+        (payload) => {
+          const alert = payload.new as {
+            id: string;
+            alert_level: string;
+            message: string;
+            negative_percentage: number;
+            negative_count: number;
+            review_count: number;
+            top_keyword: string | null;
+          };
+
+          if (processedIds.current.has(`alert-${alert.id}`)) return;
+          processedIds.current.add(`alert-${alert.id}`);
+
+          const isCritical = alert.alert_level === "critical";
+
+          const popup: NotificationPopup = {
+            id: crypto.randomUUID(),
+            navigateTo: "/pv-dashboard/alerts",
+            title: isCritical ? "🚨 Critical Alert Triggered" : "⚠️ Threshold Alert",
+            message: alert.message,
+            time: "Just now",
+            type: "alert",
+          };
+
+          setPopups((prev) => [...prev, popup]);
+
+          queryClient.invalidateQueries({ queryKey: ["alert-history"] });
+
+          setTimeout(() => {
+            setPopups((prev) => prev.filter((p) => p.id !== popup.id));
+          }, isCritical ? 10000 : 6000);
+        }
+      )
       .subscribe();
 
     return () => {
@@ -137,7 +177,11 @@ const RealtimeNotificationPopup = () => {
 
   const handleClick = (popup: NotificationPopup) => {
     setPopups((prev) => prev.filter((p) => p.id !== popup.id));
-    navigate(`/pv-dashboard/reviews/${popup.reviewId}`);
+    if (popup.navigateTo) {
+      navigate(popup.navigateTo);
+    } else if (popup.reviewId) {
+      navigate(`/pv-dashboard/reviews/${popup.reviewId}`);
+    }
   };
 
   const handleDismiss = (e: React.MouseEvent, popupId: string) => {
@@ -160,15 +204,24 @@ const RealtimeNotificationPopup = () => {
             <div
               onClick={() => handleClick(popup)}
               className={cn(
-                "w-[360px] max-w-[calc(100vw-2rem)] bg-card border-2 border-destructive/30 rounded-xl p-4 shadow-lg",
-                "cursor-pointer hover:border-destructive/50 hover:shadow-xl transition-all",
-                "backdrop-blur-sm"
+                "w-[360px] max-w-[calc(100vw-2rem)] bg-card border-2 rounded-xl p-4 shadow-lg",
+                "cursor-pointer hover:shadow-xl transition-all",
+                "backdrop-blur-sm",
+                popup.type === "alert" 
+                  ? "border-warning/50 hover:border-warning/70" 
+                  : "border-destructive/30 hover:border-destructive/50"
               )}
             >
               <div className="flex items-start gap-3">
                 {/* Icon */}
-                <div className="rounded-full p-2 bg-destructive/10 shrink-0">
-                  <ShieldAlert className="h-4 w-4 text-destructive" />
+                <div className={cn(
+                  "rounded-full p-2 shrink-0",
+                  popup.type === "alert" ? "bg-warning/10" : "bg-destructive/10"
+                )}>
+                  {popup.type === "alert" 
+                    ? <AlertTriangle className="h-4 w-4 text-warning" />
+                    : <ShieldAlert className="h-4 w-4 text-destructive" />
+                  }
                 </div>
 
                 {/* Content */}
@@ -194,10 +247,13 @@ const RealtimeNotificationPopup = () => {
               {/* Progress bar */}
               <div className="mt-3 h-0.5 w-full bg-muted rounded-full overflow-hidden">
                 <motion.div
-                  className="h-full bg-destructive/50 rounded-full"
+                  className={cn(
+                    "h-full rounded-full",
+                    popup.type === "alert" ? "bg-warning/50" : "bg-destructive/50"
+                  )}
                   initial={{ width: "100%" }}
                   animate={{ width: "0%" }}
-                  transition={{ duration: 6, ease: "linear" }}
+                  transition={{ duration: popup.type === "alert" ? 10 : 6, ease: "linear" }}
                 />
               </div>
             </div>
