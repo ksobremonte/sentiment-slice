@@ -177,7 +177,11 @@ const RealtimeNotificationPopup = () => {
 
   const handleClick = (popup: NotificationPopup) => {
     setPopups((prev) => prev.filter((p) => p.id !== popup.id));
-    navigate(`/pv-dashboard/reviews/${popup.reviewId}`);
+    if (popup.navigateTo) {
+      navigate(popup.navigateTo);
+    } else if (popup.reviewId) {
+      navigate(`/pv-dashboard/reviews/${popup.reviewId}`);
+    }
   };
 
   const handleDismiss = (e: React.MouseEvent, popupId: string) => {
