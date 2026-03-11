@@ -116,6 +116,19 @@ Respond with a JSON object:
   }
 }
 
+// Check if a session is blocked
+async function isSessionBlocked(
+  supabase: ReturnType<typeof createClient>,
+  sessionId: string
+): Promise<boolean> {
+  const { data } = await supabase
+    .from("blocked_sessions")
+    .select("id")
+    .eq("session_id", sessionId)
+    .maybeSingle();
+  return !!data;
+}
+
 // Get or create a conversation
 async function getOrCreateConversation(
   supabase: ReturnType<typeof createClient>,
