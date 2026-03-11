@@ -295,6 +295,18 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Check if session is blocked
+    if (sessionId) {
+      const blocked = await isSessionBlocked(supabase, sessionId);
+      if (blocked) {
+        return new Response(JSON.stringify({ 
+          reply: "This session has been restricted. Please contact the restaurant directly for assistance." 
+        }), {
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
     let conversationId: string | null = null;
     if (sessionId) {
       conversationId = await getOrCreateConversation(supabase, sessionId);
