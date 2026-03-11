@@ -8,7 +8,7 @@ import { Star, MessageSquare } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 const DashboardSentiment = () => {
-  const [filterSentiment, setFilterSentiment] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("negative");
   const { data: reviews = [] } = useReviews();
 
   const sentimentData = useMemo(() => {
@@ -34,9 +34,11 @@ const DashboardSentiment = () => {
     positive: { label: "Positive", color: "text-success", bgClass: "bg-success/10", borderClass: "border-success/30" },
   };
 
-  const displayOrder = filterSentiment
-    ? [filterSentiment]
-    : ["negative", "neutral", "positive"];
+  const handleFilterChange = (sentiment: string | null) => {
+    if (sentiment) {
+      setActiveTab(sentiment);
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -45,12 +47,12 @@ const DashboardSentiment = () => {
 
         <SentimentChart
           sentimentData={sentimentData}
-          filterSentiment={filterSentiment}
-          onFilterChange={setFilterSentiment}
+          filterSentiment={activeTab}
+          onFilterChange={handleFilterChange}
         />
 
         {/* Comments by Sentiment - Tabbed */}
-        <Tabs defaultValue="negative" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="w-full justify-start gap-2 bg-transparent p-0">
             {["negative", "neutral", "positive"].map((sentiment) => {
               const config = sentimentConfig[sentiment];
