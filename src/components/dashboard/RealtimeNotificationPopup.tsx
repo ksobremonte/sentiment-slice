@@ -2,16 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { ShieldAlert, X, Clock } from "lucide-react";
+import { ShieldAlert, X, Clock, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface NotificationPopup {
   id: string;
-  reviewId: string;
+  reviewId?: string;
+  navigateTo?: string;
   title: string;
   message: string;
   time: string;
+  type?: "review" | "alert";
 }
 
 const RealtimeNotificationPopup = () => {
@@ -40,11 +42,9 @@ const RealtimeNotificationPopup = () => {
             created_at: string;
           };
 
-          // Avoid duplicates
           if (processedIds.current.has(review.id)) return;
           processedIds.current.add(review.id);
 
-          // Show popup for negative/mixed sentiment or low ratings
           const isNegative = review.sentiment === "negative" || review.sentiment === "mixed";
           const isLowRating = review.rating <= 2;
 
@@ -64,21 +64,19 @@ const RealtimeNotificationPopup = () => {
             title,
             message: `${review.name}: "${feedback}"`,
             time: "Just now",
+            type: "review",
           };
 
           setPopups((prev) => [...prev, popup]);
 
-          // Invalidate queries to update badge count
           queryClient.invalidateQueries({ queryKey: ["reviews"] });
           queryClient.invalidateQueries({ queryKey: ["notification-reads"] });
 
-          // Auto-dismiss after 6 seconds
           setTimeout(() => {
             setPopups((prev) => prev.filter((p) => p.id !== popup.id));
           }, 6000);
         }
       )
-      // Also listen for UPDATE events (sentiment might be set after insert)
       .on(
         "postgres_changes",
         {
@@ -97,7 +95,6 @@ const RealtimeNotificationPopup = () => {
           };
           const old = payload.old as { sentiment: string | null };
 
-          // Only show popup when sentiment changes TO negative/mixed (not already set)
           if (old.sentiment === review.sentiment) return;
           if (processedIds.current.has(`update-${review.id}`)) return;
 
@@ -116,6 +113,7 @@ const RealtimeNotificationPopup = () => {
             title: "Negative Sentiment Detected",
             message: `${review.name}: "${feedback}"`,
             time: "Just now",
+            type: "review",
           };
 
           setPopups((prev) => [...prev, popup]);
@@ -126,6 +124,48 @@ const RealtimeNotificationPopup = () => {
           setTimeout(() => {
             setPopups((prev) => prev.filter((p) => p.id !== popup.id));
           }, 6000);
+        }
+      )
+      // Listen for threshold alert inserts
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "alert_history",
+        },
+        (payload) => {
+          const alert = payload.new as {
+            id: string;
+            alert_level: string;
+            message: string;
+            negative_percentage: number;
+            negative_count: number;
+            review_count: number;
+            top_keyword: string | null;
+          };
+
+          if (processedIds.current.has(`alert-${alert.id}`)) return;
+          processedIds.current.add(`alert-${alert.id}`);
+
+          const isCritical = alert.alert_level === "critical";
+
+          const popup: NotificationPopup = {
+            id: crypto.randomUUID(),
+            navigateTo: "/pv-dashboard/alerts",
+            title: isCritical ? "🚨 Critical Alert Triggered" : "⚠️ Threshold Alert",
+            message: alert.message,
+            time: "Just now",
+            type: "alert",
+          };
+
+          setPopups((prev) => [...prev, popup]);
+
+          queryClient.invalidateQueries({ queryKey: ["alert-history"] });
+
+          setTimeout(() => {
+            setPopups((prev) => prev.filter((p) => p.id !== popup.id));
+          }, isCritical ? 10000 : 6000);
         }
       )
       .subscribe();
