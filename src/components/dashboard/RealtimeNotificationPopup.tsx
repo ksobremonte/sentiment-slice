@@ -204,15 +204,24 @@ const RealtimeNotificationPopup = () => {
             <div
               onClick={() => handleClick(popup)}
               className={cn(
-                "w-[360px] max-w-[calc(100vw-2rem)] bg-card border-2 border-destructive/30 rounded-xl p-4 shadow-lg",
-                "cursor-pointer hover:border-destructive/50 hover:shadow-xl transition-all",
-                "backdrop-blur-sm"
+                "w-[360px] max-w-[calc(100vw-2rem)] bg-card border-2 rounded-xl p-4 shadow-lg",
+                "cursor-pointer hover:shadow-xl transition-all",
+                "backdrop-blur-sm",
+                popup.type === "alert" 
+                  ? "border-warning/50 hover:border-warning/70" 
+                  : "border-destructive/30 hover:border-destructive/50"
               )}
             >
               <div className="flex items-start gap-3">
                 {/* Icon */}
-                <div className="rounded-full p-2 bg-destructive/10 shrink-0">
-                  <ShieldAlert className="h-4 w-4 text-destructive" />
+                <div className={cn(
+                  "rounded-full p-2 shrink-0",
+                  popup.type === "alert" ? "bg-warning/10" : "bg-destructive/10"
+                )}>
+                  {popup.type === "alert" 
+                    ? <AlertTriangle className="h-4 w-4 text-warning" />
+                    : <ShieldAlert className="h-4 w-4 text-destructive" />
+                  }
                 </div>
 
                 {/* Content */}
