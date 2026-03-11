@@ -165,3 +165,47 @@ export const useResolveConversation = () => {
 
   return { resolve };
 };
+
+export const useDeleteConversation = () => {
+  const queryClient = useQueryClient();
+
+  const deleteConversation = async (conversationId: string) => {
+    // Delete messages first, then conversation
+    const { error: msgError } = await supabase
+      .from("chat_messages")
+      .delete()
+      .eq("conversation_id", conversationId);
+    if (msgError) throw msgError;
+
+    const { error } = await supabase
+      .from("chat_conversations")
+      .delete()
+      .eq("id", conversationId);
+    if (error) throw error;
+
+    queryClient.invalidateQueries({ queryKey: ["conversations"] });
+  };
+
+  return { deleteConversation };
+};
+
+export const useBlockSession = () => {
+  const queryClient = useQueryClient();
+
+  const blockSession = async (sessionId: string) => {
+    const { error } = await supabase
+      .from("blocked_sessions")
+      .insert({ session_id: sessionId });
+    if (error) throw error;
+
+    // Also update all conversations from this session to resolved
+    await supabase
+      .from("chat_conversations")
+      .update({ status: "resolved" })
+      .eq("session_id", sessionId);
+
+    queryClient.invalidateQueries({ queryKey: ["conversations"] });
+  };
+
+  return { blockSession };
+};
