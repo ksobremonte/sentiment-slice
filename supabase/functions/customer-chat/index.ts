@@ -116,6 +116,19 @@ Respond with a JSON object:
   }
 }
 
+// Check if a session is blocked
+async function isSessionBlocked(
+  supabase: ReturnType<typeof createClient>,
+  sessionId: string
+): Promise<boolean> {
+  const { data } = await supabase
+    .from("blocked_sessions")
+    .select("id")
+    .eq("session_id", sessionId)
+    .maybeSingle();
+  return !!data;
+}
+
 // Get or create a conversation
 async function getOrCreateConversation(
   supabase: ReturnType<typeof createClient>,
@@ -281,6 +294,18 @@ Deno.serve(async (req) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Check if session is blocked
+    if (sessionId) {
+      const blocked = await isSessionBlocked(supabase, sessionId);
+      if (blocked) {
+        return new Response(JSON.stringify({ 
+          reply: "This session has been restricted. Please contact the restaurant directly for assistance." 
+        }), {
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
 
     let conversationId: string | null = null;
     if (sessionId) {

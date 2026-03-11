@@ -68,6 +68,30 @@ export type Database = {
         }
         Relationships: []
       }
+      blocked_sessions: {
+        Row: {
+          blocked_at: string
+          blocked_by: string | null
+          id: string
+          reason: string | null
+          session_id: string
+        }
+        Insert: {
+          blocked_at?: string
+          blocked_by?: string | null
+          id?: string
+          reason?: string | null
+          session_id: string
+        }
+        Update: {
+          blocked_at?: string
+          blocked_by?: string | null
+          id?: string
+          reason?: string | null
+          session_id?: string
+        }
+        Relationships: []
+      }
       chat_conversations: {
         Row: {
           created_at: string
