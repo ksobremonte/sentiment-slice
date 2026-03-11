@@ -247,10 +247,14 @@ const RealtimeNotificationPopup = () => {
               {/* Progress bar */}
               <div className="mt-3 h-0.5 w-full bg-muted rounded-full overflow-hidden">
                 <motion.div
-                  className="h-full bg-destructive/50 rounded-full"
+                  className={cn(
+                    "h-full rounded-full",
+                    popup.type === "alert" ? "bg-warning/50" : "bg-destructive/50"
+                  )}
                   initial={{ width: "100%" }}
                   animate={{ width: "0%" }}
-                  transition={{ duration: 6, ease: "linear" }}
+                  transition={{ duration: popup.type === "alert" ? 10 : 6, ease: "linear" }}
+                />
                 />
               </div>
             </div>
