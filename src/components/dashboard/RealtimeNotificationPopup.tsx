@@ -255,7 +255,6 @@ const RealtimeNotificationPopup = () => {
                   animate={{ width: "0%" }}
                   transition={{ duration: popup.type === "alert" ? 10 : 6, ease: "linear" }}
                 />
-                />
               </div>
             </div>
           </motion.div>
