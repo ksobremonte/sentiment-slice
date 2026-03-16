@@ -56,7 +56,7 @@ const ReviewCard = ({ review, onAnalyze, onViewSentiment, onDelete }: ReviewCard
           <User className="w-6 h-6 text-secondary-foreground" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 flex-wrap mb-2">
+          <div className="flex flex-col gap-2 mb-2">
             <div className="flex items-center gap-2 flex-wrap">
               <h4 className="font-display font-semibold text-lg text-foreground">{review.name}</h4>
               {review.sentiment && (
@@ -76,7 +76,7 @@ const ReviewCard = ({ review, onAnalyze, onViewSentiment, onDelete }: ReviewCard
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-2 flex-wrap">
               <AdminResponseDialog
                 reviewId={review.id}
                 reviewerName={review.name}
