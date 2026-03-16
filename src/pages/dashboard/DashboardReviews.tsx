@@ -77,6 +77,17 @@ const DashboardReviews = () => {
     }
   };
 
+  const handleDelete = useCallback(async (reviewId: string) => {
+    try {
+      const { error } = await supabase.from("reviews").delete().eq("id", reviewId);
+      if (error) throw error;
+      toast.success("Review deleted permanently");
+      refetch();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete review");
+    }
+  }, [refetch]);
+
   const reviewsToFilter = isAISorted ? sortedReviews : reviews;
   const filteredReviews = reviewsToFilter.filter((review) => {
     const matchesSearch =
