@@ -30,7 +30,6 @@ interface UserWithRole {
 const DashboardUsers = () => {
   const queryClient = useQueryClient();
   const [addOpen, setAddOpen] = useState(false);
-  const [newEmail, setNewEmail] = useState("");
   const [newRole, setNewRole] = useState<string>("moderator");
   const [isAdding, setIsAdding] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
