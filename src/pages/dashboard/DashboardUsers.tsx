@@ -65,13 +65,12 @@ const DashboardUsers = () => {
       const { data: { session } } = await supabase.auth.getSession();
       const res = await supabase.functions.invoke("list-users?action=create", {
         headers: { Authorization: `Bearer ${session?.access_token}` },
-        body: { email: newEmail.trim(), role: newRole },
+        body: { email: newEmail.trim() },
       });
-      if (res.error) throw new Error(res.error.message || "Failed to create user");
+      if (res.error) throw new Error(res.error.message || "Failed to invite user");
       if (res.data?.error) throw new Error(res.data.error);
-      toast.success("User invited successfully");
+      toast.success("Invitation sent! The user will receive an email to set their password.");
       setNewEmail("");
-      setNewRole("moderator");
       setAddOpen(false);
       queryClient.invalidateQueries({ queryKey: ["dashboard-users"] });
     } catch (err: any) {
@@ -131,36 +130,27 @@ const DashboardUsers = () => {
             <DialogTrigger asChild>
               <Button className="rounded-xl gap-2">
                 <UserPlus className="h-4 w-4" />
-                Create User
+                Invite Staff
               </Button>
             </DialogTrigger>
             <DialogContent className="rounded-2xl">
               <DialogHeader>
-                <DialogTitle>Invite New User</DialogTitle>
+                <DialogTitle>Invite New Staff Member</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-2">
                 <div className="space-y-2">
                   <Label>Email Address</Label>
                   <Input
-                    placeholder="user@example.com"
+                    placeholder="staff@example.com"
                     type="email"
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
                     className="rounded-xl"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>Role</Label>
-                  <Select value={newRole} onValueChange={setNewRole}>
-                    <SelectTrigger className="rounded-xl">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="moderator">Staff</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <p className="text-sm text-muted-foreground">
+                  The user will be invited as <strong>Staff</strong> and will receive an email to set their password.
+                </p>
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setAddOpen(false)} className="rounded-xl">

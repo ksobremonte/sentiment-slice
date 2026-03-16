@@ -61,8 +61,28 @@ Deno.serve(async (req) => {
     if (req.method === "POST" && action === "create") {
       const { email, role } = await req.json();
       
-      // Invite user (sends magic link email)
-      const { data: inviteData, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(email);
+      // Check caller has admin role (staff cannot invite)
+      const { data: callerAdminRole } = await adminClient
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", caller.id)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      if (!callerAdminRole) {
+        return new Response(JSON.stringify({ error: "Only admins can invite users" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Determine redirect URL for the invitation email
+      const siteUrl = Deno.env.get("SITE_URL") || req.headers.get("origin") || "https://pizzavolante-dashboard.lovable.app";
+      
+      // Invite user (sends invitation email with accept link)
+      const { data: inviteData, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(email, {
+        redirectTo: `${siteUrl}/accept-invitation`,
+      });
       if (inviteError) {
         return new Response(JSON.stringify({ error: inviteError.message }), {
           status: 400,
@@ -70,11 +90,11 @@ Deno.serve(async (req) => {
         });
       }
 
-      // Assign role
+      // Always assign "moderator" (staff) role for invited users
       if (inviteData.user) {
         await adminClient.from("user_roles").insert({
           user_id: inviteData.user.id,
-          role: role,
+          role: "moderator",
         });
       }
 

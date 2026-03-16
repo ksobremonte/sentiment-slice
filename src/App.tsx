@@ -12,7 +12,7 @@ import Home from "./pages/Home";
 
 // Lazy-loaded routes
 const Login = lazy(() => import("./pages/Login"));
-const Signup = lazy(() => import("./pages/Signup"));
+const AcceptInvitation = lazy(() => import("./pages/AcceptInvitation"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const DashboardOverview = lazy(() => import("./pages/dashboard/DashboardOverview"));
@@ -27,7 +27,7 @@ const DashboardTrends = lazy(() => import("./pages/dashboard/DashboardTrends"));
 const DashboardSettings = lazy(() => import("./pages/dashboard/DashboardSettings"));
 const DashboardHelp = lazy(() => import("./pages/dashboard/DashboardHelp"));
 const DashboardSwitchAccount = lazy(() => import("./pages/dashboard/DashboardSwitchAccount"));
-const DashboardAddAccount = lazy(() => import("./pages/dashboard/DashboardAddAccount"));
+
 const DashboardNotifications = lazy(() => import("./pages/dashboard/DashboardNotifications"));
 const DashboardReviewDetail = lazy(() => import("./pages/dashboard/DashboardReviewDetail"));
 const About = lazy(() => import("./pages/About"));
@@ -57,7 +57,7 @@ const App = () => (
               <Route path="/read-reviews" element={<ReadReviews />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/pv-admin" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
+              <Route path="/accept-invitation" element={<AcceptInvitation />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/pv-dashboard" element={<ProtectedRoute><DashboardOverview /></ProtectedRoute>} />
@@ -72,7 +72,7 @@ const App = () => (
               <Route path="/pv-dashboard/settings" element={<ProtectedRoute><DashboardSettings /></ProtectedRoute>} />
               <Route path="/pv-dashboard/help" element={<ProtectedRoute><DashboardHelp /></ProtectedRoute>} />
               <Route path="/pv-dashboard/switch-account" element={<ProtectedRoute><DashboardSwitchAccount /></ProtectedRoute>} />
-              <Route path="/pv-dashboard/add-account" element={<ProtectedRoute><DashboardAddAccount /></ProtectedRoute>} />
+              
               <Route path="/pv-dashboard/notifications" element={<ProtectedRoute><DashboardNotifications /></ProtectedRoute>} />
               <Route path="/pv-dashboard/reviews/:reviewId" element={<ProtectedRoute><DashboardReviewDetail /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
