@@ -1,4 +1,4 @@
-import { Send, User, Star, Image as ImageIcon, MessageSquare } from "lucide-react";
+import { Send, User, Star, Image as ImageIcon, MessageSquare, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Review } from "@/hooks/useReviews";
@@ -8,12 +8,24 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import AdminResponseDialog from "./AdminResponseDialog";
 
 interface ReviewCardProps {
   review: Review;
   onAnalyze: (review: Review) => void;
   onViewSentiment?: (review: Review) => void;
+  onDelete?: (reviewId: string) => void;
 }
 
 const ReviewCard = ({ review, onAnalyze, onViewSentiment }: ReviewCardProps) => {
