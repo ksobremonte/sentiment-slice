@@ -12,7 +12,7 @@ import Home from "./pages/Home";
 
 // Lazy-loaded routes
 const Login = lazy(() => import("./pages/Login"));
-const Signup = lazy(() => import("./pages/Signup"));
+const AcceptInvitation = lazy(() => import("./pages/AcceptInvitation"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const DashboardOverview = lazy(() => import("./pages/dashboard/DashboardOverview"));
