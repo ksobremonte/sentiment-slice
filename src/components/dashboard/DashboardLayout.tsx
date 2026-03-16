@@ -189,9 +189,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
-  const { unreadCount } = useNotificationReads();
 
-  const isOnNotifications = location.pathname === "/pv-dashboard/notifications";
   const isOnConversations = location.pathname === "/pv-dashboard/conversations";
 
   return (
@@ -212,20 +210,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               >
                 <MessageSquare className="h-4 w-4" />
               </Button>
-              <Button
-                variant={isOnNotifications ? "default" : "outline"}
-                size="icon"
-                className="h-9 w-9 rounded-full relative !overflow-visible"
-                onClick={() => navigate("/pv-dashboard/notifications")}
-                title="Notifications"
-              >
-                <Bell className="h-4 w-4" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
-                    {unreadCount > 99 ? "99+" : unreadCount}
-                  </span>
-                )}
-              </Button>
+              <NotificationDropdown />
             </div>
           </header>
           <main className="flex-1 p-4 md:p-6 brick-overlay">
