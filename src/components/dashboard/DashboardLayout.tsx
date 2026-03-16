@@ -20,6 +20,7 @@ import { useReviews } from "@/hooks/useReviews";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 import RealtimeNotificationPopup from "@/components/dashboard/RealtimeNotificationPopup";
+import NotificationDropdown from "@/components/dashboard/NotificationDropdown";
 import {
   SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter,
   SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarMenu,
