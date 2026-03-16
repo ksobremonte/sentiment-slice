@@ -185,7 +185,7 @@ const DashboardReviews = () => {
       <div className="space-y-4">
         {paginatedReviews.length > 0 ? (
           paginatedReviews.map((review) => (
-            <ReviewCard key={review.id} review={review} onAnalyze={handleAnalyze} onViewSentiment={(r) => setSentimentView(r)} onDelete={handleDelete} />
+            <ReviewCard key={review.id} review={review} onAnalyze={handleAnalyze} onViewSentiment={(r) => setSentimentView(r)} onDelete={isAdmin ? handleDelete : undefined} />
           ))
         ) : (
           <div className="text-center py-16 bg-card rounded-2xl border-2 border-border shadow-subtle">
