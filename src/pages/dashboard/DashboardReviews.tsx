@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 const REVIEWS_PER_PAGE = 10;
 
@@ -23,6 +24,8 @@ const DashboardReviews = () => {
   const [sentimentView, setSentimentView] = useState<Review | null>(null);
   const { data: reviews = [], refetch } = useReviews();
   const { sortReviewsByRelevance, isSorting, error: sortError } = useAIReviewSort();
+  const { role } = useAuthContext();
+  const isAdmin = role === "admin";
 
   useEffect(() => {
     if (reviews.length > 0 && !isAISorted) {
@@ -182,7 +185,7 @@ const DashboardReviews = () => {
       <div className="space-y-4">
         {paginatedReviews.length > 0 ? (
           paginatedReviews.map((review) => (
-            <ReviewCard key={review.id} review={review} onAnalyze={handleAnalyze} onViewSentiment={(r) => setSentimentView(r)} onDelete={handleDelete} />
+            <ReviewCard key={review.id} review={review} onAnalyze={handleAnalyze} onViewSentiment={(r) => setSentimentView(r)} onDelete={isAdmin ? handleDelete : undefined} />
           ))
         ) : (
           <div className="text-center py-16 bg-card rounded-2xl border-2 border-border shadow-subtle">
