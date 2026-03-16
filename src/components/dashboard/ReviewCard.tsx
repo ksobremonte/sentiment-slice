@@ -28,7 +28,7 @@ interface ReviewCardProps {
   onDelete?: (reviewId: string) => void;
 }
 
-const ReviewCard = ({ review, onAnalyze, onViewSentiment }: ReviewCardProps) => {
+const ReviewCard = ({ review, onAnalyze, onViewSentiment, onDelete }: ReviewCardProps) => {
   const getSentimentStyles = () => {
     if (!review.sentiment) return "border-l-4 border-l-muted";
     
