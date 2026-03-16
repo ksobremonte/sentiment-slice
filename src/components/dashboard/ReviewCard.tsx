@@ -91,6 +91,37 @@ const ReviewCard = ({ review, onAnalyze, onViewSentiment, onDelete }: ReviewCard
                 <Send className="w-4 h-4 mr-2" />
                 Analyze
               </Button>
+              {onDelete && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-xl border-2 font-semibold text-destructive hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Review Permanently?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently delete the review by <strong>{review.name}</strong> from the database. It will also be removed from the public website. This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => onDelete(review.id)}
+                        className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Delete Permanently
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
             </div>
           </div>
           
