@@ -64,13 +64,12 @@ const DashboardUsers = () => {
       const { data: { session } } = await supabase.auth.getSession();
       const res = await supabase.functions.invoke("list-users?action=create", {
         headers: { Authorization: `Bearer ${session?.access_token}` },
-        body: { email: newEmail.trim(), role: newRole },
+        body: { email: newEmail.trim() },
       });
-      if (res.error) throw new Error(res.error.message || "Failed to create user");
+      if (res.error) throw new Error(res.error.message || "Failed to invite user");
       if (res.data?.error) throw new Error(res.data.error);
-      toast.success("User invited successfully");
+      toast.success("Invitation sent! The user will receive an email to set their password.");
       setNewEmail("");
-      setNewRole("moderator");
       setAddOpen(false);
       queryClient.invalidateQueries({ queryKey: ["dashboard-users"] });
     } catch (err: any) {
