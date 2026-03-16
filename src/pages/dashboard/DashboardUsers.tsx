@@ -129,36 +129,27 @@ const DashboardUsers = () => {
             <DialogTrigger asChild>
               <Button className="rounded-xl gap-2">
                 <UserPlus className="h-4 w-4" />
-                Create User
+                Invite Staff
               </Button>
             </DialogTrigger>
             <DialogContent className="rounded-2xl">
               <DialogHeader>
-                <DialogTitle>Invite New User</DialogTitle>
+                <DialogTitle>Invite New Staff Member</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-2">
                 <div className="space-y-2">
                   <Label>Email Address</Label>
                   <Input
-                    placeholder="user@example.com"
+                    placeholder="staff@example.com"
                     type="email"
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
                     className="rounded-xl"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>Role</Label>
-                  <Select value={newRole} onValueChange={setNewRole}>
-                    <SelectTrigger className="rounded-xl">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="moderator">Staff</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <p className="text-sm text-muted-foreground">
+                  The user will be invited as <strong>Staff</strong> and will receive an email to set their password.
+                </p>
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setAddOpen(false)} className="rounded-xl">
