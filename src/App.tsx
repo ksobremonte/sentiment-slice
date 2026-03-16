@@ -27,7 +27,7 @@ const DashboardTrends = lazy(() => import("./pages/dashboard/DashboardTrends"));
 const DashboardSettings = lazy(() => import("./pages/dashboard/DashboardSettings"));
 const DashboardHelp = lazy(() => import("./pages/dashboard/DashboardHelp"));
 const DashboardSwitchAccount = lazy(() => import("./pages/dashboard/DashboardSwitchAccount"));
-const DashboardAddAccount = lazy(() => import("./pages/dashboard/DashboardAddAccount"));
+
 const DashboardNotifications = lazy(() => import("./pages/dashboard/DashboardNotifications"));
 const DashboardReviewDetail = lazy(() => import("./pages/dashboard/DashboardReviewDetail"));
 const About = lazy(() => import("./pages/About"));
