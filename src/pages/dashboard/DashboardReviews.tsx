@@ -24,6 +24,8 @@ const DashboardReviews = () => {
   const [sentimentView, setSentimentView] = useState<Review | null>(null);
   const { data: reviews = [], refetch } = useReviews();
   const { sortReviewsByRelevance, isSorting, error: sortError } = useAIReviewSort();
+  const { role } = useAuthContext();
+  const isAdmin = role === "admin";
 
   useEffect(() => {
     if (reviews.length > 0 && !isAISorted) {
