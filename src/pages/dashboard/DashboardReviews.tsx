@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MessageSquare, Search, Filter, Sparkles, Loader2, Star } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import ReviewCard from "@/components/dashboard/ReviewCard";
@@ -76,6 +76,17 @@ const DashboardReviews = () => {
       toast.error(err instanceof Error ? err.message : "Failed to analyze review");
     }
   };
+
+  const handleDelete = useCallback(async (reviewId: string) => {
+    try {
+      const { error } = await supabase.from("reviews").delete().eq("id", reviewId);
+      if (error) throw error;
+      toast.success("Review deleted permanently");
+      refetch();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete review");
+    }
+  }, [refetch]);
 
   const reviewsToFilter = isAISorted ? sortedReviews : reviews;
   const filteredReviews = reviewsToFilter.filter((review) => {
@@ -171,7 +182,7 @@ const DashboardReviews = () => {
       <div className="space-y-4">
         {paginatedReviews.length > 0 ? (
           paginatedReviews.map((review) => (
-            <ReviewCard key={review.id} review={review} onAnalyze={handleAnalyze} onViewSentiment={(r) => setSentimentView(r)} />
+            <ReviewCard key={review.id} review={review} onAnalyze={handleAnalyze} onViewSentiment={(r) => setSentimentView(r)} onDelete={handleDelete} />
           ))
         ) : (
           <div className="text-center py-16 bg-card rounded-2xl border-2 border-border shadow-subtle">

@@ -1,4 +1,4 @@
-import { Send, User, Star, Image as ImageIcon, MessageSquare } from "lucide-react";
+import { Send, User, Star, Image as ImageIcon, MessageSquare, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Review } from "@/hooks/useReviews";
@@ -8,15 +8,27 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import AdminResponseDialog from "./AdminResponseDialog";
 
 interface ReviewCardProps {
   review: Review;
   onAnalyze: (review: Review) => void;
   onViewSentiment?: (review: Review) => void;
+  onDelete?: (reviewId: string) => void;
 }
 
-const ReviewCard = ({ review, onAnalyze, onViewSentiment }: ReviewCardProps) => {
+const ReviewCard = ({ review, onAnalyze, onViewSentiment, onDelete }: ReviewCardProps) => {
   const getSentimentStyles = () => {
     if (!review.sentiment) return "border-l-4 border-l-muted";
     
@@ -79,6 +91,37 @@ const ReviewCard = ({ review, onAnalyze, onViewSentiment }: ReviewCardProps) => 
                 <Send className="w-4 h-4 mr-2" />
                 Analyze
               </Button>
+              {onDelete && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-xl border-2 font-semibold text-destructive hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Review Permanently?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently delete the review by <strong>{review.name}</strong> from the database. It will also be removed from the public website. This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => onDelete(review.id)}
+                        className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Delete Permanently
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
             </div>
           </div>
           
