@@ -57,7 +57,7 @@ const App = () => (
               <Route path="/read-reviews" element={<ReadReviews />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/pv-admin" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
+              <Route path="/accept-invitation" element={<AcceptInvitation />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/pv-dashboard" element={<ProtectedRoute><DashboardOverview /></ProtectedRoute>} />
