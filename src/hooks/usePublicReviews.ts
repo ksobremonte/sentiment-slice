@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 export interface PublicReview {
   id: string;
@@ -17,19 +16,23 @@ export const usePublicReviews = () => {
   return useQuery({
     queryKey: ["public-reviews"],
     queryFn: async () => {
-      // Fetch only 4-star and 5-star approved reviews for public display
-      // The view already filters to approved = true
-      const { data, error } = await supabase
-        .from("reviews_public")
-        .select("id, name, rating, feedback, sentiment, created_at, photo_url, language, approved")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("[usePublicReviews] Error fetching reviews:", error);
-        throw error;
-      }
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/reviews?select=id,name,rating,feedback,sentiment,created_at,photo_url,language,approved&approved=eq.true&order=created_at.desc`;
       
-      console.log("[usePublicReviews] Fetched reviews:", data);
+      const response = await fetch(url, {
+        headers: {
+          "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("[usePublicReviews] Error:", errorText);
+        throw new Error("Failed to fetch reviews");
+      }
+
+      const data = await response.json();
+      console.log("[usePublicReviews] Fetched reviews:", data?.length);
       return data as PublicReview[];
     },
   });
