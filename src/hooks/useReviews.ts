@@ -48,8 +48,10 @@ export const useReviews = () => {
 
   return useQuery({
     queryKey: ["reviews"],
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
     queryFn: async () => {
-      // Fetch all reviews directly for dashboard (admin view sees all)
       const { data, error } = await supabase
         .from("reviews")
         .select("id, name, rating, feedback, sentiment, sentiment_reason, sentiment_keywords, created_at, photo_url, language, approved, admin_response, admin_response_at, conversation_id")
