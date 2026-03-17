@@ -15,6 +15,9 @@ export interface PublicReview {
 export const usePublicReviews = () => {
   return useQuery({
     queryKey: ["public-reviews"],
+    staleTime: 5 * 60 * 1000, // 5 minutes - avoid refetching on every mount
+    gcTime: 10 * 60 * 1000, // 10 minutes cache
+    refetchOnWindowFocus: false,
     queryFn: async () => {
       const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/reviews?select=id,name,rating,feedback,sentiment,created_at,photo_url,language,approved&approved=eq.true&order=created_at.desc`;
       
