@@ -1,7 +1,7 @@
 import { Phone, Mail, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { FadeIn } from "@/components/ui/animated";
-import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
+import pizzaVolanteLogo from "@/assets/pizza-volante-logo-nobg.png";
 
 const PublicFooter = () => {
   return (
