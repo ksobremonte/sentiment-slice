@@ -21,12 +21,18 @@ export const usePublicReviews = () => {
     queryFn: async () => {
       const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/reviews?select=id,name,rating,feedback,sentiment,created_at,photo_url,language,approved&approved=eq.true&order=created_at.desc`;
       
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
       const response = await fetch(url, {
         headers: {
           "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorText = await response.text();
