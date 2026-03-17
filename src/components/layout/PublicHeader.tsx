@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { motion, AnimatePresence } from "framer-motion";
-import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
+import pizzaVolanteLogo from "@/assets/pizza-volante-logo-nobg.png";
 
 const navItems = [
   { name: "Home", path: "/" },
