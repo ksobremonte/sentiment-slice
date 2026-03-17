@@ -33,8 +33,25 @@ const PublicReviewsList = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="bg-card border border-border rounded-xl p-5 shadow-card animate-pulse">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-muted flex-shrink-0" />
+              <div className="flex-1 space-y-3">
+                <div className="flex justify-between">
+                  <div className="h-4 w-24 bg-muted rounded" />
+                  <div className="h-3 w-16 bg-muted rounded" />
+                </div>
+                <div className="flex gap-1">
+                  {[1,2,3,4,5].map(s => <div key={s} className="w-4 h-4 bg-muted rounded" />)}
+                </div>
+                <div className="h-3 w-full bg-muted rounded" />
+                <div className="h-3 w-3/4 bg-muted rounded" />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
