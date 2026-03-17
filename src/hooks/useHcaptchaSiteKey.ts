@@ -6,7 +6,47 @@ type UseHcaptchaSiteKeyState = {
   loading: boolean;
 };
 
-const KEY_REQUEST_TIMEOUT_MS = 8000;
+const KEY_REQUEST_TIMEOUT_MS = 2500;
+const HCAPTCHA_CACHE_KEY = "pv_hcaptcha_site_key";
+
+const normalizeString = (value: unknown): string | null => {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+};
+
+const extractSiteKey = (data: unknown): string | null => {
+  if (typeof data === "string") {
+    try {
+      return extractSiteKey(JSON.parse(data));
+    } catch {
+      return normalizeString(data);
+    }
+  }
+
+  if (data && typeof data === "object") {
+    const payload = data as { hcaptchaSiteKey?: unknown; siteKey?: unknown };
+    return normalizeString(payload.hcaptchaSiteKey) ?? normalizeString(payload.siteKey);
+  }
+
+  return null;
+};
+
+const getCachedSiteKey = (): string | null => {
+  try {
+    return normalizeString(sessionStorage.getItem(HCAPTCHA_CACHE_KEY));
+  } catch {
+    return null;
+  }
+};
+
+const setCachedSiteKey = (key: string) => {
+  try {
+    sessionStorage.setItem(HCAPTCHA_CACHE_KEY, key);
+  } catch {
+    // no-op for environments where sessionStorage is unavailable
+  }
+};
 
 /**
  * Loads the hCaptcha *public* site key from the backend.
@@ -18,56 +58,57 @@ export const useHcaptchaSiteKey = (): UseHcaptchaSiteKeyState => {
 
   useEffect(() => {
     let cancelled = false;
-    let timeoutId: number | undefined;
 
-    const fallbackKey =
-      typeof import.meta.env.VITE_HCAPTCHA_SITE_KEY === "string" &&
-      import.meta.env.VITE_HCAPTCHA_SITE_KEY.trim().length > 0
-        ? import.meta.env.VITE_HCAPTCHA_SITE_KEY.trim()
-        : null;
+    const envKey = normalizeString(import.meta.env.VITE_HCAPTCHA_SITE_KEY);
+    const cachedKey = getCachedSiteKey();
+    const immediateFallbackKey = envKey ?? cachedKey;
+
+    if (immediateFallbackKey) {
+      setSiteKey(immediateFallbackKey);
+      setLoading(false);
+    }
 
     const run = async () => {
       try {
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          window.setTimeout(() => reject(new Error("public-config timeout")), KEY_REQUEST_TIMEOUT_MS);
+        });
+
         const response = await Promise.race([
           supabase.functions.invoke("public-config", { body: {} }),
-          new Promise<{ data: null; error: { message: string } }>((resolve) => {
-            timeoutId = window.setTimeout(() => {
-              resolve({ data: null, error: { message: "timeout" } });
-            }, KEY_REQUEST_TIMEOUT_MS);
-          }),
+          timeoutPromise,
         ]);
 
         if (cancelled) return;
 
-        const data = response && typeof response === "object" ? (response as { data?: unknown }).data : null;
-        const error = response && typeof response === "object" ? (response as { error?: unknown }).error : null;
-
-        if (error) {
-          setSiteKey(fallbackKey);
-          return;
+        const invokeResponse = response as { data?: unknown; error?: unknown };
+        if (invokeResponse?.error) {
+          throw invokeResponse.error;
         }
 
-        const key =
-          data && typeof data === "object"
-            ? (data as { hcaptchaSiteKey?: unknown }).hcaptchaSiteKey
-            : null;
-
-        const normalizedKey = typeof key === "string" && key.trim().length > 0 ? key.trim() : null;
-        setSiteKey(normalizedKey ?? fallbackKey);
+        const resolvedKey = extractSiteKey(invokeResponse?.data);
+        if (resolvedKey) {
+          setCachedSiteKey(resolvedKey);
+          setSiteKey(resolvedKey);
+        } else {
+          setSiteKey(immediateFallbackKey ?? null);
+        }
+      } catch (error) {
+        console.warn("[captcha] Failed to load public-config quickly:", error);
+        if (!cancelled) {
+          setSiteKey(immediateFallbackKey ?? null);
+        }
       } finally {
-        if (typeof timeoutId === "number") {
-          window.clearTimeout(timeoutId);
+        if (!cancelled) {
+          setLoading(false);
         }
-        if (!cancelled) setLoading(false);
       }
     };
 
     void run();
+
     return () => {
       cancelled = true;
-      if (typeof timeoutId === "number") {
-        window.clearTimeout(timeoutId);
-      }
     };
   }, []);
 
