@@ -1,41 +1,81 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User } from "@supabase/supabase-js";
+
+const AUTH_TIMEOUT_MS = 5000; // Max time to wait for auth before giving up
 
 export const useAuth = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<string | null>(null);
+  const loadingResolved = useRef(false);
+
+  const resolveLoading = () => {
+    if (!loadingResolved.current) {
+      loadingResolved.current = true;
+      setLoading(false);
+    }
+  };
+
+  // Fetch role without blocking auth loading
+  const fetchRole = async (userId: string) => {
+    try {
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .maybeSingle();
+      setRole(data?.role ?? null);
+    } catch {
+      setRole(null);
+    }
+  };
 
   useEffect(() => {
-    // Set up auth state listener FIRST
+    // Safety timeout — never stay loading forever
+    const timeout = setTimeout(() => {
+      if (!loadingResolved.current) {
+        console.warn("[useAuth] Auth loading timed out after", AUTH_TIMEOUT_MS, "ms");
+        resolveLoading();
+      }
+    }, AUTH_TIMEOUT_MS);
+
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+
         if (session?.user) {
-          const { data } = await supabase
-            .from("user_roles")
-            .select("role")
-            .eq("user_id", session.user.id)
-            .maybeSingle();
-          setRole(data?.role ?? null);
+          // Fetch role in background — don't block loading
+          fetchRole(session.user.id);
         } else {
           setRole(null);
         }
-        setLoading(false);
+
+        resolveLoading();
       }
     );
 
-    // THEN get initial session
+    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      setLoading(false);
+
+      if (session?.user) {
+        fetchRole(session.user.id);
+      }
+
+      resolveLoading();
+    }).catch(() => {
+      resolveLoading();
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      clearTimeout(timeout);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const verifyCaptcha = async (captchaToken: string) => {
@@ -46,7 +86,6 @@ export const useAuth = () => {
     if (error) return { ok: false as const };
     if (!data || typeof data !== "object") return { ok: false as const };
 
-    // supabase-js types `data` as `any`
     return { ok: Boolean((data as any).success) as boolean };
   };
 
