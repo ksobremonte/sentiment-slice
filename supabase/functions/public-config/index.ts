@@ -1,15 +1,14 @@
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
 Deno.serve(async (req) => {
-  // CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // We intentionally allow POST (used by supabase-js invoke).
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
@@ -17,7 +16,8 @@ Deno.serve(async (req) => {
     });
   }
 
-  const hcaptchaSiteKey = Deno.env.get("VITE_HCAPTCHA_SITE_KEY") ?? null;
+  const rawKey = Deno.env.get("VITE_HCAPTCHA_SITE_KEY");
+  const hcaptchaSiteKey = typeof rawKey === "string" && rawKey.trim().length > 0 ? rawKey.trim() : null;
 
   return new Response(JSON.stringify({ hcaptchaSiteKey }), {
     status: 200,
