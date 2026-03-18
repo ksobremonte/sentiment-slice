@@ -75,7 +75,9 @@ export const useHcaptchaSiteKey = (): UseHcaptchaSiteKeyState => {
         });
 
         const response = await Promise.race([
-          supabase.functions.invoke("public-config", { body: {} }),
+          supabase.functions.invoke("public-config", {
+            method: "GET",
+          }),
           timeoutPromise,
         ]);
 
