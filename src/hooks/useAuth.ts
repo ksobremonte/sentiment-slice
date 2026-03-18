@@ -32,8 +32,15 @@ export const useAuth = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      setLoading(false);
+      if (!session?.user) setLoading(false);
     });
+
+    // Safety timeout — never stay loading forever
+    const timeout = setTimeout(() => setLoading(false), 5000);
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
 
     return () => subscription.unsubscribe();
   }, []);
