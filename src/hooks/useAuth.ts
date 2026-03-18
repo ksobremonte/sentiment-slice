@@ -41,8 +41,6 @@ export const useAuth = () => {
       subscription.unsubscribe();
       clearTimeout(timeout);
     };
-
-    return () => subscription.unsubscribe();
   }, []);
 
   const verifyCaptcha = async (captchaToken: string) => {
