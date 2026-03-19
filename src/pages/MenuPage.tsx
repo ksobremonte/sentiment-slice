@@ -5,7 +5,7 @@ import PublicLayout from "@/components/layout/PublicLayout";
 import {
   FadeIn, StaggerContainer, StaggerItem, HoverCard, ParallaxImage, AnimatedButton, ZoomImage,
 } from "@/components/ui/animated";
-import pizzaVolanteLogo from "@/assets/pizza-volante-logo-nobg.png";
+import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 import pizzaSupreme from "@/assets/pizza-supreme.webp";
 import pizzaClassic from "@/assets/pizza-classic.webp";
 import pastaDish from "@/assets/pasta-dish.webp";

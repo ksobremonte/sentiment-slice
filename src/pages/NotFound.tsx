@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import pizzaVolanteLogo from "@/assets/pizza-volante-logo-nobg.png";
+import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 
 const NotFound = () => {
   return (

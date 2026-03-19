@@ -6,7 +6,6 @@ interface AuthContextType {
   session: Session | null;
   user: User | null;
   loading: boolean;
-  role: string | null;
   signUp: (
     email: string,
     password: string,

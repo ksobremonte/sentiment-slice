@@ -23,19 +23,7 @@ const DashboardOverview = () => {
   const [filterSentiment, setFilterSentiment] = useState<string | null>(null);
   const [aiInsight, setAiInsight] = useState<string | null>(null);
   const [insightLoading, setInsightLoading] = useState(false);
-  const {
-    data: reviews = [],
-    isLoading: reviewsLoading,
-    isError: reviewsError,
-    error: reviewsErrorDetails,
-  } = useReviews();
-
-  console.log("[DashboardOverview] Review payload", {
-    reviewCount: reviews.length,
-    loading: reviewsLoading,
-    hasError: reviewsError,
-    errorMessage: reviewsErrorDetails?.message ?? null,
-  });
+  const { data: reviews = [] } = useReviews();
 
   const { data: alertSettings } = useQuery({
     queryKey: ["alert-settings"],
@@ -46,7 +34,7 @@ const DashboardOverview = () => {
     },
   });
 
-  // Split reviews into this week and last week, with all-time fallback if this week has no records
+  // Split reviews into this week and last week
   const stats = useMemo(() => {
     const now = new Date();
     const weekStart = startOfDay(subDays(now, 7));
@@ -66,45 +54,38 @@ const DashboardOverview = () => {
       return { pos, neg, neu, analyzed, total: list.length };
     };
 
-    const allTime = calcSentiment(reviews);
-    const thisWeekStats = calcSentiment(thisWeek);
-    const lastWeekStats = calcSentiment(lastWeek);
-    const activePeriodStats = thisWeekStats.total > 0 ? thisWeekStats : allTime;
-    const periodForKeywords = thisWeekStats.total > 0 ? thisWeek : reviews;
+    const tw = calcSentiment(thisWeek);
+    const lw = calcSentiment(lastWeek);
 
     // Overall sentiment score (0-100, 100 = all positive)
-    const overallScore = activePeriodStats.analyzed > 0
-      ? Math.round(((activePeriodStats.pos + activePeriodStats.neu * 0.5) / activePeriodStats.analyzed) * 100)
-      : 0;
-    const prevScore = lastWeekStats.analyzed > 0
-      ? Math.round(((lastWeekStats.pos + lastWeekStats.neu * 0.5) / lastWeekStats.analyzed) * 100)
-      : overallScore;
+    const overallScore = tw.analyzed > 0 ? Math.round(((tw.pos + tw.neu * 0.5) / tw.analyzed) * 100) : 0;
+    const prevScore = lw.analyzed > 0 ? Math.round(((lw.pos + lw.neu * 0.5) / lw.analyzed) * 100) : 0;
     const scoreDiff = overallScore - prevScore;
 
     // Negative rate
-    const negRate = activePeriodStats.analyzed > 0 ? (activePeriodStats.neg / activePeriodStats.analyzed) * 100 : 0;
-    const prevNegRate = lastWeekStats.analyzed > 0 ? (lastWeekStats.neg / lastWeekStats.analyzed) * 100 : negRate;
+    const negRate = tw.analyzed > 0 ? (tw.neg / tw.analyzed) * 100 : 0;
+    const prevNegRate = lw.analyzed > 0 ? (lw.neg / lw.analyzed) * 100 : 0;
     const negDiff = negRate - prevNegRate;
 
-    // Top complaint keyword
-    const negReviews = periodForKeywords.filter((r) => r.sentiment === "negative");
+    // Top complaint keyword from negative reviews this week
+    const negReviews = thisWeek.filter((r) => r.sentiment === "negative");
     const words: Record<string, number> = {};
     negReviews.forEach((r) => {
       r.feedback.toLowerCase().split(/\s+/).filter((w) => w.length > 4).forEach((w) => {
         words[w] = (words[w] || 0) + 1;
       });
     });
-    const topComplaint = Object.entries(words).sort((a, b) => b[1] - a[1])[0]?.[0] || "No data available";
+    const topComplaint = Object.entries(words).sort((a, b) => b[1] - a[1])[0]?.[0] || "none";
 
-    // Most praised aspect
-    const posReviews = periodForKeywords.filter((r) => r.sentiment === "positive");
+    // Most praised aspect from positive reviews
+    const posReviews = thisWeek.filter((r) => r.sentiment === "positive");
     const posWords: Record<string, number> = {};
     posReviews.forEach((r) => {
       r.feedback.toLowerCase().split(/\s+/).filter((w) => w.length > 4).forEach((w) => {
         posWords[w] = (posWords[w] || 0) + 1;
       });
     });
-    const topPraise = Object.entries(posWords).sort((a, b) => b[1] - a[1])[0]?.[0] || "No data available";
+    const topPraise = Object.entries(posWords).sort((a, b) => b[1] - a[1])[0]?.[0] || "none";
 
     // Sentiment trend (week-over-week score change)
     const trendDirection = scoreDiff > 0 ? "up" : scoreDiff < 0 ? "down" : "neutral";
@@ -115,14 +96,6 @@ const DashboardOverview = () => {
     if (negRate >= threshold + 20) alertLevel = "critical";
     else if (negRate >= threshold) alertLevel = "moderate";
 
-    console.log("[DashboardOverview] Computed sentiment", {
-      allTimeTotal: allTime.total,
-      allTimePositive: allTime.pos,
-      allTimeNegative: allTime.neg,
-      allTimeNeutral: allTime.neu,
-      thisWeekTotal: thisWeekStats.total,
-    });
-
     return {
       overallScore, scoreDiff, prevScore,
       negRate, negDiff, prevNegRate,
@@ -130,11 +103,8 @@ const DashboardOverview = () => {
       trendDirection, scoreDiffAbs: Math.abs(scoreDiff),
       alertLevel, threshold,
       sentimentData: {
-        positive: allTime.pos,
-        negative: allTime.neg,
-        neutral: allTime.neu,
-        unanalyzed: allTime.total - allTime.analyzed,
-        total: allTime.total,
+        positive: tw.pos, negative: tw.neg, neutral: tw.neu,
+        unanalyzed: tw.total - tw.analyzed, total: tw.total,
       },
     };
   }, [reviews, alertSettings]);
@@ -168,9 +138,7 @@ const DashboardOverview = () => {
             try {
               const json = JSON.parse(line.slice(6));
               result += json.choices?.[0]?.delta?.content || "";
-            } catch {
-              // skip malformed chunks
-            }
+            } catch { /* skip */ }
           }
         }
         setAiInsight(result.trim() || null);
@@ -182,32 +150,6 @@ const DashboardOverview = () => {
     };
     generateInsight();
   }, [reviews.length]); // Only regenerate when review count changes
-
-  if (reviewsLoading) {
-    return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center py-20">
-          <div className="text-center space-y-3">
-            <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto" />
-            <p className="text-sm text-muted-foreground">Loading dashboard data...</p>
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  if (reviewsError) {
-    return (
-      <DashboardLayout>
-        <div className="rounded-2xl border-2 border-destructive/30 bg-destructive/10 p-6">
-          <h3 className="text-base font-semibold text-destructive">Could not load reviews</h3>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {(reviewsErrorDetails as Error | null)?.message ?? "Please refresh and sign in again."}
-          </p>
-        </div>
-      </DashboardLayout>
-    );
-  }
 
   if (view.type === "stats") {
     const commentsForStats = reviews.map((r) => ({

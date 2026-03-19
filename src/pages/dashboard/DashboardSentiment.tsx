@@ -9,34 +9,13 @@ import { formatDistanceToNow } from "date-fns";
 
 const DashboardSentiment = () => {
   const [activeTab, setActiveTab] = useState("negative");
-  const {
-    data: reviews = [],
-    isLoading,
-    isError,
-    error,
-  } = useReviews();
-
-  console.log("[DashboardSentiment] Query payload", {
-    reviewCount: reviews.length,
-    loading: isLoading,
-    hasError: isError,
-    errorMessage: error?.message ?? null,
-  });
+  const { data: reviews = [] } = useReviews();
 
   const sentimentData = useMemo(() => {
     const positive = reviews.filter((r) => r.sentiment === "positive").length;
     const negative = reviews.filter((r) => r.sentiment === "negative").length;
     const neutral = reviews.filter((r) => r.sentiment === "neutral").length;
     const unanalyzed = reviews.filter((r) => !r.sentiment).length;
-
-    console.log("[DashboardSentiment] Computed sentiment totals", {
-      positive,
-      negative,
-      neutral,
-      unanalyzed,
-      total: reviews.length,
-    });
-
     return { positive, negative, neutral, unanalyzed, total: reviews.length };
   }, [reviews]);
 
@@ -60,30 +39,6 @@ const DashboardSentiment = () => {
       setActiveTab(sentiment);
     }
   };
-
-  if (isLoading) {
-    return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center py-20">
-          <div className="text-center space-y-3">
-            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-sm text-muted-foreground">Loading sentiment data...</p>
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  if (isError) {
-    return (
-      <DashboardLayout>
-        <div className="rounded-2xl border-2 border-destructive/30 bg-destructive/10 p-6">
-          <h3 className="text-base font-semibold text-destructive">Could not load sentiment data</h3>
-          <p className="mt-1 text-sm text-muted-foreground">{error?.message ?? "Please refresh and try again."}</p>
-        </div>
-      </DashboardLayout>
-    );
-  }
 
   return (
     <DashboardLayout>

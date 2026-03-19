@@ -62,27 +62,15 @@ const AcceptInvitation = () => {
     }
 
     setLoading(true);
-    try {
-      // Use a timeout to prevent hanging indefinitely
-      const updatePromise = supabase.auth.updateUser({ password });
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Request timed out. Please try again.")), 15000)
-      );
+    const { error } = await supabase.auth.updateUser({ password });
+    setLoading(false);
 
-      const { error } = await Promise.race([updatePromise, timeoutPromise]) as any;
-
-      if (error) {
-        toast.error(error.message);
-        setLoading(false);
-        return;
-      }
-
+    if (error) {
+      toast.error(error.message);
+    } else {
       setSuccess(true);
       toast.success("Account activated! Redirecting to dashboard…");
       setTimeout(() => navigate("/pv-dashboard"), 2000);
-    } catch (err: any) {
-      toast.error(err?.message || "Something went wrong. Please try again.");
-      setLoading(false);
     }
   };
 

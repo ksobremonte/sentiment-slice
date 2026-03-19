@@ -7,9 +7,11 @@ import {
   ParallaxImage, AnimatedCounter, FloatingElement, RevealText, ZoomImage,
 } from "@/components/ui/animated";
 import { motion } from "framer-motion";
-import pizzaVolanteLogo from "@/assets/pizza-volante-logo-transparent.png";
+import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
+import foodSpread from "@/assets/food-spread.jpg";
 const heroPizza = "/images/hero-pizza.webp";
 import pizzaSupreme from "@/assets/pizza-supreme.webp";
+import restaurantExterior from "@/assets/restaurant-exterior.jpg";
 import pizzaClassic from "@/assets/pizza-classic.webp";
 import pastaDish from "@/assets/pasta-dish.webp";
 import pizzaSlice from "@/assets/pizza-slice.webp";

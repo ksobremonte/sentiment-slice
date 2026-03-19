@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Pizza, Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,18 +26,6 @@ const Login = () => {
   const { siteKey: hcaptchaSiteKey, loading: hcaptchaKeyLoading } = useHcaptchaSiteKey();
   const navigate = useNavigate();
   const { signIn } = useAuthContext();
-
-  // Pre-warm the verify-captcha edge function to avoid cold-start delay on submit
-  useEffect(() => {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-    if (supabaseUrl && anonKey) {
-      fetch(`${supabaseUrl}/functions/v1/verify-captcha`, {
-        method: "OPTIONS",
-        headers: { apikey: anonKey },
-      }).catch(() => {});
-    }
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

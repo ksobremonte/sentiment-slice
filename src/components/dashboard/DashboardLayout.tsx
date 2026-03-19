@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/useProfile";
 import { useReviews } from "@/hooks/useReviews";
 
-import pizzaVolanteLogo from "@/assets/pizza-volante-logo-nobg.png";
+import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 import RealtimeNotificationPopup from "@/components/dashboard/RealtimeNotificationPopup";
 import NotificationDropdown from "@/components/dashboard/NotificationDropdown";
 import {

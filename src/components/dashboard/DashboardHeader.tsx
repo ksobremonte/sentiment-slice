@@ -1,4 +1,4 @@
-import pizzaVolanteLogo from "@/assets/pizza-volante-logo-nobg.png";
+import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 
 const DashboardHeader = () => {
   return (
