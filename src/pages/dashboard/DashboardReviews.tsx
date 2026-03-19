@@ -84,11 +84,14 @@ const DashboardReviews = () => {
 
   const handleDelete = useCallback(async (reviewId: string) => {
     try {
+      console.log(`[DashboardReviews] Deleting review ${reviewId}...`);
       const { error } = await supabase.from("reviews").delete().eq("id", reviewId);
       if (error) throw error;
+      console.log(`[DashboardReviews] Review ${reviewId} deleted successfully`);
       toast.success("Review deleted permanently");
       refetch();
     } catch (err) {
+      console.error("[DashboardReviews] Delete error:", err);
       toast.error(err instanceof Error ? err.message : "Failed to delete review");
     }
   }, [refetch]);
