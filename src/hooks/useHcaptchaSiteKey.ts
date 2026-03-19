@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 type UseHcaptchaSiteKeyState = {
   siteKey: string | null;
@@ -74,21 +73,29 @@ export const useHcaptchaSiteKey = (): UseHcaptchaSiteKeyState => {
           window.setTimeout(() => reject(new Error("public-config timeout")), KEY_REQUEST_TIMEOUT_MS);
         });
 
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
         const response = await Promise.race([
-          supabase.functions.invoke("public-config", {
+          fetch(`${supabaseUrl}/functions/v1/public-config`, {
             method: "GET",
+            headers: {
+              "apikey": anonKey,
+              "Content-Type": "application/json",
+            },
           }),
           timeoutPromise,
         ]);
 
         if (cancelled) return;
 
-        const invokeResponse = response as { data?: unknown; error?: unknown };
-        if (invokeResponse?.error) {
-          throw invokeResponse.error;
+        const fetchResponse = response as Response;
+        if (!fetchResponse.ok) {
+          throw new Error(`public-config returned ${fetchResponse.status}`);
         }
 
-        const resolvedKey = extractSiteKey(invokeResponse?.data);
+        const data = await fetchResponse.json();
+        const resolvedKey = extractSiteKey(data);
         if (resolvedKey) {
           setCachedSiteKey(resolvedKey);
           setSiteKey(resolvedKey);
