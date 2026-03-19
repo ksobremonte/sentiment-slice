@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useMemo, useCallback } from "react";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { SAMPLE_REVIEW_ROWS } from "@/lib/sampleReviews";
 
 export interface Review {
   id: string;
@@ -82,9 +83,11 @@ export const useReviews = () => {
         userId: user?.id ?? null,
       });
 
+      const selectColumns = "id, name, rating, feedback, sentiment, sentiment_reason, sentiment_keywords, created_at, receipt_number, photo_url, language, approved, admin_response, admin_response_at, conversation_id";
+
       const { data, error } = await supabase
         .from(REVIEWS_TABLE)
-        .select("id, name, rating, feedback, sentiment, sentiment_reason, sentiment_keywords, created_at, receipt_number, photo_url, language, approved, admin_response, admin_response_at, conversation_id")
+        .select(selectColumns)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -97,6 +100,55 @@ export const useReviews = () => {
         throw error;
       }
 
+      if (!data || data.length === 0) {
+        console.warn("[useReviews] Query returned 0 rows", {
+          table: REVIEWS_TABLE,
+          canFetchReviews,
+          userId: user?.id ?? null,
+        });
+
+        const { count, error: countError } = await supabase
+          .from(REVIEWS_TABLE)
+          .select("id", { count: "exact", head: true });
+
+        if (!countError && (count ?? 0) === 0) {
+          console.log("[useReviews] Database empty, creating sample reviews...");
+
+          const { error: seedError } = await supabase
+            .from(REVIEWS_TABLE)
+            .insert(SAMPLE_REVIEW_ROWS);
+
+          if (seedError) {
+            console.error("[useReviews] Failed to seed sample reviews", {
+              message: seedError.message,
+              code: seedError.code,
+              details: seedError.details,
+            });
+            return [];
+          }
+
+          const { data: seededData, error: seededFetchError } = await supabase
+            .from(REVIEWS_TABLE)
+            .select(selectColumns)
+            .order("created_at", { ascending: false });
+
+          if (seededFetchError) {
+            console.error("[useReviews] Failed to fetch seeded reviews", {
+              message: seededFetchError.message,
+              code: seededFetchError.code,
+              details: seededFetchError.details,
+            });
+            throw seededFetchError;
+          }
+
+          console.log("[useReviews] Seed complete", {
+            rowCount: seededData?.length ?? 0,
+          });
+
+          return (seededData ?? []) as Review[];
+        }
+      }
+
       console.log("[useReviews] Query result", {
         table: REVIEWS_TABLE,
         rowCount: data?.length ?? 0,
@@ -106,14 +158,6 @@ export const useReviews = () => {
           rating: row.rating,
         })),
       });
-
-      if (!data || data.length === 0) {
-        console.warn("[useReviews] Query returned 0 rows", {
-          table: REVIEWS_TABLE,
-          canFetchReviews,
-          userId: user?.id ?? null,
-        });
-      }
 
       return (data ?? []) as Review[];
   }, [user?.id, canFetchReviews]);
