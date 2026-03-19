@@ -9,7 +9,9 @@ import { formatDistanceToNow } from "date-fns";
 
 const DashboardSentiment = () => {
   const [activeTab, setActiveTab] = useState("negative");
-  const { data: reviews = [] } = useReviews();
+  const { data: reviews = [], isLoading, error } = useReviews();
+
+  console.log("[DashboardSentiment] reviews:", reviews.length, "loading:", isLoading, "error:", error?.message);
 
   const sentimentData = useMemo(() => {
     const positive = reviews.filter((r) => r.sentiment === "positive").length;
