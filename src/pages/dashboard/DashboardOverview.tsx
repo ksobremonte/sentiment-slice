@@ -10,6 +10,7 @@ import SentimentChart from "@/components/dashboard/SentimentChart";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useReviews } from "@/hooks/useReviews";
+import { useSeedReviews } from "@/hooks/useSeedReviews";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { subDays, isAfter, startOfDay } from "date-fns";
