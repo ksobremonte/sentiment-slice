@@ -48,17 +48,40 @@ export const useAuth = () => {
       body: { token: captchaToken },
     });
 
-    if (error) return { ok: false as const };
-    if (!data || typeof data !== "object") return { ok: false as const };
+    if (error) {
+      console.error("[auth] verify-captcha function call failed", error);
+      return { ok: false as const, reason: "Captcha verification request failed" };
+    }
 
-    // supabase-js types `data` as `any`
-    return { ok: Boolean((data as any).success) as boolean };
+    if (!data || typeof data !== "object") {
+      console.warn("[auth] verify-captcha returned invalid payload", data);
+      return { ok: false as const, reason: "Invalid captcha verification response" };
+    }
+
+    const payload = data as { success?: unknown; error?: unknown; errorCodes?: unknown };
+    const ok = Boolean(payload.success);
+    const errorCodes = Array.isArray(payload.errorCodes)
+      ? payload.errorCodes.filter((v): v is string => typeof v === "string")
+      : [];
+
+    if (!ok) {
+      console.warn("[auth] captcha verification failed", {
+        error: payload.error,
+        errorCodes,
+      });
+    }
+
+    return {
+      ok,
+      reason: typeof payload.error === "string" ? payload.error : null,
+      errorCodes,
+    };
   };
 
   const signUp = async (email: string, password: string, captchaToken: string) => {
     const verify = await verifyCaptcha(captchaToken);
     if (!verify.ok) {
-      return { data: null, error: { message: "Captcha verification failed" } };
+      return { data: null, error: { message: verify.reason ?? "Captcha verification failed" } };
     }
 
     const { data, error } = await supabase.auth.signUp({
@@ -74,7 +97,7 @@ export const useAuth = () => {
   const signIn = async (email: string, password: string, captchaToken: string) => {
     const verify = await verifyCaptcha(captchaToken);
     if (!verify.ok) {
-      return { data: null, error: { message: "Captcha verification failed" } };
+      return { data: null, error: { message: verify.reason ?? "Captcha verification failed" } };
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -92,11 +115,11 @@ export const useAuth = () => {
   const resetPassword = async (email: string, captchaToken: string) => {
     const verify = await verifyCaptcha(captchaToken);
     if (!verify.ok) {
-      return { data: null, error: { message: "Captcha verification failed" } };
+      return { data: null, error: { message: verify.reason ?? "Captcha verification failed" } };
     }
 
-    const redirectBase = import.meta.env.PROD 
-      ? "https://pizzavolante-dashboard.lovable.app" 
+    const redirectBase = import.meta.env.PROD
+      ? "https://pizzavolante-dashboard.lovable.app"
       : window.location.origin;
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${redirectBase}/reset-password`,
