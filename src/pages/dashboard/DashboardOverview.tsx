@@ -23,7 +23,9 @@ const DashboardOverview = () => {
   const [filterSentiment, setFilterSentiment] = useState<string | null>(null);
   const [aiInsight, setAiInsight] = useState<string | null>(null);
   const [insightLoading, setInsightLoading] = useState(false);
-  const { data: reviews = [] } = useReviews();
+  const { data: reviews = [], isLoading: reviewsLoading } = useReviews();
+
+  console.log("[DashboardOverview] reviews:", reviews.length, "loading:", reviewsLoading);
 
   const { data: alertSettings } = useQuery({
     queryKey: ["alert-settings"],
