@@ -31,6 +31,9 @@ const DashboardOverview = () => {
     error: reviewsErrorDetails,
   } = useReviews();
 
+  // Auto-seed sample reviews if database is empty
+  useSeedReviews(reviews.length, reviewsLoading);
+
   console.log("[DashboardOverview] Review payload", {
     reviewCount: reviews.length,
     loading: reviewsLoading,
