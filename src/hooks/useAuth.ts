@@ -95,16 +95,21 @@ export const useAuth = () => {
   };
 
   const signIn = async (email: string, password: string, captchaToken: string) => {
-    const verify = await verifyCaptcha(captchaToken);
+    // Run captcha verification and sign-in in parallel to reduce wait time
+    const [verify, authResult] = await Promise.all([
+      verifyCaptcha(captchaToken),
+      supabase.auth.signInWithPassword({ email, password }),
+    ]);
+
     if (!verify.ok) {
+      // Captcha failed — sign out any session that may have been created
+      if (authResult.data?.session) {
+        supabase.auth.signOut().catch(() => {});
+      }
       return { data: null, error: { message: verify.reason ?? "Captcha verification failed" } };
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { data, error };
+    return { data: authResult.data, error: authResult.error };
   };
 
   const signOut = async () => {
