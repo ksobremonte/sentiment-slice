@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useMemo, useCallback } from "react";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { SAMPLE_REVIEW_ROWS } from "@/lib/sampleReviews";
 
 export interface Review {
   id: string;
