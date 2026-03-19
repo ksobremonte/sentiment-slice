@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useCallback } from "react";
 import { useAuthContext } from "@/contexts/AuthContext";
 
 export interface Review {
@@ -76,16 +76,7 @@ export const useReviews = () => {
     };
   }, [queryClient, canFetchReviews, user?.id]);
 
-  return useQuery({
-    queryKey: ["reviews", user?.id ?? "anonymous"],
-    enabled: canFetchReviews,
-    staleTime: 2 * 60 * 1000,
-    gcTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-    refetchOnMount: "always",
-    retry: 3,
-    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
-    queryFn: async () => {
+  const queryFn = useCallback(async () => {
       console.log("[useReviews] Running query", {
         table: REVIEWS_TABLE,
         userId: user?.id ?? null,
@@ -125,6 +116,17 @@ export const useReviews = () => {
       }
 
       return (data ?? []) as Review[];
-    },
+  }, [user?.id, canFetchReviews]);
+
+  return useQuery({
+    queryKey: ["reviews", user?.id ?? "anonymous"],
+    enabled: canFetchReviews,
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: "always" as const,
+    retry: 3,
+    retryDelay: (attempt: number) => Math.min(1000 * 2 ** attempt, 10000),
+    queryFn,
   });
 };
