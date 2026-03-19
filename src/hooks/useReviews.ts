@@ -116,6 +116,17 @@ export const useReviews = () => {
       }
 
       return (data ?? []) as Review[];
-    },
+  }, [user?.id, canFetchReviews]);
+
+  return useQuery({
+    queryKey: ["reviews", user?.id ?? "anonymous"],
+    enabled: canFetchReviews,
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: "always" as const,
+    retry: 3,
+    retryDelay: (attempt: number) => Math.min(1000 * 2 ** attempt, 10000),
+    queryFn,
   });
 };
