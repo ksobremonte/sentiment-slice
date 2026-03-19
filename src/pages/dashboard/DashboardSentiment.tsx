@@ -9,7 +9,9 @@ import { formatDistanceToNow } from "date-fns";
 
 const DashboardSentiment = () => {
   const [activeTab, setActiveTab] = useState("negative");
-  const { data: reviews = [] } = useReviews();
+  const { data: reviews = [], isLoading, error } = useReviews();
+
+  console.log("[DashboardSentiment] reviews:", reviews.length, "loading:", isLoading, "error:", error?.message);
 
   const sentimentData = useMemo(() => {
     const positive = reviews.filter((r) => r.sentiment === "positive").length;
@@ -39,6 +41,19 @@ const DashboardSentiment = () => {
       setActiveTab(sentiment);
     }
   };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center space-y-3">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-sm text-muted-foreground">Loading sentiment data...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>

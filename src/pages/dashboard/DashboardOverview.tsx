@@ -23,7 +23,9 @@ const DashboardOverview = () => {
   const [filterSentiment, setFilterSentiment] = useState<string | null>(null);
   const [aiInsight, setAiInsight] = useState<string | null>(null);
   const [insightLoading, setInsightLoading] = useState(false);
-  const { data: reviews = [] } = useReviews();
+  const { data: reviews = [], isLoading: reviewsLoading } = useReviews();
+
+  console.log("[DashboardOverview] reviews:", reviews.length, "loading:", reviewsLoading);
 
   const { data: alertSettings } = useQuery({
     queryKey: ["alert-settings"],
@@ -150,6 +152,19 @@ const DashboardOverview = () => {
     };
     generateInsight();
   }, [reviews.length]); // Only regenerate when review count changes
+
+  if (reviewsLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center space-y-3">
+            <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto" />
+            <p className="text-sm text-muted-foreground">Loading dashboard data...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   if (view.type === "stats") {
     const commentsForStats = reviews.map((r) => ({
