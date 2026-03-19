@@ -55,19 +55,29 @@ export const useReviews = () => {
     staleTime: 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
+    retry: 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
     queryFn: async () => {
       console.log("[useReviews] Fetching reviews from database...");
+      console.log("[useReviews] Session user:", session?.user?.id);
+
       const { data, error } = await supabase
         .from("reviews")
-        .select("id, name, rating, feedback, sentiment, sentiment_reason, sentiment_keywords, created_at, photo_url, language, approved, admin_response, admin_response_at, conversation_id")
+        .select("id, name, rating, feedback, sentiment, sentiment_reason, sentiment_keywords, created_at, receipt_number, photo_url, language, approved, admin_response, admin_response_at, conversation_id")
         .order("created_at", { ascending: false });
 
       if (error) {
-        console.error("[useReviews] Fetch error:", error.message);
+        console.error("[useReviews] Fetch error:", error.message, error.code, error.details);
         throw error;
       }
-      console.log(`[useReviews] Fetched ${data?.length ?? 0} reviews successfully`);
-      return data as Review[];
+
+      console.log(`[useReviews] ✅ Fetched ${data?.length ?? 0} reviews successfully`);
+
+      if (!data || data.length === 0) {
+        console.warn("[useReviews] ⚠️ Query returned 0 reviews - this may indicate an RLS issue");
+      }
+
+      return (data ?? []) as Review[];
     },
   });
 };
