@@ -98,7 +98,7 @@ const DashboardOverview = () => {
         words[w] = (words[w] || 0) + 1;
       });
     });
-    const topComplaint = Object.entries(words).sort((a, b) => b[1] - a[1])[0]?.[0] || "none";
+    const topComplaint = Object.entries(words).sort((a, b) => b[1] - a[1])[0]?.[0] || "No data available";
 
     // Most praised aspect
     const posReviews = periodForKeywords.filter((r) => r.sentiment === "positive");
@@ -108,7 +108,7 @@ const DashboardOverview = () => {
         posWords[w] = (posWords[w] || 0) + 1;
       });
     });
-    const topPraise = Object.entries(posWords).sort((a, b) => b[1] - a[1])[0]?.[0] || "none";
+    const topPraise = Object.entries(posWords).sort((a, b) => b[1] - a[1])[0]?.[0] || "No data available";
 
     // Sentiment trend (week-over-week score change)
     const trendDirection = scoreDiff > 0 ? "up" : scoreDiff < 0 ? "down" : "neutral";
