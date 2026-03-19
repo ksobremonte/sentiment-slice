@@ -22,13 +22,26 @@ const DashboardReviews = () => {
   const [isAISorted, setIsAISorted] = useState(false);
   const [page, setPage] = useState(1);
   const [sentimentView, setSentimentView] = useState<Review | null>(null);
-  const { data: reviews = [], refetch } = useReviews();
+  const {
+    data: reviews = [],
+    refetch,
+    isLoading,
+    isError,
+    error,
+  } = useReviews();
   const { sortReviewsByRelevance, isSorting, error: sortError } = useAIReviewSort();
   const { role } = useAuthContext();
   const isAdmin = role === "admin";
 
+  console.log("[DashboardReviews] Query payload", {
+    reviewCount: reviews.length,
+    loading: isLoading,
+    hasError: isError,
+    errorMessage: error?.message ?? null,
+  });
+
   useEffect(() => {
-    if (reviews.length > 0 && !isAISorted) {
+    if (!isAISorted) {
       setSortedReviews(reviews);
     }
   }, [reviews, isAISorted]);
@@ -72,7 +85,11 @@ const DashboardReviews = () => {
           sentiment_keywords: keyPhrases || null,
         })
         .eq("id", review.id);
-      if (error) { console.error("[DashboardReviews] Save sentiment error:", error); toast.error("Failed to save analysis"); return; }
+      if (error) {
+        console.error("[DashboardReviews] Save sentiment error:", error);
+        toast.error("Failed to save analysis");
+        return;
+      }
 
       console.log(`[DashboardReviews] Sentiment saved successfully for review ${review.id}`);
       refetch();
@@ -110,7 +127,33 @@ const DashboardReviews = () => {
   const paginatedReviews = filteredReviews.slice((page - 1) * REVIEWS_PER_PAGE, page * REVIEWS_PER_PAGE);
 
   // Reset page when filters change
-  useEffect(() => { setPage(1); }, [searchQuery, filterSentiment, filterRating, isAISorted]);
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, filterSentiment, filterRating, isAISorted]);
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center space-y-3">
+            <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto" />
+            <p className="text-sm text-muted-foreground">Loading reviews...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (isError) {
+    return (
+      <DashboardLayout>
+        <div className="rounded-2xl border-2 border-destructive/30 bg-destructive/10 p-6">
+          <h3 className="text-base font-semibold text-destructive">Could not load reviews</h3>
+          <p className="mt-1 text-sm text-muted-foreground">{error?.message ?? "Please refresh and try again."}</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   if (sentimentView) {
     return (
