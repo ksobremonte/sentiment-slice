@@ -63,6 +63,7 @@ const DashboardReviews = () => {
       }
 
       const { sentiment, reasoning, keyPhrases } = await response.json();
+      console.log(`[DashboardReviews] Saving sentiment for review ${review.id}:`, { sentiment, reasoning });
       const { error } = await supabase
         .from("reviews")
         .update({
@@ -71,8 +72,9 @@ const DashboardReviews = () => {
           sentiment_keywords: keyPhrases || null,
         })
         .eq("id", review.id);
-      if (error) { toast.error("Failed to save analysis"); return; }
+      if (error) { console.error("[DashboardReviews] Save sentiment error:", error); toast.error("Failed to save analysis"); return; }
 
+      console.log(`[DashboardReviews] Sentiment saved successfully for review ${review.id}`);
       refetch();
       setSentimentView({ ...review, sentiment, sentiment_reason: reasoning || null, sentiment_keywords: keyPhrases || null });
     } catch (err) {
