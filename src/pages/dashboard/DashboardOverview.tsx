@@ -20,6 +20,7 @@ type ViewState =
   | { type: "stats"; statsType: "comments" | "customers" | "response" };
 
 const DashboardOverview = () => {
+  const navigate = useNavigate();
   const [view, setView] = useState<ViewState>({ type: "overview" });
   const [filterSentiment, setFilterSentiment] = useState<string | null>(null);
   const [aiInsight, setAiInsight] = useState<string | null>(null);
