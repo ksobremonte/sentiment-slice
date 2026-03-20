@@ -163,8 +163,8 @@ const SentimentResult = ({ comment, sentimentReason, sentimentKeywords, onBack }
                 <Button variant="outline" onClick={onBack}>
                   Analyze Another
                 </Button>
-                <Button variant="default">
-                  Export Report
+                <Button variant="default" onClick={handleExport}>
+                  <Download className="w-4 h-4 mr-2" /> Export Report
                 </Button>
               </div>
             </div>
