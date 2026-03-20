@@ -53,7 +53,7 @@ export const useReviews = () => {
       // Fetch all reviews directly for dashboard (admin view sees all)
       const { data, error } = await supabase
         .from("reviews")
-        .select("id, name, rating, feedback, sentiment, sentiment_reason, sentiment_keywords, created_at, photo_url, language, approved, admin_response, admin_response_at, conversation_id")
+        .select("id, name, rating, feedback, sentiment, sentiment_reason, sentiment_keywords, created_at, photo_url, photo_urls, language, approved, admin_response, admin_response_at, conversation_id")
         .order("created_at", { ascending: false });
 
       if (error) throw error;

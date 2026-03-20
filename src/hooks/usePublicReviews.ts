@@ -22,7 +22,7 @@ export const usePublicReviews = () => {
       // The view already filters to approved = true
       const { data, error } = await supabase
         .from("reviews_public")
-        .select("id, name, rating, feedback, sentiment, created_at, photo_url, language, approved")
+        .select("id, name, rating, feedback, sentiment, created_at, photo_url, photo_urls, language, approved")
         .order("created_at", { ascending: false });
 
       if (error) {

@@ -1,4 +1,5 @@
-import { Star, User, Image as ImageIcon } from "lucide-react";
+import { useState } from "react";
+import { Star, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PublicReview } from "@/hooks/usePublicReviews";
 import { formatDistanceToNow } from "date-fns";
@@ -15,6 +16,15 @@ interface PublicReviewCardProps {
 
 const PublicReviewCard = ({ review }: PublicReviewCardProps) => {
   const timeAgo = formatDistanceToNow(new Date(review.created_at), { addSuffix: true });
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  // Collect all photo URLs
+  const allPhotos: string[] = [];
+  if (review.photo_urls && review.photo_urls.length > 0) {
+    allPhotos.push(...review.photo_urls);
+  } else if (review.photo_url) {
+    allPhotos.push(review.photo_url);
+  }
 
   return (
     <motion.div
@@ -46,21 +56,25 @@ const PublicReviewCard = ({ review }: PublicReviewCardProps) => {
           
           <p className="text-sm text-foreground/80 leading-relaxed">{review.feedback}</p>
           
-          {review.photo_url && (
-            <Dialog>
-              <DialogTrigger asChild>
-                <button className="mt-3 rounded-lg overflow-hidden border border-border hover:border-primary/50 transition-colors cursor-pointer">
-                  <img
-                    src={review.photo_url}
-                    alt="Review attachment"
-                    className="w-32 h-24 object-cover"
-                  />
-                </button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl bg-card">
-                <img src={review.photo_url} alt="Review attachment" className="w-full rounded-xl" />
-              </DialogContent>
-            </Dialog>
+          {allPhotos.length > 0 && (
+            <div className="flex gap-2 mt-3 flex-wrap">
+              {allPhotos.map((url, i) => (
+                <Dialog key={i}>
+                  <DialogTrigger asChild>
+                    <button className="rounded-lg overflow-hidden border border-border hover:border-primary/50 transition-colors cursor-pointer">
+                      <img
+                        src={url}
+                        alt={`Review photo ${i + 1}`}
+                        className="w-28 h-20 object-cover"
+                      />
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl bg-card">
+                    <img src={url} alt={`Review photo ${i + 1}`} className="w-full rounded-xl" />
+                  </DialogContent>
+                </Dialog>
+              ))}
+            </div>
           )}
         </div>
       </div>
