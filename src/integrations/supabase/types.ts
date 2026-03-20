@@ -286,6 +286,45 @@ export type Database = {
         }
         Relationships: []
       }
+      review_reactions: {
+        Row: {
+          created_at: string
+          id: string
+          reaction: string
+          review_id: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reaction: string
+          review_id: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reaction?: string
+          review_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_reactions_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_reactions_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reviews: {
         Row: {
           admin_response: string | null
