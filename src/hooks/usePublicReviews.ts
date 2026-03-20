@@ -9,6 +9,7 @@ export interface PublicReview {
   sentiment: string | null;
   created_at: string;
   photo_url: string | null;
+  photo_urls: string[] | null;
   language: string | null;
   approved: boolean | null;
 }
