@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Star, User } from "lucide-react";
+import { Star, User, ThumbsUp, ThumbsDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PublicReview } from "@/hooks/usePublicReviews";
 import { formatDistanceToNow } from "date-fns";
@@ -12,11 +12,14 @@ import {
 
 interface PublicReviewCardProps {
   review: PublicReview;
+  likes: number;
+  dislikes: number;
+  userReaction: string | null;
+  onReact: (reviewId: string, reaction: "like" | "dislike") => void;
 }
 
-const PublicReviewCard = ({ review }: PublicReviewCardProps) => {
+const PublicReviewCard = ({ review, likes, dislikes, userReaction, onReact }: PublicReviewCardProps) => {
   const timeAgo = formatDistanceToNow(new Date(review.created_at), { addSuffix: true });
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Collect all photo URLs
   const allPhotos: string[] = [];
@@ -76,6 +79,34 @@ const PublicReviewCard = ({ review }: PublicReviewCardProps) => {
               ))}
             </div>
           )}
+
+          {/* Like / Dislike buttons */}
+          <div className="flex items-center gap-4 mt-3 pt-2 border-t border-border">
+            <button
+              onClick={() => onReact(review.id, "like")}
+              className={cn(
+                "flex items-center gap-1.5 text-xs font-medium transition-colors rounded-lg px-2.5 py-1.5",
+                userReaction === "like"
+                  ? "bg-success/15 text-success"
+                  : "text-muted-foreground hover:text-success hover:bg-success/10"
+              )}
+            >
+              <ThumbsUp className={cn("w-4 h-4", userReaction === "like" && "fill-success")} />
+              <span>{likes}</span>
+            </button>
+            <button
+              onClick={() => onReact(review.id, "dislike")}
+              className={cn(
+                "flex items-center gap-1.5 text-xs font-medium transition-colors rounded-lg px-2.5 py-1.5",
+                userReaction === "dislike"
+                  ? "bg-destructive/15 text-destructive"
+                  : "text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+              )}
+            >
+              <ThumbsDown className={cn("w-4 h-4", userReaction === "dislike" && "fill-destructive")} />
+              <span>{dislikes}</span>
+            </button>
+          </div>
         </div>
       </div>
     </motion.div>
