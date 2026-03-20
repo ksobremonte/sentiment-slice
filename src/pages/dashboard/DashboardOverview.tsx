@@ -229,6 +229,7 @@ const DashboardOverview = () => {
           trend="neutral"
           trendValue="this week"
           description="from negative reviews"
+          onClick={() => navigate("/pv-dashboard/reviews")}
         />
         <StatsCard
           title="Most Praised Aspect"
