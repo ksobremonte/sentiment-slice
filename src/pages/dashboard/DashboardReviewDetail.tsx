@@ -145,19 +145,32 @@ const DashboardReviewDetail = () => {
             </div>
 
 
-            {/* Photo */}
-            {review.photo_url && (
-              <Dialog>
-                <DialogTrigger asChild>
-                  <button className="flex items-center gap-2 text-sm text-primary hover:underline font-medium">
-                    <ImageIcon className="w-4 h-4" /> View attached photo
-                  </button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl bg-card">
-                  <img src={review.photo_url} alt="Review attachment" className="w-full rounded-xl" />
-                </DialogContent>
-              </Dialog>
-            )}
+            {/* Photos */}
+            {(() => {
+              const allPhotos: string[] = [];
+              if (review.photo_urls && review.photo_urls.length > 0) {
+                allPhotos.push(...review.photo_urls);
+              } else if (review.photo_url) {
+                allPhotos.push(review.photo_url);
+              }
+              if (allPhotos.length === 0) return null;
+              return (
+                <div className="flex gap-3 flex-wrap">
+                  {allPhotos.map((url, i) => (
+                    <Dialog key={i}>
+                      <DialogTrigger asChild>
+                        <button className="rounded-xl overflow-hidden border-2 border-border hover:border-primary/50 transition-colors cursor-pointer">
+                          <img src={url} alt={`Review photo ${i + 1}`} className="w-32 h-24 object-cover" />
+                        </button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl bg-card">
+                        <img src={url} alt={`Review photo ${i + 1}`} className="w-full rounded-xl" />
+                      </DialogContent>
+                    </Dialog>
+                  ))}
+                </div>
+              );
+            })()}
 
             {/* Admin Response */}
             {review.admin_response && (
