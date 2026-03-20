@@ -173,6 +173,12 @@ Ilocano negative: madi, saan a nasayaat, narigat, bassit, tamnay (meaning "kulan
 Cebuano/Bisaya: treat as Filipino dialect, translate before classifying.
 Translate non-English before classifying.
 
+EMOJI SENTIMENT MAPPING (auto-detect and classify):
+Positive emojis: 😊 😍 🥰 😋 🤤 👍 ❤️ 🔥 💯 ⭐ 🎉 👏 😎 🙌 💪 ✨ 💖 😁 😄 🥳 👌 🫶 💕
+Negative emojis: 😡 😤 🤮 🤢 👎 💩 😒 😠 😞 😢 😭 🙄 😑 👊 🚫 ❌ 😣 😖 😩 😫 🤬 💔
+Neutral emojis: 😐 🤔 😶 🫤 😑 🤷 📷 📸 🍕 🍽️ 🏠 📝 ℹ️
+When emojis are present, factor them into the overall sentiment. If text and emojis conflict, weigh the text more heavily but note the emoji sentiment.
+
 CLASSIFICATION (text only, ignore star ratings):
 - POSITIVE: praise, satisfaction, enthusiasm, recommendations
 - NEGATIVE: complaints, disappointment, frustration, criticism
