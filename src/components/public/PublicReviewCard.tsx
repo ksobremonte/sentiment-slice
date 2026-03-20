@@ -65,7 +65,7 @@ const PublicReviewCard = ({ review }: PublicReviewCardProps) => {
                       <img
                         src={url}
                         alt={`Review photo ${i + 1}`}
-                        className="w-36 h-28 object-cover"
+                        className="w-[19rem] h-48 object-cover"
                       />
                     </button>
                   </DialogTrigger>
