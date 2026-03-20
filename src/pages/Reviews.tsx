@@ -142,7 +142,7 @@ const Reviews = () => {
   const relevantPhotos = photos.filter(p => p.status === "relevant" && p.url);
   const hasIrrelevantPhotos = photos.some(p => p.status === "irrelevant");
   const isProcessing = photos.some(p => p.status === "uploading" || p.status === "analyzing");
-  const canSubmit = relevantPhotos.length >= MIN_PHOTOS && !isProcessing && !hasIrrelevantPhotos;
+  const canSubmit = (photos.length === 0 || relevantPhotos.length >= MIN_PHOTOS) && !isProcessing && !hasIrrelevantPhotos;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
