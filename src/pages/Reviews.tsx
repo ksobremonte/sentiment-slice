@@ -21,7 +21,7 @@ const reviewSchema = z.object({
   receipt_number: z.string().trim().min(1, "Receipt number is required").max(50, "Receipt number must be less than 50 characters"),
 });
 
-const MIN_PHOTOS = 2;
+const MIN_PHOTOS = 1;
 const MAX_PHOTOS = 3;
 
 interface PhotoItem {
