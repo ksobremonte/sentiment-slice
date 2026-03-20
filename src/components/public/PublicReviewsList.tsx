@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Star, MessageSquare, Loader2, ArrowUpDown } from "lucide-react";
 import { usePublicReviews } from "@/hooks/usePublicReviews";
+import { useReviewReactions } from "@/hooks/useReviewReactions";
 import PublicReviewCard from "./PublicReviewCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,13 @@ const PublicReviewsList = () => {
   const { data: reviews = [], isLoading } = usePublicReviews();
   const [sort, setSort] = useState<SortOption>("latest");
   const [page, setPage] = useState(1);
+
+  const reviewIds = useMemo(() => reviews.map((r) => r.id), [reviews]);
+  const { getCounts, getUserReaction, toggleReaction } = useReviewReactions(reviewIds);
+
+  const handleReact = (reviewId: string, reaction: "like" | "dislike") => {
+    toggleReaction.mutate({ reviewId, reaction });
+  };
 
   const sortedReviews = useMemo(() => {
     const sorted = [...reviews];
@@ -83,9 +91,19 @@ const PublicReviewsList = () => {
 
       {/* Reviews */}
       <div className="grid gap-4">
-        {paginatedReviews.map((review) => (
-          <PublicReviewCard key={review.id} review={review} />
-        ))}
+        {paginatedReviews.map((review) => {
+          const counts = getCounts(review.id);
+          return (
+            <PublicReviewCard
+              key={review.id}
+              review={review}
+              likes={counts.likes}
+              dislikes={counts.dislikes}
+              userReaction={getUserReaction(review.id)}
+              onReact={handleReact}
+            />
+          );
+        })}
       </div>
 
       {/* Pagination */}
