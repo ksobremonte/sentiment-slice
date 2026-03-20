@@ -184,7 +184,14 @@ MIXED SENTIMENT RULES:
 3. Decisiveness: If one sentiment is clearly stronger, pick that one only. If it is a clear split, use two separated by comma.
 4. Output: Provide only the label(s) in the sentiment field.
 
-Detect sarcasm and emoji sentiment. Base result on meaning, not unknown words.`;
+Detect sarcasm and emoji sentiment. Base result on meaning, not unknown words.
+
+EMOJI SENTIMENT MAPPING:
+- POSITIVE emojis: 😊 😁 😍 🥰 😋 🤤 👍 👌 🔥 ❤️ 💯 🎉 🥳 ⭐ 🌟 ✨ 😎 🙌 💪 😄 😃 🤩 💖 💕 👏 🥇 🏆 ✅ 💚 💙 💛
+- NEGATIVE emojis: 😡 😤 🤮 🤢 👎 😠 😒 😞 😢 😭 💔 🚫 ❌ 😑 😩 😫 🙄 😣 😖 😵 🤬 ⚠️ 💀 ☠️ 😰 😨 😱 🤧
+- NEUTRAL emojis: 😐 🤔 😶 🫤 🤷 😑 📝 📌 ℹ️ 🔔 📢 🙂 😏 🫡
+
+When a review consists primarily of emojis with little or no text, classify sentiment based on the dominant emoji category above. When emojis accompany text, use them to reinforce or override ambiguous text sentiment.`;
 
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
