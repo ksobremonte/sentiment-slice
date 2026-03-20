@@ -1,8 +1,10 @@
-import { ArrowLeft, ThumbsUp, ThumbsDown, Minus, Sparkles, Quote, Tag } from "lucide-react";
+import { useRef, useCallback } from "react";
+import { ArrowLeft, ThumbsUp, ThumbsDown, Minus, Sparkles, Quote, Tag, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Comment } from "./CommentCard";
 import { Badge } from "@/components/ui/badge";
+import html2canvas from "html2canvas";
 
 interface SentimentResultProps {
   comment: Comment;
