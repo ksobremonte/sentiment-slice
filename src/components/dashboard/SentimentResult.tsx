@@ -14,6 +14,17 @@ interface SentimentResultProps {
 }
 
 const SentimentResult = ({ comment, sentimentReason, sentimentKeywords, onBack }: SentimentResultProps) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleExport = useCallback(async () => {
+    if (!cardRef.current) return;
+    const canvas = await html2canvas(cardRef.current, { backgroundColor: null, scale: 2 });
+    const link = document.createElement("a");
+    link.download = `sentiment-${comment.sentiment || "analysis"}-${Date.now()}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  }, [comment.sentiment]);
+
   const getSentimentData = () => {
     switch (comment.sentiment) {
       case "positive":
