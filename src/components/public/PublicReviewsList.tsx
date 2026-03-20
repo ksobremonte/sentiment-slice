@@ -14,6 +14,13 @@ const PublicReviewsList = () => {
   const [sort, setSort] = useState<SortOption>("latest");
   const [page, setPage] = useState(1);
 
+  const reviewIds = useMemo(() => reviews.map((r) => r.id), [reviews]);
+  const { getCounts, getUserReaction, toggleReaction } = useReviewReactions(reviewIds);
+
+  const handleReact = (reviewId: string, reaction: "like" | "dislike") => {
+    toggleReaction.mutate({ reviewId, reaction });
+  };
+
   const sortedReviews = useMemo(() => {
     const sorted = [...reviews];
     switch (sort) {
