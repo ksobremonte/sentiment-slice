@@ -147,24 +147,32 @@ const ReviewCard = ({ review, onAnalyze, onViewSentiment }: ReviewCardProps) => 
             </div>
           )}
           
-          {/* Photo Preview */}
-          {review.photo_url && (
-            <Dialog>
-              <DialogTrigger asChild>
-                <button className="mt-4 flex items-center gap-2 text-sm text-primary hover:underline font-medium">
-                  <ImageIcon className="w-4 h-4" />
-                  View attached photo
-                </button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl bg-card">
-                <img
-                  src={review.photo_url}
-                  alt="Review attachment"
-                  className="w-full rounded-xl"
-                />
-              </DialogContent>
-            </Dialog>
-          )}
+          {/* Photo Previews */}
+          {(() => {
+            const allPhotos: string[] = [];
+            if (review.photo_urls && review.photo_urls.length > 0) {
+              allPhotos.push(...review.photo_urls);
+            } else if (review.photo_url) {
+              allPhotos.push(review.photo_url);
+            }
+            if (allPhotos.length === 0) return null;
+            return (
+              <div className="flex gap-2 mt-4 flex-wrap">
+                {allPhotos.map((url, i) => (
+                  <Dialog key={i}>
+                    <DialogTrigger asChild>
+                      <button className="rounded-lg overflow-hidden border border-border hover:border-primary/50 transition-colors cursor-pointer">
+                        <img src={url} alt={`Review photo ${i + 1}`} className="w-24 h-18 object-cover" />
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl bg-card">
+                      <img src={url} alt={`Review photo ${i + 1}`} className="w-full rounded-xl" />
+                    </DialogContent>
+                  </Dialog>
+                ))}
+              </div>
+            );
+          })()}
           
           <p className="text-xs text-muted-foreground mt-4">{timeAgo}</p>
         </div>
