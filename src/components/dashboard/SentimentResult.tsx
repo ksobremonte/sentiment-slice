@@ -67,7 +67,7 @@ const SentimentResult = ({ comment, sentimentReason, sentimentKeywords, onBack }
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-8">
         <div className="max-w-2xl mx-auto">
-          <div className={cn(
+          <div ref={cardRef} className={cn(
             "relative overflow-hidden rounded-2xl border-2 p-8 animate-scale-in",
             sentimentData.borderColor,
             sentimentData.bgColor
