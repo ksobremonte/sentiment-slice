@@ -138,30 +138,36 @@ Deno.serve(async (req) => {
 
     // Fetch user details from auth
     const userIds = roles.map((r: any) => r.user_id);
-    const usersWithDetails = [];
 
-    for (const userId of userIds) {
-      const { data: { user } } = await adminClient.auth.admin.getUserById(userId);
-      const { data: profile } = await adminClient
-        .from("profiles")
-        .select("display_name, avatar_url")
-        .eq("user_id", userId)
-        .maybeSingle();
+    // Fetch all user details in parallel for speed
+    const usersWithDetails = await Promise.all(
+      userIds.map(async (userId: string) => {
+        const [authResult, profileResult] = await Promise.all([
+          adminClient.auth.admin.getUserById(userId),
+          adminClient
+            .from("profiles")
+            .select("display_name, avatar_url")
+            .eq("user_id", userId)
+            .maybeSingle(),
+        ]);
 
-      const role = roles.find((r: any) => r.user_id === userId);
-      
-      usersWithDetails.push({
-        id: role.id,
-        user_id: userId,
-        email: user?.email || "Unknown",
-        display_name: profile?.display_name || user?.email?.split("@")[0] || "User",
-        avatar_url: profile?.avatar_url || null,
-        role: role.role,
-        created_at: role.created_at,
-        email_confirmed: !!user?.email_confirmed_at,
-        last_sign_in: user?.last_sign_in_at || null,
-      });
-    }
+        const user = authResult.data?.user;
+        const profile = profileResult.data;
+        const role = roles.find((r: any) => r.user_id === userId);
+
+        return {
+          id: role.id,
+          user_id: userId,
+          email: user?.email || "Unknown",
+          display_name: profile?.display_name || user?.email?.split("@")[0] || "User",
+          avatar_url: profile?.avatar_url || null,
+          role: role.role,
+          created_at: role.created_at,
+          email_confirmed: !!user?.email_confirmed_at,
+          last_sign_in: user?.last_sign_in_at || null,
+        };
+      })
+    );
 
     return new Response(JSON.stringify(usersWithDetails), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
