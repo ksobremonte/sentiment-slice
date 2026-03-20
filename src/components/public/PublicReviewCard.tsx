@@ -49,9 +49,12 @@ const PublicReviewCard = ({ review }: PublicReviewCardProps) => {
           {review.photo_url && (
             <Dialog>
               <DialogTrigger asChild>
-                <button className="mt-3 flex items-center gap-1.5 text-xs text-primary hover:underline font-medium">
-                  <ImageIcon className="w-3.5 h-3.5" />
-                  View photo
+                <button className="mt-3 rounded-lg overflow-hidden border border-border hover:border-primary/50 transition-colors cursor-pointer">
+                  <img
+                    src={review.photo_url}
+                    alt="Review attachment"
+                    className="w-32 h-24 object-cover"
+                  />
                 </button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl bg-card">
