@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Star, MessageSquare, Loader2, ArrowUpDown } from "lucide-react";
 import { usePublicReviews } from "@/hooks/usePublicReviews";
+import { useReviewReactions } from "@/hooks/useReviewReactions";
 import PublicReviewCard from "./PublicReviewCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
