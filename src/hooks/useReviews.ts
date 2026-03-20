@@ -13,6 +13,7 @@ export interface Review {
   created_at: string;
   receipt_number: string | null;
   photo_url: string | null;
+  photo_urls: string[] | null;
   language: string | null;
   approved: boolean | null;
   admin_response: string | null;
