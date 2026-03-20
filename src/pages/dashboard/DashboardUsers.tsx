@@ -183,7 +183,26 @@ const DashboardUsers = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="rounded-xl gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-xl gap-2"
+                disabled={filteredUsers.length === 0}
+                onClick={() => {
+                  const data = filteredUsers.map((u) => ({
+                    Name: u.display_name,
+                    Email: u.email,
+                    Role: u.role === "admin" ? "Admin" : "Staff",
+                    Status: u.email_confirmed ? "Verified" : "Pending",
+                  }));
+                  const ws = XLSX.utils.json_to_sheet(data);
+                  ws["!cols"] = [{ wch: 25 }, { wch: 35 }, { wch: 10 }, { wch: 12 }];
+                  const wb = XLSX.utils.book_new();
+                  XLSX.utils.book_append_sheet(wb, ws, "Users");
+                  XLSX.writeFile(wb, `users-${new Date().toISOString().slice(0, 10)}.xlsx`);
+                  toast.success("Users exported successfully");
+                }}
+              >
                 <Download className="h-4 w-4" />
                 Export
               </Button>
