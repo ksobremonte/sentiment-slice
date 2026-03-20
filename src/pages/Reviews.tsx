@@ -21,7 +21,7 @@ const reviewSchema = z.object({
   receipt_number: z.string().trim().min(1, "Receipt number is required").max(50, "Receipt number must be less than 50 characters"),
 });
 
-const MIN_PHOTOS = 1;
+const MIN_PHOTOS = 0;
 const MAX_PHOTOS = 3;
 
 interface PhotoItem {
@@ -142,7 +142,7 @@ const Reviews = () => {
   const relevantPhotos = photos.filter(p => p.status === "relevant" && p.url);
   const hasIrrelevantPhotos = photos.some(p => p.status === "irrelevant");
   const isProcessing = photos.some(p => p.status === "uploading" || p.status === "analyzing");
-  const canSubmit = relevantPhotos.length >= MIN_PHOTOS && !isProcessing && !hasIrrelevantPhotos;
+  const canSubmit = (photos.length === 0 || relevantPhotos.length >= MIN_PHOTOS) && !isProcessing && !hasIrrelevantPhotos;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -269,7 +269,7 @@ const Reviews = () => {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <Label className="text-foreground font-medium text-sm">
-                        Upload Photos <span className="text-destructive">*</span>
+                        Upload Photos (optional)
                       </Label>
                       <span className="text-xs text-muted-foreground font-medium">
                         {photos.length}/{MAX_PHOTOS} · Min {MIN_PHOTOS} required
