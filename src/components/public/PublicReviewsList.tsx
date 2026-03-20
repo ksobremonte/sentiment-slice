@@ -91,8 +91,19 @@ const PublicReviewsList = () => {
 
       {/* Reviews */}
       <div className="grid gap-4">
-        {paginatedReviews.map((review) => (
-          <PublicReviewCard key={review.id} review={review} />
+        {paginatedReviews.map((review) => {
+          const counts = getCounts(review.id);
+          return (
+            <PublicReviewCard
+              key={review.id}
+              review={review}
+              likes={counts.likes}
+              dislikes={counts.dislikes}
+              userReaction={getUserReaction(review.id)}
+              onReact={handleReact}
+            />
+          );
+        })}
         ))}
       </div>
 
