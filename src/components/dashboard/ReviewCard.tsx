@@ -162,7 +162,7 @@ const ReviewCard = ({ review, onAnalyze, onViewSentiment }: ReviewCardProps) => 
                   <Dialog key={i}>
                     <DialogTrigger asChild>
                       <button className="rounded-lg overflow-hidden border border-border hover:border-primary/50 transition-colors cursor-pointer">
-                        <img src={url} alt={`Review photo ${i + 1}`} className="w-36 h-28 object-cover" />
+                        <img src={url} alt={`Review photo ${i + 1}`} className="w-[19rem] h-48 object-cover" />
                       </button>
                     </DialogTrigger>
                     <DialogContent className="max-w-2xl bg-card">
