@@ -299,6 +299,7 @@ export type Database = {
           language: string | null
           name: string
           photo_url: string | null
+          photo_urls: string[] | null
           rating: number
           receipt_number: string | null
           sentiment: string | null
@@ -317,6 +318,7 @@ export type Database = {
           language?: string | null
           name: string
           photo_url?: string | null
+          photo_urls?: string[] | null
           rating: number
           receipt_number?: string | null
           sentiment?: string | null
@@ -335,6 +337,7 @@ export type Database = {
           language?: string | null
           name?: string
           photo_url?: string | null
+          photo_urls?: string[] | null
           rating?: number
           receipt_number?: string | null
           sentiment?: string | null
@@ -383,6 +386,7 @@ export type Database = {
           language: string | null
           name: string | null
           photo_url: string | null
+          photo_urls: string[] | null
           rating: number | null
           sentiment: string | null
         }
@@ -394,6 +398,7 @@ export type Database = {
           language?: string | null
           name?: string | null
           photo_url?: string | null
+          photo_urls?: string[] | null
           rating?: number | null
           sentiment?: string | null
         }
@@ -405,6 +410,7 @@ export type Database = {
           language?: string | null
           name?: string | null
           photo_url?: string | null
+          photo_urls?: string[] | null
           rating?: number | null
           sentiment?: string | null
         }
