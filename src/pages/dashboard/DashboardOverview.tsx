@@ -238,6 +238,7 @@ const DashboardOverview = () => {
           trend="neutral"
           trendValue="this week"
           description="from positive reviews"
+          onClick={() => navigate("/pv-dashboard/reviews")}
         />
         <StatsCard
           title="Sentiment Trend"
@@ -246,6 +247,7 @@ const DashboardOverview = () => {
           trend={stats.trendDirection as "up" | "down" | "neutral"}
           trendValue={`${stats.scoreDiffAbs}pts`}
           description="week-over-week"
+          onClick={() => navigate("/pv-dashboard/trends")}
         />
         <div className="group relative overflow-hidden rounded-2xl bg-card border-2 border-border p-6 shadow-card">
           <div className="flex items-start justify-between mb-4">
