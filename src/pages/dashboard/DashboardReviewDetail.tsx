@@ -160,7 +160,7 @@ const DashboardReviewDetail = () => {
                     <Dialog key={i}>
                       <DialogTrigger asChild>
                         <button className="rounded-xl overflow-hidden border-2 border-border hover:border-primary/50 transition-colors cursor-pointer">
-                          <img src={url} alt={`Review photo ${i + 1}`} className="w-32 h-24 object-cover" />
+                          <img src={url} alt={`Review photo ${i + 1}`} className="w-40 h-32 object-cover" />
                         </button>
                       </DialogTrigger>
                       <DialogContent className="max-w-2xl bg-card">
