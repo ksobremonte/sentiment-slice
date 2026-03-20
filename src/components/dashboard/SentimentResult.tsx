@@ -1,8 +1,10 @@
-import { ArrowLeft, ThumbsUp, ThumbsDown, Minus, Sparkles, Quote, Tag } from "lucide-react";
+import { useRef, useCallback } from "react";
+import { ArrowLeft, ThumbsUp, ThumbsDown, Minus, Sparkles, Quote, Tag, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Comment } from "./CommentCard";
 import { Badge } from "@/components/ui/badge";
+import html2canvas from "html2canvas";
 
 interface SentimentResultProps {
   comment: Comment;
@@ -12,6 +14,17 @@ interface SentimentResultProps {
 }
 
 const SentimentResult = ({ comment, sentimentReason, sentimentKeywords, onBack }: SentimentResultProps) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleExport = useCallback(async () => {
+    if (!cardRef.current) return;
+    const canvas = await html2canvas(cardRef.current, { backgroundColor: null, scale: 2 });
+    const link = document.createElement("a");
+    link.download = `sentiment-${comment.sentiment || "analysis"}-${Date.now()}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  }, [comment.sentiment]);
+
   const getSentimentData = () => {
     switch (comment.sentiment) {
       case "positive":
@@ -54,7 +67,7 @@ const SentimentResult = ({ comment, sentimentReason, sentimentKeywords, onBack }
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-8">
         <div className="max-w-2xl mx-auto">
-          <div className={cn(
+          <div ref={cardRef} className={cn(
             "relative overflow-hidden rounded-2xl border-2 p-8 animate-scale-in",
             sentimentData.borderColor,
             sentimentData.bgColor
@@ -150,8 +163,8 @@ const SentimentResult = ({ comment, sentimentReason, sentimentKeywords, onBack }
                 <Button variant="outline" onClick={onBack}>
                   Analyze Another
                 </Button>
-                <Button variant="default">
-                  Export Report
+                <Button variant="default" onClick={handleExport}>
+                  <Download className="w-4 h-4 mr-2" /> Export Report
                 </Button>
               </div>
             </div>
