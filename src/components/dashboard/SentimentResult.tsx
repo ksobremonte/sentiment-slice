@@ -67,7 +67,7 @@ const SentimentResult = ({ comment, sentimentReason, sentimentKeywords, onBack }
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-8">
         <div className="max-w-2xl mx-auto">
-          <div ref={cardRef} className={cn(
+          <div className={cn(
             "relative overflow-hidden rounded-2xl border-2 p-8 animate-scale-in",
             sentimentData.borderColor,
             sentimentData.bgColor
@@ -79,86 +79,94 @@ const SentimentResult = ({ comment, sentimentReason, sentimentKeywords, onBack }
             )} />
 
             <div className="relative z-10">
-              {/* Back Button */}
+              {/* Back Button - excluded from export */}
               <Button variant="ghost" size="icon" onClick={onBack} className="mb-4 -ml-2">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
 
-              {/* Sentiment Icon */}
-              <div className="flex justify-center mb-6">
-                <div className={cn(
-                  "w-24 h-24 rounded-full flex items-center justify-center animate-float",
-                  sentimentData.bgColor
-                )}>
-                  <Icon className={cn("w-12 h-12", sentimentData.color)} />
-                </div>
-              </div>
-
-              {/* Sentiment Title */}
-              <div className="text-center mb-8">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Sparkles className="w-5 h-5 text-primary" />
-                  <span className="text-sm font-medium text-primary">AI Analysis Result</span>
-                </div>
-                <h2 className={cn("text-3xl font-bold mb-2", sentimentData.color)}>
-                  {sentimentData.title}
-                </h2>
-                <p className="text-muted-foreground">{sentimentData.description}</p>
-              </div>
-
-              {/* Why This Result? Section */}
-              {(sentimentReason || (sentimentKeywords && sentimentKeywords.length > 0)) && (
-                <div className="bg-card/60 backdrop-blur-sm rounded-xl p-6 border border-border mb-4">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Quote className="w-4 h-4 text-primary" />
-                    <h3 className="text-sm font-semibold text-primary">Why this result?</h3>
+              {/* Exportable area */}
+              <div ref={cardRef} className={cn("rounded-xl p-6", sentimentData.bgColor)}>
+                {/* Sentiment Icon */}
+                <div className="flex justify-center mb-6">
+                  <div className={cn(
+                    "w-24 h-24 rounded-full flex items-center justify-center",
+                    sentimentData.bgColor
+                  )}>
+                    <Icon className={cn("w-12 h-12", sentimentData.color)} />
                   </div>
+                </div>
 
-                  {sentimentReason && (
-                    <p className="text-foreground/90 leading-relaxed text-sm mb-4">
-                      {sentimentReason}
-                    </p>
-                  )}
+                {/* Sentiment Title */}
+                <div className="text-center mb-8">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Sparkles className="w-5 h-5 text-primary" />
+                    <span className="text-sm font-medium text-primary">AI Analysis Result</span>
+                  </div>
+                  <h2 className={cn("text-3xl font-bold mb-2", sentimentData.color)}>
+                    {sentimentData.title}
+                  </h2>
+                  <p className="text-muted-foreground">{sentimentData.description}</p>
+                </div>
 
-                  {sentimentKeywords && sentimentKeywords.length > 0 && (
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Tag className="w-3.5 h-3.5 text-muted-foreground" />
-                        <span className="text-xs font-semibold text-muted-foreground">Key Phrases</span>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {sentimentKeywords.map((keyword, i) => (
-                          <Badge
-                            key={i}
-                            variant="secondary"
-                            className={cn(
-                              "text-xs font-medium",
-                              comment.sentiment === "positive" && "bg-success/15 text-success border-success/20",
-                              comment.sentiment === "negative" && "bg-destructive/15 text-destructive border-destructive/20",
-                              comment.sentiment === "neutral" && "bg-warning/15 text-warning border-warning/20"
-                            )}
-                          >
-                            "{keyword}"
-                          </Badge>
-                        ))}
-                      </div>
+                {/* Why This Result? Section */}
+                {(sentimentReason || (sentimentKeywords && sentimentKeywords.length > 0)) && (
+                  <div className="bg-card/60 backdrop-blur-sm rounded-xl p-6 border border-border mb-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Quote className="w-4 h-4 text-primary" />
+                      <h3 className="text-sm font-semibold text-primary">Why this result?</h3>
                     </div>
-                  )}
-                </div>
-              )}
 
-              {/* Original Comment */}
-              <div className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border">
-                <h3 className="text-sm font-semibold text-muted-foreground mb-3">Original Comment</h3>
-                <div className="mb-4">
-                  <p className="font-semibold text-foreground">{comment.customerName}</p>
-                  <p className="text-xs text-muted-foreground">{comment.customerEmail}</p>
+                    {sentimentReason && (
+                      <p className="text-foreground/90 leading-relaxed text-sm mb-4">
+                        {sentimentReason}
+                      </p>
+                    )}
+
+                    {sentimentKeywords && sentimentKeywords.length > 0 && (
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+                          <span className="text-xs font-semibold text-muted-foreground">Key Phrases</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {sentimentKeywords.map((keyword, i) => (
+                            <Badge
+                              key={i}
+                              variant="secondary"
+                              className={cn(
+                                "text-xs font-medium",
+                                comment.sentiment === "positive" && "bg-success/15 text-success border-success/20",
+                                comment.sentiment === "negative" && "bg-destructive/15 text-destructive border-destructive/20",
+                                comment.sentiment === "neutral" && "bg-warning/15 text-warning border-warning/20"
+                              )}
+                            >
+                              "{keyword}"
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Original Comment */}
+                <div className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border">
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">Original Comment</h3>
+                  <div className="mb-4">
+                    <p className="font-semibold text-foreground">{comment.customerName}</p>
+                    <p className="text-xs text-muted-foreground">{comment.customerEmail}</p>
+                  </div>
+                  <p className="text-foreground/90 leading-relaxed italic">"{comment.content}"</p>
+                  <p className="text-xs text-muted-foreground/70 mt-4">{comment.timestamp}</p>
                 </div>
-                <p className="text-foreground/90 leading-relaxed italic">"{comment.content}"</p>
-                <p className="text-xs text-muted-foreground/70 mt-4">{comment.timestamp}</p>
+
+                {/* Branding footer for export */}
+                <p className="text-center text-[10px] text-muted-foreground/50 mt-6">
+                  Powered by Pizza Volante AI Sentiment Analysis
+                </p>
               </div>
 
-              {/* Action buttons */}
+              {/* Action buttons - excluded from export */}
               <div className="flex justify-center gap-4 mt-8">
                 <Button variant="outline" onClick={onBack}>
                   Analyze Another
