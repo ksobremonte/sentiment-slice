@@ -104,7 +104,6 @@ const PublicReviewsList = () => {
             />
           );
         })}
-        ))}
       </div>
 
       {/* Pagination */}
