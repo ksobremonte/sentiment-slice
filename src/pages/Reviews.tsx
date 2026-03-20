@@ -269,7 +269,7 @@ const Reviews = () => {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <Label className="text-foreground font-medium text-sm">
-                        Upload Photos <span className="text-destructive">*</span>
+                        Upload Photos (optional)
                       </Label>
                       <span className="text-xs text-muted-foreground font-medium">
                         {photos.length}/{MAX_PHOTOS} · Min {MIN_PHOTOS} required
