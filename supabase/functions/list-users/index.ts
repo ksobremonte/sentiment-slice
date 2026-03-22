@@ -100,7 +100,7 @@ Deno.serve(async (req) => {
           });
         }
 
-        const existingUser = usersData.users.find(
+        const existingUser = usersData?.users?.find(
           (u) => (u.email || "").toLowerCase() === normalizedEmail
         );
 
