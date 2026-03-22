@@ -68,8 +68,10 @@ const DashboardUsers = () => {
         headers: { Authorization: `Bearer ${session?.access_token}` },
         body: { email: newEmail.trim() },
       });
+      // Check data-level error first (function returned 400 with JSON error)
+      const resData = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
+      if (resData?.error) throw new Error(resData.error);
       if (res.error) throw new Error(res.error.message || "Failed to invite user");
-      if (res.data?.error) throw new Error(res.data.error);
       toast.success("Invitation sent! The user will receive an email to set their password.");
       setNewEmail("");
       setAddOpen(false);
