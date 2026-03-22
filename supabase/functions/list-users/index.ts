@@ -59,35 +59,95 @@ Deno.serve(async (req) => {
     const action = url.searchParams.get("action");
 
     if (req.method === "POST" && action === "create") {
-      const { email, role } = await req.json();
-      
-      // Check caller has admin role (staff cannot invite)
-      const { data: callerAdminRole } = await adminClient
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", caller.id)
-        .eq("role", "admin")
-        .maybeSingle();
+      const { email } = await req.json();
+      const normalizedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
 
-      if (!callerAdminRole) {
-        return new Response(JSON.stringify({ error: "Only admins can invite users" }), {
-          status: 403,
+      if (!normalizedEmail) {
+        return new Response(JSON.stringify({ error: "Email is required" }), {
+          status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
 
       // Determine redirect URL for the invitation email
       const siteUrl = Deno.env.get("SITE_URL") || req.headers.get("origin") || "https://pizzavolante-dashboard.lovable.app";
-      
+
       // Invite user (sends invitation email with accept link)
-      const { data: inviteData, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(email, {
+      const { data: inviteData, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(normalizedEmail, {
         redirectTo: `${siteUrl}/accept-invitation`,
       });
+
+      // If user already exists, recover gracefully instead of failing hard.
       if (inviteError) {
-        return new Response(JSON.stringify({ error: inviteError.message }), {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        const alreadyRegistered = inviteError.message?.toLowerCase().includes("already been registered");
+
+        if (!alreadyRegistered) {
+          return new Response(JSON.stringify({ error: inviteError.message }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const { data: usersData, error: usersError } = await adminClient.auth.admin.listUsers({
+          page: 1,
+          perPage: 1000,
         });
+
+        if (usersError) {
+          return new Response(JSON.stringify({ error: usersError.message }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const existingUser = usersData?.users?.find(
+          (u) => (u.email || "").toLowerCase() === normalizedEmail
+        );
+
+        if (!existingUser) {
+          return new Response(JSON.stringify({ error: inviteError.message }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const { data: existingRoles, error: rolesError } = await adminClient
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", existingUser.id);
+
+        if (rolesError) {
+          return new Response(JSON.stringify({ error: rolesError.message }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        if (!existingRoles || existingRoles.length === 0) {
+          const { error: roleInsertError } = await adminClient.from("user_roles").insert({
+            user_id: existingUser.id,
+            role: "moderator",
+          });
+
+          if (roleInsertError) {
+            return new Response(JSON.stringify({ error: roleInsertError.message }), {
+              status: 400,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+        }
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            user: existingUser,
+            alreadyRegistered: true,
+            message: "Email already exists. Access was restored. Use Reset Password if needed.",
+          }),
+          {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
       }
 
       // Always assign "moderator" (staff) role for invited users

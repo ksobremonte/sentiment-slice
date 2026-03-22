@@ -85,7 +85,7 @@ const DashboardUsers = () => {
         throw new Error(msg);
       }
       if (res.data?.error) throw new Error(res.data.error);
-      toast.success("Invitation sent! The user will receive an email to set their password.");
+      toast.success(res.data?.message || "Invitation sent! The user will receive an email to set their password.");
       setNewEmail("");
       setAddOpen(false);
       queryClient.invalidateQueries({ queryKey: ["dashboard-users"] });
