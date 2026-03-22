@@ -395,13 +395,24 @@ const DashboardUsers = () => {
             <div className="space-y-4 py-2">
               <div className="space-y-2">
                 <Label>New Password</Label>
-                <Input
-                  placeholder="Enter new password"
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="rounded-xl"
-                />
+                <div className="relative">
+                  <Input
+                    placeholder="Enter new password"
+                    type={showPassword ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="rounded-xl pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
+                  </Button>
+                </div>
               </div>
               <p className="text-sm text-muted-foreground">
                 Set a new password for this user. They can use it to sign in immediately.
