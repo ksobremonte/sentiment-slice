@@ -118,6 +118,31 @@ const DashboardUsers = () => {
     }
   };
 
+  const handleResetPassword = async () => {
+    if (!newPassword.trim() || newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    setIsResetting(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await supabase.functions.invoke("list-users?action=reset-password", {
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+        body: { userId: resetUserId, newPassword },
+      });
+      const resData = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
+      if (resData?.error) throw new Error(resData.error);
+      if (res.error) throw new Error(res.error.message || "Failed to reset password");
+      toast.success("Password has been reset successfully");
+      setNewPassword("");
+      setResetOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to reset password");
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   const getInitials = (name: string) => {
     return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
   };
