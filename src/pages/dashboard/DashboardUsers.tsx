@@ -147,9 +147,9 @@ const DashboardUsers = () => {
     }
     setIsResetting(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const token = await getValidToken();
       const res = await supabase.functions.invoke("list-users?action=reset-password", {
-        headers: { Authorization: `Bearer ${session?.access_token}` },
+        headers: { Authorization: `Bearer ${token}` },
         body: { userId: resetUserId, newPassword },
       });
       const resData = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
