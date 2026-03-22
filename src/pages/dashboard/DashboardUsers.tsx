@@ -127,9 +127,9 @@ const DashboardUsers = () => {
 
   const handleRemoveUser = async (userId: string) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const token = await getValidToken();
       const res = await supabase.functions.invoke("list-users?action=remove", {
-        headers: { Authorization: `Bearer ${session?.access_token}` },
+        headers: { Authorization: `Bearer ${token}` },
         body: { userId },
       });
       if (res.error) throw res.error;
