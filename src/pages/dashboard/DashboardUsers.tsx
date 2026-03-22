@@ -44,16 +44,29 @@ const DashboardUsers = () => {
   const [showPassword, setShowPassword] = useState(false);
   const perPage = 10;
 
+  const getValidToken = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error("Not authenticated");
+    // Check if token expires within 60 seconds, refresh if so
+    const expiresAt = session.expires_at ?? 0;
+    if (expiresAt - Math.floor(Date.now() / 1000) < 60) {
+      const { data: refreshed } = await supabase.auth.refreshSession();
+      return refreshed.session?.access_token;
+    }
+    return session.access_token;
+  };
+
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["dashboard-users"],
     queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const token = await getValidToken();
       const res = await supabase.functions.invoke("list-users", {
-        headers: { Authorization: `Bearer ${session?.access_token}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (res.error) throw res.error;
       return (res.data || []) as UserWithRole[];
     },
+    retry: 1,
   });
 
   const filteredUsers = users.filter(
