@@ -41,6 +41,7 @@ const DashboardUsers = () => {
   const [resetUserName, setResetUserName] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [isResetting, setIsResetting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const perPage = 10;
 
   const { data: users = [], isLoading } = useQuery({
