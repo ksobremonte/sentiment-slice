@@ -44,29 +44,16 @@ const DashboardUsers = () => {
   const [showPassword, setShowPassword] = useState(false);
   const perPage = 10;
 
-  const getValidToken = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) throw new Error("Not authenticated");
-    // Check if token expires within 60 seconds, refresh if so
-    const expiresAt = session.expires_at ?? 0;
-    if (expiresAt - Math.floor(Date.now() / 1000) < 60) {
-      const { data: refreshed } = await supabase.auth.refreshSession();
-      return refreshed.session?.access_token;
-    }
-    return session.access_token;
-  };
-
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["dashboard-users"],
     queryFn: async () => {
-      const token = await getValidToken();
+      const { data: { session } } = await supabase.auth.getSession();
       const res = await supabase.functions.invoke("list-users", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${session?.access_token}` },
       });
       if (res.error) throw res.error;
       return (res.data || []) as UserWithRole[];
     },
-    retry: 1,
   });
 
   const filteredUsers = users.filter(
@@ -82,9 +69,9 @@ const DashboardUsers = () => {
     if (!newEmail.trim()) return;
     setIsAdding(true);
     try {
-      const token = await getValidToken();
+      const { data: { session } } = await supabase.auth.getSession();
       const res = await supabase.functions.invoke("list-users?action=create", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${session?.access_token}` },
         body: { email: newEmail.trim() },
       });
       if (res.error) {
@@ -112,9 +99,9 @@ const DashboardUsers = () => {
 
   const handleUpdateRole = async (userId: string, role: string) => {
     try {
-      const token = await getValidToken();
+      const { data: { session } } = await supabase.auth.getSession();
       const res = await supabase.functions.invoke("list-users?action=update-role", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${session?.access_token}` },
         body: { userId, role },
       });
       if (res.error) throw res.error;
@@ -127,9 +114,9 @@ const DashboardUsers = () => {
 
   const handleRemoveUser = async (userId: string) => {
     try {
-      const token = await getValidToken();
+      const { data: { session } } = await supabase.auth.getSession();
       const res = await supabase.functions.invoke("list-users?action=remove", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${session?.access_token}` },
         body: { userId },
       });
       if (res.error) throw res.error;
@@ -147,9 +134,9 @@ const DashboardUsers = () => {
     }
     setIsResetting(true);
     try {
-      const token = await getValidToken();
+      const { data: { session } } = await supabase.auth.getSession();
       const res = await supabase.functions.invoke("list-users?action=reset-password", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${session?.access_token}` },
         body: { userId: resetUserId, newPassword },
       });
       const resData = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
