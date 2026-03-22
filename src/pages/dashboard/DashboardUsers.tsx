@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Users, Loader2, Search, UserPlus, MoreHorizontal, Download, KeyRound } from "lucide-react";
+import { Users, Loader2, Search, UserPlus, MoreHorizontal, Download, KeyRound, Eye, EyeOff } from "lucide-react";
 import * as XLSX from "xlsx";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card } from "@/components/ui/card";
