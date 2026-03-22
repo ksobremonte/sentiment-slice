@@ -143,7 +143,16 @@ Deno.serve(async (req) => {
 
     if (req.method === "POST" && action === "remove") {
       const { userId } = await req.json();
+      // Delete role first, then delete the auth user entirely
       await adminClient.from("user_roles").delete().eq("user_id", userId);
+      await adminClient.from("profiles").delete().eq("user_id", userId);
+      const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId);
+      if (deleteError) {
+        return new Response(JSON.stringify({ error: deleteError.message }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
 
       return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
