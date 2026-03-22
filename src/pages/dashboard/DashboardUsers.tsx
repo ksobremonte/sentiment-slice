@@ -376,6 +376,39 @@ const DashboardUsers = () => {
             </div>
           )}
         </Card>
+
+        {/* Reset Password Dialog */}
+        <Dialog open={resetOpen} onOpenChange={setResetOpen}>
+          <DialogContent className="rounded-2xl">
+            <DialogHeader>
+              <DialogTitle>Reset Password for {resetUserName}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-2">
+                <Label>New Password</Label>
+                <Input
+                  placeholder="Enter new password"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="rounded-xl"
+                />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Set a new password for this user. They can use it to sign in immediately.
+              </p>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setResetOpen(false)} className="rounded-xl">
+                Cancel
+              </Button>
+              <Button onClick={handleResetPassword} disabled={isResetting || newPassword.length < 6} className="rounded-xl">
+                {isResetting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Reset Password
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   );
