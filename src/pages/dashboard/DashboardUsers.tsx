@@ -82,9 +82,9 @@ const DashboardUsers = () => {
     if (!newEmail.trim()) return;
     setIsAdding(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const token = await getValidToken();
       const res = await supabase.functions.invoke("list-users?action=create", {
-        headers: { Authorization: `Bearer ${session?.access_token}` },
+        headers: { Authorization: `Bearer ${token}` },
         body: { email: newEmail.trim() },
       });
       if (res.error) {
