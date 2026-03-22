@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Users, Loader2, Search, UserPlus, MoreHorizontal, Download } from "lucide-react";
+import { Users, Loader2, Search, UserPlus, MoreHorizontal, Download, KeyRound } from "lucide-react";
 import * as XLSX from "xlsx";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card } from "@/components/ui/card";
@@ -36,6 +36,11 @@ const DashboardUsers = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
+  const [resetOpen, setResetOpen] = useState(false);
+  const [resetUserId, setResetUserId] = useState("");
+  const [resetUserName, setResetUserName] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [isResetting, setIsResetting] = useState(false);
   const perPage = 10;
 
   const { data: users = [], isLoading } = useQuery({
@@ -110,6 +115,31 @@ const DashboardUsers = () => {
       queryClient.invalidateQueries({ queryKey: ["dashboard-users"] });
     } catch {
       toast.error("Failed to remove user");
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!newPassword.trim() || newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    setIsResetting(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await supabase.functions.invoke("list-users?action=reset-password", {
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+        body: { userId: resetUserId, newPassword },
+      });
+      const resData = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
+      if (resData?.error) throw new Error(resData.error);
+      if (res.error) throw new Error(res.error.message || "Failed to reset password");
+      toast.success("Password has been reset successfully");
+      setNewPassword("");
+      setResetOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to reset password");
+    } finally {
+      setIsResetting(false);
     }
   };
 
@@ -283,6 +313,17 @@ const DashboardUsers = () => {
                           >
                             Change to {user.role === "admin" ? "Staff" : "Admin"}
                           </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setResetUserId(user.user_id);
+                              setResetUserName(user.display_name);
+                              setNewPassword("");
+                              setResetOpen(true);
+                            }}
+                          >
+                            <KeyRound className="h-4 w-4 mr-2" />
+                            Reset Password
+                          </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             className="text-destructive focus:text-destructive"
@@ -335,6 +376,39 @@ const DashboardUsers = () => {
             </div>
           )}
         </Card>
+
+        {/* Reset Password Dialog */}
+        <Dialog open={resetOpen} onOpenChange={setResetOpen}>
+          <DialogContent className="rounded-2xl">
+            <DialogHeader>
+              <DialogTitle>Reset Password for {resetUserName}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-2">
+                <Label>New Password</Label>
+                <Input
+                  placeholder="Enter new password"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="rounded-xl"
+                />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Set a new password for this user. They can use it to sign in immediately.
+              </p>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setResetOpen(false)} className="rounded-xl">
+                Cancel
+              </Button>
+              <Button onClick={handleResetPassword} disabled={isResetting || newPassword.length < 6} className="rounded-xl">
+                {isResetting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Reset Password
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   );

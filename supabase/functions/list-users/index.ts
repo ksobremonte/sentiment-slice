@@ -115,6 +115,32 @@ Deno.serve(async (req) => {
       });
     }
 
+    if (req.method === "POST" && action === "reset-password") {
+      const { userId, newPassword } = await req.json();
+      
+      if (!newPassword || newPassword.length < 6) {
+        return new Response(JSON.stringify({ error: "Password must be at least 6 characters" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { error: updateError } = await adminClient.auth.admin.updateUserById(userId, {
+        password: newPassword,
+      });
+
+      if (updateError) {
+        return new Response(JSON.stringify({ error: updateError.message }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     if (req.method === "POST" && action === "remove") {
       const { userId } = await req.json();
       await adminClient.from("user_roles").delete().eq("user_id", userId);
