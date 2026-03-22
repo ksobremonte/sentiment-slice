@@ -313,6 +313,17 @@ const DashboardUsers = () => {
                           >
                             Change to {user.role === "admin" ? "Staff" : "Admin"}
                           </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setResetUserId(user.user_id);
+                              setResetUserName(user.display_name);
+                              setNewPassword("");
+                              setResetOpen(true);
+                            }}
+                          >
+                            <KeyRound className="h-4 w-4 mr-2" />
+                            Reset Password
+                          </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             className="text-destructive focus:text-destructive"
