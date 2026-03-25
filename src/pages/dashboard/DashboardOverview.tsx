@@ -205,6 +205,15 @@ const DashboardOverview = () => {
       {/* Sentiment Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <StatsCard
+          title="Total Reviews"
+          value={reviews.length}
+          icon={MessageSquare}
+          trend="neutral"
+          trendValue="all time"
+          description="Total reviews in database"
+          onClick={() => navigate("/pv-dashboard/reviews")}
+        />
+        <StatsCard
           title="Overall Sentiment Score"
           value={`${stats.overallScore}/100`}
           icon={Smile}
