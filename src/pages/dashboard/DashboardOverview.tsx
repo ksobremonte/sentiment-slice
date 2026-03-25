@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Smile, Frown, MessageSquareWarning, ThumbsUp,
-  TrendingUp, Bell, Sparkles, Loader2, MessageSquare,
+  TrendingUp, Bell, Sparkles, Loader2,
 } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import StatsCard from "@/components/dashboard/StatsCard";
@@ -204,15 +204,6 @@ const DashboardOverview = () => {
 
       {/* Sentiment Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <StatsCard
-          title="Total Reviews"
-          value={reviews.length}
-          icon={MessageSquare}
-          trend="neutral"
-          trendValue="all time"
-          description="Total reviews in database"
-          onClick={() => navigate("/pv-dashboard/reviews")}
-        />
         <StatsCard
           title="Overall Sentiment Score"
           value={`${stats.overallScore}/100`}

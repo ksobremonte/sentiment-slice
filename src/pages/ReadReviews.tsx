@@ -3,11 +3,8 @@ import PublicLayout from "@/components/layout/PublicLayout";
 import PublicReviewsList from "@/components/public/PublicReviewsList";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { usePublicReviews } from "@/hooks/usePublicReviews";
 
 const ReadReviews = () => {
-  const { data: reviews = [] } = usePublicReviews();
-
   return (
     <PublicLayout>
       <section className="py-16 lg:py-24">
@@ -20,11 +17,8 @@ const ReadReviews = () => {
             <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-6">
               What Our Customers <span className="text-primary">Say</span>
             </h1>
-            <p className="text-lg text-muted-foreground mb-4">
+            <p className="text-lg text-muted-foreground mb-8">
               Real feedback from our valued customers at Pizza Volante.
-            </p>
-            <p className="text-2xl font-display font-bold text-primary mb-8">
-              {reviews.length} Review{reviews.length !== 1 ? "s" : ""}
             </p>
             <Link to="/reviews">
               <Button size="lg" className="rounded-xl font-semibold">
