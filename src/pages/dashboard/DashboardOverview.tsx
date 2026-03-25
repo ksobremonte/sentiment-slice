@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Smile, Frown, MessageSquareWarning, ThumbsUp,
-  TrendingUp, Bell, Sparkles, Loader2,
+  TrendingUp, Bell, Sparkles, Loader2, MessageSquare,
 } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import StatsCard from "@/components/dashboard/StatsCard";
