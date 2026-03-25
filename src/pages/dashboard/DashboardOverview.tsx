@@ -119,15 +119,13 @@ const DashboardOverview = () => {
   }, [reviews, alertSettings]);
 
   // Sorted reviews for the list
-  // Fake reviews (now March 2026 after swap); real ones are Feb 2026
-  const isFakeReview = (r: Review) => {
-    const d = new Date(r.created_at);
-    return d.getFullYear() === 2026 && d.getMonth() === 2; // month 2 = March
-  };
+  const hasPhoto = (r: Review) =>
+    (r.photo_url && r.photo_url.length > 0) ||
+    (r.photo_urls && r.photo_urls.length > 0);
 
   const sortedReviews = useMemo(() => {
-    const realReviews = reviews.filter(r => !isFakeReview(r));
-    const fakeReviews = reviews.filter(r => isFakeReview(r));
+    const withPhotos = reviews.filter(r => hasPhoto(r));
+    const withoutPhotos = reviews.filter(r => !hasPhoto(r));
 
     const sortList = (list: Review[]) => {
       const sorted = [...list];
@@ -143,7 +141,7 @@ const DashboardOverview = () => {
       return sorted;
     };
 
-    return [...sortList(realReviews), ...sortList(fakeReviews)];
+    return [...sortList(withPhotos), ...sortList(withoutPhotos)];
   }, [reviews, sortBy]);
 
   const totalOverviewPages = Math.ceil(sortedReviews.length / OVERVIEW_PER_PAGE);
