@@ -119,18 +119,31 @@ const DashboardOverview = () => {
   }, [reviews, alertSettings]);
 
   // Sorted reviews for the list
+  // Fake reviews (now March 2026 after swap); real ones are Feb 2026
+  const isFakeReview = (r: Review) => {
+    const d = new Date(r.created_at);
+    return d.getFullYear() === 2026 && d.getMonth() === 2; // month 2 = March
+  };
+
   const sortedReviews = useMemo(() => {
-    const sorted = [...reviews];
-    switch (sortBy) {
-      case "newest": sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()); break;
-      case "oldest": sorted.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()); break;
-      case "highest": sorted.sort((a, b) => b.rating - a.rating); break;
-      case "lowest": sorted.sort((a, b) => a.rating - b.rating); break;
-      case "positive": return reviews.filter(r => r.sentiment === "positive");
-      case "negative": return reviews.filter(r => r.sentiment === "negative");
-      case "neutral": return reviews.filter(r => r.sentiment === "neutral");
-    }
-    return sorted;
+    const realReviews = reviews.filter(r => !isFakeReview(r));
+    const fakeReviews = reviews.filter(r => isFakeReview(r));
+
+    const sortList = (list: Review[]) => {
+      const sorted = [...list];
+      switch (sortBy) {
+        case "newest": sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()); break;
+        case "oldest": sorted.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()); break;
+        case "highest": sorted.sort((a, b) => b.rating - a.rating); break;
+        case "lowest": sorted.sort((a, b) => a.rating - b.rating); break;
+        case "positive": return list.filter(r => r.sentiment === "positive");
+        case "negative": return list.filter(r => r.sentiment === "negative");
+        case "neutral": return list.filter(r => r.sentiment === "neutral");
+      }
+      return sorted;
+    };
+
+    return [...sortList(realReviews), ...sortList(fakeReviews)];
   }, [reviews, sortBy]);
 
   const totalOverviewPages = Math.ceil(sortedReviews.length / OVERVIEW_PER_PAGE);
