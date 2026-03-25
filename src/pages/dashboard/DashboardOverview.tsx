@@ -36,7 +36,11 @@ const DashboardOverview = () => {
     },
   });
 
-  // Split reviews into this week and last week
+  const [sortBy, setSortBy] = useState<string>("newest");
+  const [overviewPage, setOverviewPage] = useState(1);
+  const OVERVIEW_PER_PAGE = 10;
+
+  // Compute stats from ALL reviews
   const stats = useMemo(() => {
     const now = new Date();
     const weekStart = startOfDay(subDays(now, 7));
@@ -56,21 +60,20 @@ const DashboardOverview = () => {
       return { pos, neg, neu, analyzed, total: list.length };
     };
 
+    const all = calcSentiment(reviews);
     const tw = calcSentiment(thisWeek);
     const lw = calcSentiment(lastWeek);
 
-    // Overall sentiment score (0-100, 100 = all positive)
-    const overallScore = tw.analyzed > 0 ? Math.round(((tw.pos + tw.neu * 0.5) / tw.analyzed) * 100) : 0;
+    const overallScore = all.analyzed > 0 ? Math.round(((all.pos + all.neu * 0.5) / all.analyzed) * 100) : 0;
     const prevScore = lw.analyzed > 0 ? Math.round(((lw.pos + lw.neu * 0.5) / lw.analyzed) * 100) : 0;
-    const scoreDiff = overallScore - prevScore;
+    const weekScore = tw.analyzed > 0 ? Math.round(((tw.pos + tw.neu * 0.5) / tw.analyzed) * 100) : 0;
+    const scoreDiff = weekScore - prevScore;
 
-    // Negative rate
-    const negRate = tw.analyzed > 0 ? (tw.neg / tw.analyzed) * 100 : 0;
+    const negRate = all.analyzed > 0 ? (all.neg / all.analyzed) * 100 : 0;
     const prevNegRate = lw.analyzed > 0 ? (lw.neg / lw.analyzed) * 100 : 0;
-    const negDiff = negRate - prevNegRate;
+    const negDiff = (tw.analyzed > 0 ? (tw.neg / tw.analyzed) * 100 : 0) - prevNegRate;
 
-    // Top complaint keyword from negative reviews this week
-    const negReviews = thisWeek.filter((r) => r.sentiment === "negative");
+    const negReviews = reviews.filter((r) => r.sentiment === "negative");
     const words: Record<string, number> = {};
     negReviews.forEach((r) => {
       r.feedback.toLowerCase().split(/\s+/).filter((w) => w.length > 4).forEach((w) => {
@@ -79,8 +82,7 @@ const DashboardOverview = () => {
     });
     const topComplaint = Object.entries(words).sort((a, b) => b[1] - a[1])[0]?.[0] || "none";
 
-    // Most praised aspect from positive reviews
-    const posReviews = thisWeek.filter((r) => r.sentiment === "positive");
+    const posReviews = reviews.filter((r) => r.sentiment === "positive");
     const posWords: Record<string, number> = {};
     posReviews.forEach((r) => {
       r.feedback.toLowerCase().split(/\s+/).filter((w) => w.length > 4).forEach((w) => {
@@ -89,10 +91,8 @@ const DashboardOverview = () => {
     });
     const topPraise = Object.entries(posWords).sort((a, b) => b[1] - a[1])[0]?.[0] || "none";
 
-    // Sentiment trend (week-over-week score change)
     const trendDirection = scoreDiff > 0 ? "up" : scoreDiff < 0 ? "down" : "neutral";
 
-    // Alert status
     const threshold = alertSettings?.threshold_percentage ?? 30;
     let alertLevel: "critical" | "moderate" | "normal" = "normal";
     if (negRate >= threshold + 20) alertLevel = "critical";
@@ -104,12 +104,33 @@ const DashboardOverview = () => {
       topComplaint, topPraise,
       trendDirection, scoreDiffAbs: Math.abs(scoreDiff),
       alertLevel, threshold,
+      totalReviews: reviews.length,
       sentimentData: {
-        positive: tw.pos, negative: tw.neg, neutral: tw.neu,
-        unanalyzed: tw.total - tw.analyzed, total: tw.total,
+        positive: all.pos, negative: all.neg, neutral: all.neu,
+        unanalyzed: all.total - all.analyzed, total: all.total,
       },
     };
   }, [reviews, alertSettings]);
+
+  // Sorted reviews for the list
+  const sortedReviews = useMemo(() => {
+    const sorted = [...reviews];
+    switch (sortBy) {
+      case "newest": sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()); break;
+      case "oldest": sorted.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()); break;
+      case "highest": sorted.sort((a, b) => b.rating - a.rating); break;
+      case "lowest": sorted.sort((a, b) => a.rating - b.rating); break;
+      case "positive": return reviews.filter(r => r.sentiment === "positive");
+      case "negative": return reviews.filter(r => r.sentiment === "negative");
+      case "neutral": return reviews.filter(r => r.sentiment === "neutral");
+    }
+    return sorted;
+  }, [reviews, sortBy]);
+
+  const totalOverviewPages = Math.ceil(sortedReviews.length / OVERVIEW_PER_PAGE);
+  const paginatedOverviewReviews = sortedReviews.slice((overviewPage - 1) * OVERVIEW_PER_PAGE, overviewPage * OVERVIEW_PER_PAGE);
+
+  useEffect(() => { setOverviewPage(1); }, [sortBy]);
 
   // AI insight generation
   useEffect(() => {
