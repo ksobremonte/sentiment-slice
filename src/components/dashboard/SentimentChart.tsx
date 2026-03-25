@@ -61,7 +61,7 @@ const SentimentChart = ({ sentimentData, filterSentiment, onFilterChange }: Sent
           <h3 className="text-xl font-display font-bold text-foreground">Sentiment Distribution</h3>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-muted/50 text-xs text-muted-foreground">
             <Calendar className="w-3.5 h-3.5" />
-            <span>DATE RANGE: {formatDate(thirtyDaysAgo)} - {formatDate(now)}</span>
+            <span>AS OF: {formatDate(now)}</span>
           </div>
         </div>
 
