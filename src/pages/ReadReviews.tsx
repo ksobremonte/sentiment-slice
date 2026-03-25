@@ -3,6 +3,7 @@ import PublicLayout from "@/components/layout/PublicLayout";
 import PublicReviewsList from "@/components/public/PublicReviewsList";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { usePublicReviews } from "@/hooks/usePublicReviews";
 
 const ReadReviews = () => {
   return (
