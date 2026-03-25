@@ -119,29 +119,18 @@ const DashboardOverview = () => {
   }, [reviews, alertSettings]);
 
   // Sorted reviews for the list
-  const hasPhoto = (r: Review) =>
-    (r.photo_url && r.photo_url.length > 0) ||
-    (r.photo_urls && r.photo_urls.length > 0);
-
   const sortedReviews = useMemo(() => {
-    const withPhotos = reviews.filter(r => hasPhoto(r));
-    const withoutPhotos = reviews.filter(r => !hasPhoto(r));
-
-    const sortList = (list: Review[]) => {
-      const sorted = [...list];
-      switch (sortBy) {
-        case "newest": sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()); break;
-        case "oldest": sorted.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()); break;
-        case "highest": sorted.sort((a, b) => b.rating - a.rating); break;
-        case "lowest": sorted.sort((a, b) => a.rating - b.rating); break;
-        case "positive": return list.filter(r => r.sentiment === "positive");
-        case "negative": return list.filter(r => r.sentiment === "negative");
-        case "neutral": return list.filter(r => r.sentiment === "neutral");
-      }
-      return sorted;
-    };
-
-    return [...sortList(withPhotos), ...sortList(withoutPhotos)];
+    const sorted = [...reviews];
+    switch (sortBy) {
+      case "newest": sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()); break;
+      case "oldest": sorted.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()); break;
+      case "highest": sorted.sort((a, b) => b.rating - a.rating); break;
+      case "lowest": sorted.sort((a, b) => a.rating - b.rating); break;
+      case "positive": return reviews.filter(r => r.sentiment === "positive");
+      case "negative": return reviews.filter(r => r.sentiment === "negative");
+      case "neutral": return reviews.filter(r => r.sentiment === "neutral");
+    }
+    return sorted;
   }, [reviews, sortBy]);
 
   const totalOverviewPages = Math.ceil(sortedReviews.length / OVERVIEW_PER_PAGE);
