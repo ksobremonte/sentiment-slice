@@ -50,9 +50,7 @@ const SentimentChart = ({ sentimentData, filterSentiment, onFilterChange }: Sent
     link.click();
   }, []);
 
-  // Date range (last 30 days)
   const now = new Date();
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
   const formatDate = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
   return (
