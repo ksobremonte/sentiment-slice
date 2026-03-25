@@ -21,16 +21,27 @@ const PublicReviewsList = () => {
     toggleReaction.mutate({ reviewId, reaction });
   };
 
+  const hasPhoto = (r: typeof reviews[0]) =>
+    (r.photo_url && r.photo_url.length > 0) ||
+    (r.photo_urls && r.photo_urls.length > 0);
+
   const sortedReviews = useMemo(() => {
-    const sorted = [...reviews];
-    switch (sort) {
-      case "highest":
-        return sorted.sort((a, b) => b.rating - a.rating);
-      case "lowest":
-        return sorted.sort((a, b) => a.rating - b.rating);
-      default:
-        return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-    }
+    const withPhotos = reviews.filter(r => hasPhoto(r));
+    const withoutPhotos = reviews.filter(r => !hasPhoto(r));
+
+    const sortList = (list: typeof reviews) => {
+      const sorted = [...list];
+      switch (sort) {
+        case "highest":
+          return sorted.sort((a, b) => b.rating - a.rating);
+        case "lowest":
+          return sorted.sort((a, b) => a.rating - b.rating);
+        default:
+          return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      }
+    };
+
+    return [...sortList(withPhotos), ...sortList(withoutPhotos)];
   }, [reviews, sort]);
 
   const totalPages = Math.ceil(sortedReviews.length / REVIEWS_PER_PAGE);
