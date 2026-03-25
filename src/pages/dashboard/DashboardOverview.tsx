@@ -15,7 +15,7 @@ import StatsDetail from "@/components/dashboard/StatsDetail";
 import SentimentChart from "@/components/dashboard/SentimentChart";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useReviews } from "@/hooks/useReviews";
+import { useReviews, Review } from "@/hooks/useReviews";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { subDays, isAfter, startOfDay } from "date-fns";
