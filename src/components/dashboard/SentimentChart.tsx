@@ -108,7 +108,7 @@ const SentimentChart = ({ sentimentData, filterSentiment, onFilterChange }: Sent
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                   <span className="text-3xl font-display font-bold text-foreground">{total}</span>
                   <span className="text-[11px] text-muted-foreground font-semibold">Total Reviews</span>
-                  <span className="text-[9px] text-muted-foreground uppercase tracking-wider">Last 30 Days</span>
+                  <span className="text-[9px] text-muted-foreground uppercase tracking-wider">All Time</span>
                 </div>
               </div>
             ) : (
