@@ -180,6 +180,36 @@ const DashboardOverview = () => {
     generateInsight();
   }, [reviews.length]); // Only regenerate when review count changes
 
+  const handleAnalyze = async (review: Review) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-reviews`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        body: JSON.stringify({ reviews: [review], action: "analyze-sentiment" }),
+      });
+      if (!response.ok) { const err = await response.json(); throw new Error(err.error || "Failed"); }
+      const { sentiment, reasoning, keyPhrases } = await response.json();
+      await supabase.from("reviews").update({ sentiment, sentiment_reason: reasoning || null, sentiment_keywords: keyPhrases || null }).eq("id", review.id);
+      refetch();
+      setSentimentView({ ...review, sentiment, sentiment_reason: reasoning || null, sentiment_keywords: keyPhrases || null });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to analyze review");
+    }
+  };
+
+  if (sentimentView) {
+    return (
+      <DashboardLayout>
+        <SentimentResult
+          comment={{ id: sentimentView.id, customerName: sentimentView.name, customerEmail: "", content: sentimentView.feedback, timestamp: sentimentView.created_at, sentiment: sentimentView.sentiment as "positive" | "negative" | "neutral" | undefined }}
+          sentimentReason={sentimentView.sentiment_reason}
+          sentimentKeywords={sentimentView.sentiment_keywords}
+          onBack={() => setSentimentView(null)}
+        />
+      </DashboardLayout>
+    );
+  }
+
   if (view.type === "stats") {
     const commentsForStats = reviews.map((r) => ({
       id: r.id,
@@ -254,7 +284,7 @@ const DashboardOverview = () => {
           value={`"${stats.topComplaint}"`}
           icon={MessageSquareWarning}
           trend="neutral"
-          trendValue="this week"
+          trendValue="all time"
           description="from negative reviews"
           onClick={() => navigate("/pv-dashboard/reviews")}
         />
@@ -263,7 +293,7 @@ const DashboardOverview = () => {
           value={`"${stats.topPraise}"`}
           icon={ThumbsUp}
           trend="neutral"
-          trendValue="this week"
+          trendValue="all time"
           description="from positive reviews"
           onClick={() => navigate("/pv-dashboard/reviews")}
         />
@@ -296,6 +326,60 @@ const DashboardOverview = () => {
         filterSentiment={filterSentiment}
         onFilterChange={setFilterSentiment}
       />
+
+      {/* All Reviews List */}
+      <div className="mt-8">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <div className="flex items-center gap-3">
+            <h3 className="text-lg font-display font-bold text-foreground">All Reviews</h3>
+            <span className="text-sm text-muted-foreground font-semibold">({sortedReviews.length})</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-44 rounded-xl border-2">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="oldest">Oldest First</SelectItem>
+                <SelectItem value="highest">Highest Rating</SelectItem>
+                <SelectItem value="lowest">Lowest Rating</SelectItem>
+                <SelectItem value="positive">Positive Only</SelectItem>
+                <SelectItem value="negative">Negative Only</SelectItem>
+                <SelectItem value="neutral">Neutral Only</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          {paginatedOverviewReviews.length > 0 ? (
+            paginatedOverviewReviews.map((review) => (
+              <ReviewCard key={review.id} review={review} onAnalyze={handleAnalyze} onViewSentiment={(r) => setSentimentView(r)} />
+            ))
+          ) : (
+            <div className="text-center py-16 bg-card rounded-2xl border-2 border-border">
+              <MessageSquare className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground font-display text-lg">No reviews found.</p>
+            </div>
+          )}
+        </div>
+
+        {totalOverviewPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-8">
+            <Button variant="outline" size="sm" onClick={() => setOverviewPage((p) => Math.max(1, p - 1))} disabled={overviewPage === 1} className="rounded-xl border-2 font-semibold">
+              Previous
+            </Button>
+            <span className="text-sm text-muted-foreground font-semibold px-4">
+              Page {overviewPage} of {totalOverviewPages}
+            </span>
+            <Button variant="outline" size="sm" onClick={() => setOverviewPage((p) => Math.min(totalOverviewPages, p + 1))} disabled={overviewPage === totalOverviewPages} className="rounded-xl border-2 font-semibold">
+              Next
+            </Button>
+          </div>
+        )}
+      </div>
     </DashboardLayout>
   );
 };
