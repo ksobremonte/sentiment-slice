@@ -119,10 +119,10 @@ const DashboardOverview = () => {
   }, [reviews, alertSettings]);
 
   // Sorted reviews for the list
-  // Fake reviews are dated Feb 2026; real ones are March 2026+
+  // Fake reviews (now March 2026 after swap); real ones are Feb 2026
   const isFakeReview = (r: Review) => {
     const d = new Date(r.created_at);
-    return d.getFullYear() === 2026 && d.getMonth() === 1; // month 1 = February
+    return d.getFullYear() === 2026 && d.getMonth() === 2; // month 2 = March
   };
 
   const sortedReviews = useMemo(() => {
