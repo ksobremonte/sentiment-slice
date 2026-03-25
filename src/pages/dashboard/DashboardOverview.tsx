@@ -2,20 +2,15 @@ import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Smile, Frown, MessageSquareWarning, ThumbsUp,
-  TrendingUp, Bell, Sparkles, Loader2, ArrowUpDown, MessageSquare,
+  TrendingUp, Bell, Sparkles, Loader2,
 } from "lucide-react";
-import ReviewCard from "@/components/dashboard/ReviewCard";
-import SentimentResult from "@/components/dashboard/SentimentResult";
-import { toast } from "sonner";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import StatsCard from "@/components/dashboard/StatsCard";
 import StatsDetail from "@/components/dashboard/StatsDetail";
 import SentimentChart from "@/components/dashboard/SentimentChart";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useReviews, Review } from "@/hooks/useReviews";
+import { useReviews } from "@/hooks/useReviews";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { subDays, isAfter, startOfDay } from "date-fns";
@@ -30,8 +25,7 @@ const DashboardOverview = () => {
   const [filterSentiment, setFilterSentiment] = useState<string | null>(null);
   const [aiInsight, setAiInsight] = useState<string | null>(null);
   const [insightLoading, setInsightLoading] = useState(false);
-  const [sentimentView, setSentimentView] = useState<Review | null>(null);
-  const { data: reviews = [], refetch } = useReviews();
+  const { data: reviews = [] } = useReviews();
 
   const { data: alertSettings } = useQuery({
     queryKey: ["alert-settings"],
@@ -42,11 +36,7 @@ const DashboardOverview = () => {
     },
   });
 
-  const [sortBy, setSortBy] = useState<string>("newest");
-  const [overviewPage, setOverviewPage] = useState(1);
-  const OVERVIEW_PER_PAGE = 10;
-
-  // Compute stats from ALL reviews
+  // Split reviews into this week and last week
   const stats = useMemo(() => {
     const now = new Date();
     const weekStart = startOfDay(subDays(now, 7));
@@ -66,20 +56,21 @@ const DashboardOverview = () => {
       return { pos, neg, neu, analyzed, total: list.length };
     };
 
-    const all = calcSentiment(reviews);
     const tw = calcSentiment(thisWeek);
     const lw = calcSentiment(lastWeek);
 
-    const overallScore = all.analyzed > 0 ? Math.round(((all.pos + all.neu * 0.5) / all.analyzed) * 100) : 0;
+    // Overall sentiment score (0-100, 100 = all positive)
+    const overallScore = tw.analyzed > 0 ? Math.round(((tw.pos + tw.neu * 0.5) / tw.analyzed) * 100) : 0;
     const prevScore = lw.analyzed > 0 ? Math.round(((lw.pos + lw.neu * 0.5) / lw.analyzed) * 100) : 0;
-    const weekScore = tw.analyzed > 0 ? Math.round(((tw.pos + tw.neu * 0.5) / tw.analyzed) * 100) : 0;
-    const scoreDiff = weekScore - prevScore;
+    const scoreDiff = overallScore - prevScore;
 
-    const negRate = all.analyzed > 0 ? (all.neg / all.analyzed) * 100 : 0;
+    // Negative rate
+    const negRate = tw.analyzed > 0 ? (tw.neg / tw.analyzed) * 100 : 0;
     const prevNegRate = lw.analyzed > 0 ? (lw.neg / lw.analyzed) * 100 : 0;
-    const negDiff = (tw.analyzed > 0 ? (tw.neg / tw.analyzed) * 100 : 0) - prevNegRate;
+    const negDiff = negRate - prevNegRate;
 
-    const negReviews = reviews.filter((r) => r.sentiment === "negative");
+    // Top complaint keyword from negative reviews this week
+    const negReviews = thisWeek.filter((r) => r.sentiment === "negative");
     const words: Record<string, number> = {};
     negReviews.forEach((r) => {
       r.feedback.toLowerCase().split(/\s+/).filter((w) => w.length > 4).forEach((w) => {
@@ -88,7 +79,8 @@ const DashboardOverview = () => {
     });
     const topComplaint = Object.entries(words).sort((a, b) => b[1] - a[1])[0]?.[0] || "none";
 
-    const posReviews = reviews.filter((r) => r.sentiment === "positive");
+    // Most praised aspect from positive reviews
+    const posReviews = thisWeek.filter((r) => r.sentiment === "positive");
     const posWords: Record<string, number> = {};
     posReviews.forEach((r) => {
       r.feedback.toLowerCase().split(/\s+/).filter((w) => w.length > 4).forEach((w) => {
@@ -97,8 +89,10 @@ const DashboardOverview = () => {
     });
     const topPraise = Object.entries(posWords).sort((a, b) => b[1] - a[1])[0]?.[0] || "none";
 
+    // Sentiment trend (week-over-week score change)
     const trendDirection = scoreDiff > 0 ? "up" : scoreDiff < 0 ? "down" : "neutral";
 
+    // Alert status
     const threshold = alertSettings?.threshold_percentage ?? 30;
     let alertLevel: "critical" | "moderate" | "normal" = "normal";
     if (negRate >= threshold + 20) alertLevel = "critical";
@@ -110,33 +104,12 @@ const DashboardOverview = () => {
       topComplaint, topPraise,
       trendDirection, scoreDiffAbs: Math.abs(scoreDiff),
       alertLevel, threshold,
-      totalReviews: reviews.length,
       sentimentData: {
-        positive: all.pos, negative: all.neg, neutral: all.neu,
-        unanalyzed: all.total - all.analyzed, total: all.total,
+        positive: tw.pos, negative: tw.neg, neutral: tw.neu,
+        unanalyzed: tw.total - tw.analyzed, total: tw.total,
       },
     };
   }, [reviews, alertSettings]);
-
-  // Sorted reviews for the list
-  const sortedReviews = useMemo(() => {
-    const sorted = [...reviews];
-    switch (sortBy) {
-      case "newest": sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()); break;
-      case "oldest": sorted.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()); break;
-      case "highest": sorted.sort((a, b) => b.rating - a.rating); break;
-      case "lowest": sorted.sort((a, b) => a.rating - b.rating); break;
-      case "positive": return reviews.filter(r => r.sentiment === "positive");
-      case "negative": return reviews.filter(r => r.sentiment === "negative");
-      case "neutral": return reviews.filter(r => r.sentiment === "neutral");
-    }
-    return sorted;
-  }, [reviews, sortBy]);
-
-  const totalOverviewPages = Math.ceil(sortedReviews.length / OVERVIEW_PER_PAGE);
-  const paginatedOverviewReviews = sortedReviews.slice((overviewPage - 1) * OVERVIEW_PER_PAGE, overviewPage * OVERVIEW_PER_PAGE);
-
-  useEffect(() => { setOverviewPage(1); }, [sortBy]);
 
   // AI insight generation
   useEffect(() => {
@@ -179,36 +152,6 @@ const DashboardOverview = () => {
     };
     generateInsight();
   }, [reviews.length]); // Only regenerate when review count changes
-
-  const handleAnalyze = async (review: Review) => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-reviews`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({ reviews: [review], action: "analyze-sentiment" }),
-      });
-      if (!response.ok) { const err = await response.json(); throw new Error(err.error || "Failed"); }
-      const { sentiment, reasoning, keyPhrases } = await response.json();
-      await supabase.from("reviews").update({ sentiment, sentiment_reason: reasoning || null, sentiment_keywords: keyPhrases || null }).eq("id", review.id);
-      refetch();
-      setSentimentView({ ...review, sentiment, sentiment_reason: reasoning || null, sentiment_keywords: keyPhrases || null });
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to analyze review");
-    }
-  };
-
-  if (sentimentView) {
-    return (
-      <DashboardLayout>
-        <SentimentResult
-          comment={{ id: sentimentView.id, customerName: sentimentView.name, customerEmail: "", content: sentimentView.feedback, timestamp: sentimentView.created_at, sentiment: sentimentView.sentiment as "positive" | "negative" | "neutral" | undefined }}
-          sentimentReason={sentimentView.sentiment_reason}
-          sentimentKeywords={sentimentView.sentiment_keywords}
-          onBack={() => setSentimentView(null)}
-        />
-      </DashboardLayout>
-    );
-  }
 
   if (view.type === "stats") {
     const commentsForStats = reviews.map((r) => ({
@@ -284,7 +227,7 @@ const DashboardOverview = () => {
           value={`"${stats.topComplaint}"`}
           icon={MessageSquareWarning}
           trend="neutral"
-          trendValue="all time"
+          trendValue="this week"
           description="from negative reviews"
           onClick={() => navigate("/pv-dashboard/reviews")}
         />
@@ -293,7 +236,7 @@ const DashboardOverview = () => {
           value={`"${stats.topPraise}"`}
           icon={ThumbsUp}
           trend="neutral"
-          trendValue="all time"
+          trendValue="this week"
           description="from positive reviews"
           onClick={() => navigate("/pv-dashboard/reviews")}
         />
@@ -326,60 +269,6 @@ const DashboardOverview = () => {
         filterSentiment={filterSentiment}
         onFilterChange={setFilterSentiment}
       />
-
-      {/* All Reviews List */}
-      <div className="mt-8">
-        <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-          <div className="flex items-center gap-3">
-            <h3 className="text-lg font-display font-bold text-foreground">All Reviews</h3>
-            <span className="text-sm text-muted-foreground font-semibold">({sortedReviews.length})</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-44 rounded-xl border-2">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Newest First</SelectItem>
-                <SelectItem value="oldest">Oldest First</SelectItem>
-                <SelectItem value="highest">Highest Rating</SelectItem>
-                <SelectItem value="lowest">Lowest Rating</SelectItem>
-                <SelectItem value="positive">Positive Only</SelectItem>
-                <SelectItem value="negative">Negative Only</SelectItem>
-                <SelectItem value="neutral">Neutral Only</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          {paginatedOverviewReviews.length > 0 ? (
-            paginatedOverviewReviews.map((review) => (
-              <ReviewCard key={review.id} review={review} onAnalyze={handleAnalyze} onViewSentiment={(r) => setSentimentView(r)} />
-            ))
-          ) : (
-            <div className="text-center py-16 bg-card rounded-2xl border-2 border-border">
-              <MessageSquare className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground font-display text-lg">No reviews found.</p>
-            </div>
-          )}
-        </div>
-
-        {totalOverviewPages > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-8">
-            <Button variant="outline" size="sm" onClick={() => setOverviewPage((p) => Math.max(1, p - 1))} disabled={overviewPage === 1} className="rounded-xl border-2 font-semibold">
-              Previous
-            </Button>
-            <span className="text-sm text-muted-foreground font-semibold px-4">
-              Page {overviewPage} of {totalOverviewPages}
-            </span>
-            <Button variant="outline" size="sm" onClick={() => setOverviewPage((p) => Math.min(totalOverviewPages, p + 1))} disabled={overviewPage === totalOverviewPages} className="rounded-xl border-2 font-semibold">
-              Next
-            </Button>
-          </div>
-        )}
-      </div>
     </DashboardLayout>
   );
 };
