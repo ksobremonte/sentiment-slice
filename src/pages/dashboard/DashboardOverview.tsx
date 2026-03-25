@@ -2,8 +2,13 @@ import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Smile, Frown, MessageSquareWarning, ThumbsUp,
-  TrendingUp, Bell, Sparkles, Loader2,
+  TrendingUp, Bell, Sparkles, Loader2, ArrowUpDown, MessageSquare,
 } from "lucide-react";
+import ReviewCard from "@/components/dashboard/ReviewCard";
+import SentimentResult from "@/components/dashboard/SentimentResult";
+import { toast } from "sonner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import StatsCard from "@/components/dashboard/StatsCard";
 import StatsDetail from "@/components/dashboard/StatsDetail";
