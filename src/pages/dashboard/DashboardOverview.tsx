@@ -30,7 +30,8 @@ const DashboardOverview = () => {
   const [filterSentiment, setFilterSentiment] = useState<string | null>(null);
   const [aiInsight, setAiInsight] = useState<string | null>(null);
   const [insightLoading, setInsightLoading] = useState(false);
-  const { data: reviews = [] } = useReviews();
+  const [sentimentView, setSentimentView] = useState<Review | null>(null);
+  const { data: reviews = [], refetch } = useReviews();
 
   const { data: alertSettings } = useQuery({
     queryKey: ["alert-settings"],
