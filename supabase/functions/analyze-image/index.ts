@@ -88,16 +88,12 @@ Deno.serve(async (req) => {
     });
 
     if (!response.ok) {
-      if (response.status === 429) {
+      if (response.status === 429 || response.status === 402) {
+        // Fallback: allow image by default when AI is unavailable
+        console.warn("AI unavailable (status " + response.status + "), allowing image by default");
         return new Response(
-          JSON.stringify({ error: "Rate limited, please try again later" }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Service credits exhausted" }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({ relevant: true, category: "other_relevant", reason: "AI analysis unavailable, image allowed by default" }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       const text = await response.text();
