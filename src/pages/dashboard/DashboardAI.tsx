@@ -1,4 +1,4 @@
-import { Brain, Sparkles, MessageSquare, BarChart3 } from "lucide-react";
+import { Brain, Sparkles, MessageSquare, BarChart3, AlertTriangle } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
