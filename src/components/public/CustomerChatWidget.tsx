@@ -174,6 +174,20 @@ const CustomerChatWidget = () => {
         throw new Error(errorData.error || "Failed to get response");
       }
 
+      // Check if response is JSON (fallback) or stream
+      const contentType = response.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        const data = await response.json();
+        if (data.reply) {
+          assistantContent = data.reply;
+          const { cleanContent, suggestions: parsed } = parseSuggestions(assistantContent);
+          setMessages((prev) => [...prev, { role: "assistant", content: cleanContent }]);
+          setSuggestions(parsed);
+          setIsLoading(false);
+          return;
+        }
+      }
+
       if (!response.body) throw new Error("No response body");
 
       const reader = response.body.getReader();
