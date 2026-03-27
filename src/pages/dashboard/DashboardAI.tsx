@@ -8,11 +8,12 @@ import { useMemo } from "react";
 const DashboardAI = () => {
   const { data: reviews = [] } = useReviews();
 
-  const aiStats = useMemo(() => {
+  const { aiStats, missingReviews } = useMemo(() => {
     const analyzed = reviews.filter((r) => r.sentiment).length;
     const total = reviews.length;
     const rate = total > 0 ? Math.round((analyzed / total) * 100) : 0;
-    return { analyzed, total, rate };
+    const missing = reviews.filter((r) => !r.sentiment);
+    return { aiStats: { analyzed, total, rate }, missingReviews: missing };
   }, [reviews]);
 
   const features = [
