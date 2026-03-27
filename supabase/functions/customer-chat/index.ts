@@ -451,14 +451,16 @@ RULES: Only quote REAL reviews above. Never invent reviews. Stay polite. Never e
     });
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limits exceeded, please try again later." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Service temporarily unavailable." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      if (response.status === 429 || response.status === 402) {
+        // Fallback response when AI is unavailable
+        const fallbackReply = `Thank you for your message! Our AI assistant is temporarily unavailable, but here's some helpful info:\n\n• **${storeInfo.name}** is located in ${storeInfo.location}\n• **Hours:** Weekdays ${storeInfo.hours.weekdays}, Weekends ${storeInfo.hours.weekends}\n• **Phone:** ${storeInfo.phone}\n• **Delivery:** ${storeInfo.delivery}\n\nFor more detailed questions, please visit us in person or call us!`;
+
+        if (conversationId) {
+          await saveMessage(supabase, conversationId, "assistant", fallbackReply);
+        }
+
+        return new Response(JSON.stringify({ reply: fallbackReply, adminReplies }), {
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const errorText = await response.text();
