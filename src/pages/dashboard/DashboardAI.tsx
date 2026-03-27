@@ -67,6 +67,31 @@ const DashboardAI = () => {
           </div>
         </Card>
 
+        {/* Missing Sentiment Reviews */}
+        {missingReviews.length > 0 && (
+          <Card className="p-6 rounded-2xl border-2 border-destructive/30">
+            <h3 className="font-display font-semibold text-foreground mb-3 flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              Reviews Missing Analysis ({missingReviews.length})
+            </h3>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {missingReviews.map((r) => (
+                <div key={r.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/50 text-sm">
+                  <div className="flex-1 min-w-0">
+                    <span className="font-semibold text-foreground">{r.name}</span>
+                    <span className="text-muted-foreground mx-2">·</span>
+                    <span className="text-muted-foreground">{r.rating}★</span>
+                    <p className="text-muted-foreground truncate mt-0.5">{r.feedback}</p>
+                  </div>
+                  <span className="text-xs text-muted-foreground whitespace-nowrap ml-3">
+                    {new Date(r.created_at).toLocaleDateString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
+
         {/* Feature List */}
         <div className="space-y-3">
           {features.map((feature, i) => (
