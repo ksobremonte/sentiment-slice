@@ -1,5 +1,7 @@
-import { Star, Truck, ChefHat, Flame, ArrowRight, Clock, Users, Pizza, MapPin } from "lucide-react";
+import { Star, Truck, ChefHat, Flame, ArrowRight, Clock, Users, Pizza, MapPin, MessageSquare, ThumbsUp } from "lucide-react";
 import { Link } from "react-router-dom";
+import { usePublicReviews } from "@/hooks/usePublicReviews";
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import PublicLayout from "@/components/layout/PublicLayout";
 import {
