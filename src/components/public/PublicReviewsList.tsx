@@ -23,13 +23,15 @@ const PublicReviewsList = () => {
 
   const sortedReviews = useMemo(() => {
     const sorted = [...reviews];
+    const byDate = (a: typeof reviews[0], b: typeof reviews[0]) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     switch (sort) {
       case "highest":
-        return sorted.sort((a, b) => b.rating - a.rating);
+        return sorted.sort((a, b) => b.rating - a.rating || byDate(a, b));
       case "lowest":
-        return sorted.sort((a, b) => a.rating - b.rating);
+        return sorted.sort((a, b) => a.rating - b.rating || byDate(a, b));
       default:
-        return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        return sorted.sort(byDate);
     }
   }, [reviews, sort]);
 
