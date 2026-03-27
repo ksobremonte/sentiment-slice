@@ -14,6 +14,113 @@ interface Review {
   created_at: string;
 }
 
+type SentimentLabel = "positive" | "negative" | "neutral";
+
+const POSITIVE_KEYWORDS = [
+  "good", "great", "excellent", "amazing", "awesome", "love", "loved", "perfect", "fresh", "crispy",
+  "delicious", "tasty", "friendly", "fast", "clean", "recommend", "best", "masarap", "sarap", "ang sarap",
+  "nalaing", "nasayaat", "napintas", "nagpaspas", "naimas", "lami", "nindot", "ganahan",
+];
+
+const NEGATIVE_KEYWORDS = [
+  "bad", "worse", "worst", "awful", "terrible", "bland", "cold", "slow", "late", "burnt", "salty",
+  "oily", "expensive", "overpriced", "rude", "dirty", "disappoint", "madi", "saan a nasayaat", "narigat",
+  "bassit", "tamnay", "walang lasa", "hindi masarap", "tab-ang", "delay", "hilaw",
+];
+
+const POSITIVE_EMOJIS = ["😊", "😁", "😍", "🥰", "😋", "🤤", "👍", "👌", "🔥", "❤️", "💯", "🎉", "🥳", "⭐", "🌟", "✨", "😎", "🙌", "💪", "🤩", "💖", "👏"];
+const NEGATIVE_EMOJIS = ["😡", "😤", "🤮", "🤢", "👎", "😠", "😒", "😞", "😢", "😭", "💔", "🚫", "❌", "😩", "😫", "🙄", "😣", "😖", "🤬", "⚠️", "💀", "☠️", "😰", "😨", "😱"];
+const NEUTRAL_EMOJIS = ["😐", "🤔", "😶", "🫤", "🤷", "📝", "📌", "ℹ️", "🔔", "📢", "🙂", "😏", "🫡"];
+
+const STOPWORDS = new Set([
+  "the", "and", "for", "with", "this", "that", "from", "have", "very", "pero", "kasi", "lang", "yung", "ang", "mga",
+  "nga", "naman", "din", "sila", "kami", "siya", "your", "you", "are", "was", "were", "been", "really", "just", "order",
+  "pizza", "food", "store", "place", "restaurant",
+]);
+
+const sortFallbackByRatingThenDate = (reviewList: Review[]) => {
+  return [...reviewList]
+    .sort((a, b) => {
+      const ratingDiff = b.rating - a.rating;
+      if (ratingDiff !== 0) return ratingDiff;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    })
+    .map((review) => review.id);
+};
+
+const countEmojiHits = (text: string, emojis: string[]) =>
+  emojis.reduce((acc, emoji) => acc + (text.includes(emoji) ? 1 : 0), 0);
+
+const extractKeyPhrases = (feedback: string) => {
+  const words = feedback
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .split(/\s+/)
+    .filter((word) => word.length > 3 && !STOPWORDS.has(word));
+
+  const freq = new Map<string, number>();
+  for (const word of words) {
+    freq.set(word, (freq.get(word) ?? 0) + 1);
+  }
+
+  return [...freq.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([word]) => word);
+};
+
+const detectLanguage = (feedback: string) => {
+  const text = feedback.toLowerCase();
+  if (["nalaing", "nasayaat", "napintas", "nagpaspas", "naimas", "madi", "narigat", "bassit", "tamnay"].some((word) => text.includes(word))) return "ilo";
+  if (["masarap", "hindi", "walang", "sarap", "sobrang", "pangit"].some((word) => text.includes(word))) return "tl";
+  if (["lami", "nindot", "dili", "ganahan", "tab-ang"].some((word) => text.includes(word))) return "ceb";
+  return "en";
+};
+
+const getFallbackSentiment = (review: Review) => {
+  const feedback = review.feedback ?? "";
+  const text = feedback.toLowerCase();
+
+  const keywordPositive = POSITIVE_KEYWORDS.reduce((acc, word) => acc + (text.includes(word) ? 1 : 0), 0);
+  const keywordNegative = NEGATIVE_KEYWORDS.reduce((acc, word) => acc + (text.includes(word) ? 1 : 0), 0);
+  const emojiPositive = countEmojiHits(feedback, POSITIVE_EMOJIS);
+  const emojiNegative = countEmojiHits(feedback, NEGATIVE_EMOJIS);
+  const emojiNeutral = countEmojiHits(feedback, NEUTRAL_EMOJIS);
+
+  const positiveScore = keywordPositive + emojiPositive;
+  const negativeScore = keywordNegative + emojiNegative;
+
+  let sentiment: SentimentLabel = "neutral";
+  if (positiveScore > negativeScore) sentiment = "positive";
+  else if (negativeScore > positiveScore) sentiment = "negative";
+  else if (positiveScore === 0 && negativeScore === 0 && emojiNeutral > 0) sentiment = "neutral";
+
+  const totalSignals = positiveScore + negativeScore + emojiNeutral;
+  const confidence = totalSignals > 0
+    ? Number((Math.max(positiveScore, negativeScore, emojiNeutral) / totalSignals).toFixed(2))
+    : 0.55;
+
+  const keyPhrases = extractKeyPhrases(feedback);
+  const language = detectLanguage(feedback);
+
+  const reasoning = sentiment === "positive"
+    ? "Detected mainly positive words/emojis in the review text."
+    : sentiment === "negative"
+      ? "Detected mainly negative words/emojis in the review text."
+      : "The review text appears balanced or lacks strong sentiment signals.";
+
+  return {
+    sentiment,
+    language,
+    approved: true,
+    confidence,
+    aspects: {},
+    keyPhrases,
+    reasoning,
+    fallback: true,
+  };
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -123,14 +230,22 @@ Only return the JSON array, no other text. Format: ["id1", "id2", "id3", ...]`;
 
       if (!response.ok) {
         if (response.status === 429) {
-          return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
-            status: 429,
+          return new Response(JSON.stringify({
+            sortedIds: sortFallbackByRatingThenDate(reviews as Review[]),
+            fallback: true,
+            warning: "AI rate limit reached. Sorted by rating/date fallback.",
+          }), {
+            status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
         if (response.status === 402) {
-          return new Response(JSON.stringify({ error: "AI credits exhausted. Please add credits to continue." }), {
-            status: 402,
+          return new Response(JSON.stringify({
+            sortedIds: sortFallbackByRatingThenDate(reviews as Review[]),
+            fallback: true,
+            warning: "AI credits exhausted. Sorted by rating/date fallback.",
+          }), {
+            status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
@@ -256,14 +371,20 @@ When a review consists primarily of emojis with little or no text, classify sent
 
       if (!response.ok) {
         if (response.status === 429) {
-          return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
-            status: 429,
+          return new Response(JSON.stringify({
+            ...getFallbackSentiment(review),
+            warning: "AI rate limit reached. Used basic sentiment analysis fallback.",
+          }), {
+            status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
         if (response.status === 402) {
-          return new Response(JSON.stringify({ error: "AI credits exhausted. Please add credits to continue." }), {
-            status: 402,
+          return new Response(JSON.stringify({
+            ...getFallbackSentiment(review),
+            warning: "AI credits exhausted. Used basic sentiment analysis fallback.",
+          }), {
+            status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
