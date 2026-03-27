@@ -42,6 +42,7 @@ const Home = () => {
   }, [publicReviews]);
 
   return (
+    <PublicLayout>
       {/* ─── HERO ─── Full-bleed cinematic hero */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background image */}
