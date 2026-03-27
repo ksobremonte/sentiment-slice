@@ -143,10 +143,10 @@ const Home = () => {
         <div className="container mx-auto px-6 relative">
           <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto text-center">
             {[
-              { value: 25, suffix: "+", label: "Years Serving", icon: Clock },
-              { value: 50000, suffix: "+", label: "Happy Customers", icon: Users },
-              { value: 30, suffix: "+", label: "Menu Items", icon: Pizza },
-              { value: 5, suffix: "★", label: "Average Rating", icon: Star },
+              { value: liveStats.total, suffix: "", label: "Reviews Collected", icon: MessageSquare },
+              { value: liveStats.positivePct, suffix: "%", label: "Positive Feedback", icon: ThumbsUp },
+              { value: liveStats.activeUsers, suffix: "", label: "Active Users", icon: Users },
+              { value: liveStats.avgRating, suffix: "★", label: "Average Rating", icon: Star },
             ].map((stat) => (
               <StaggerItem key={stat.label}>
                 <div className="space-y-1.5">
