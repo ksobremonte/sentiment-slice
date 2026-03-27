@@ -11,7 +11,7 @@ const REVIEWS_PER_PAGE = 8;
 
 const PublicReviewsList = () => {
   const { data: reviews = [], isLoading } = usePublicReviews();
-  const [sort, setSort] = useState<SortOption>("latest");
+  const [sort, setSort] = useState<SortOption>("highest");
   const [page, setPage] = useState(1);
 
   const reviewIds = useMemo(() => reviews.map((r) => r.id), [reviews]);
