@@ -45,25 +45,26 @@ export const MagicLinkEmail = ({
 
 export default MagicLinkEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
+const main = { backgroundColor: '#ffffff', fontFamily: "'Source Sans 3', Arial, sans-serif" }
 const container = { padding: '20px 25px' }
 const h1 = {
   fontSize: '22px',
   fontWeight: 'bold' as const,
-  color: '#000000',
+  color: 'hsl(20, 35%, 8%)',
+  fontFamily: "'Playfair Display', Georgia, serif",
   margin: '0 0 20px',
 }
 const text = {
   fontSize: '14px',
-  color: '#55575d',
+  color: 'hsl(20, 8%, 46%)',
   lineHeight: '1.5',
   margin: '0 0 25px',
 }
 const button = {
-  backgroundColor: '#000000',
-  color: '#ffffff',
+  backgroundColor: 'hsl(4, 74%, 32%)',
+  color: 'hsl(0, 0%, 98%)',
   fontSize: '14px',
-  borderRadius: '8px',
+  borderRadius: '0.75rem',
   padding: '12px 20px',
   textDecoration: 'none',
 }
