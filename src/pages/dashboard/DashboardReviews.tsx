@@ -94,6 +94,11 @@ const DashboardReviews = () => {
   // Reset page when filters change
   useEffect(() => { setPage(1); }, [searchQuery, filterSentiment, filterRating, isAISorted]);
 
+  // Scroll to top of reviews container on page change
+  useEffect(() => {
+    reviewsContainerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [page]);
+
   if (sentimentView) {
     return (
       <DashboardLayout>
