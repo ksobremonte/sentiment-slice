@@ -197,7 +197,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <div className="min-h-screen flex w-full bg-background">
         <DashboardSidebar />
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="sticky top-0 z-40 flex items-center gap-2 border-b border-border bg-cream-warm/95 backdrop-blur-sm px-4 py-3">
+          <header className="sticky top-0 z-40 flex items-center gap-2 border-b border-border bg-background/95 backdrop-blur-sm px-4 py-3">
             <SidebarTrigger />
             <div className="text-sm font-semibold text-foreground flex-1">{t("nav.sentimentDashboard")}</div>
             <div className="flex items-center gap-2">

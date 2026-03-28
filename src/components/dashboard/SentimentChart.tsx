@@ -43,7 +43,8 @@ const SentimentChart = ({ sentimentData, filterSentiment, onFilterChange }: Sent
 
   const handleDownload = useCallback(async () => {
     if (!reportRef.current) return;
-    const canvas = await html2canvas(reportRef.current, { backgroundColor: "#ffffff", scale: 2 });
+    const isDark = document.documentElement.classList.contains("dark");
+    const canvas = await html2canvas(reportRef.current, { backgroundColor: isDark ? "#1a1410" : "#ffffff", scale: 2 });
     const link = document.createElement("a");
     link.download = `sentiment-report-${new Date().toISOString().slice(0, 10)}.png`;
     link.href = canvas.toDataURL("image/png");
