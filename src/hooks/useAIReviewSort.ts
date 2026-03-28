@@ -14,6 +14,10 @@ export const useAIReviewSort = () => {
     setError(null);
 
     try {
+      // Limit to first 100 reviews for AI sorting, keep the rest appended at the end
+      const batch = reviews.slice(0, 100);
+      const overflow = reviews.slice(100);
+
       const response = await fetch(FUNCTION_URL, {
         method: "POST",
         headers: {
@@ -21,7 +25,7 @@ export const useAIReviewSort = () => {
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
-          reviews,
+          reviews: batch,
           action: "sort",
         }),
       });
@@ -33,8 +37,8 @@ export const useAIReviewSort = () => {
 
       const { sortedIds } = await response.json();
       
-      // Reorder reviews based on AI-sorted IDs
-      const reviewMap = new Map(reviews.map(r => [r.id, r]));
+      // Reorder the batch based on AI-sorted IDs
+      const reviewMap = new Map(batch.map(r => [r.id, r]));
       const sortedReviews: Review[] = [];
       
       for (const id of sortedIds) {
@@ -45,8 +49,9 @@ export const useAIReviewSort = () => {
         }
       }
       
-      // Add any remaining reviews not in the sorted list
+      // Add any remaining batch reviews not in the sorted list, then overflow
       sortedReviews.push(...reviewMap.values());
+      sortedReviews.push(...overflow);
       
       return sortedReviews;
     } catch (err) {
