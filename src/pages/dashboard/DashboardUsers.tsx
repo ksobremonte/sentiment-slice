@@ -239,6 +239,16 @@ const DashboardUsers = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <Select value={roleFilter} onValueChange={(v) => { setRoleFilter(v); setPage(1); }}>
+                <SelectTrigger className="w-[140px] rounded-xl h-9">
+                  <SelectValue placeholder="All Roles" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="all">All Roles</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="moderator">Staff</SelectItem>
+                </SelectContent>
+              </Select>
               <Button
                 variant="outline"
                 size="sm"
