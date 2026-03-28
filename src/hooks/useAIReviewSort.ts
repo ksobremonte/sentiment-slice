@@ -49,8 +49,9 @@ export const useAIReviewSort = () => {
         }
       }
       
-      // Add any remaining reviews not in the sorted list
+      // Add any remaining batch reviews not in the sorted list, then overflow
       sortedReviews.push(...reviewMap.values());
+      sortedReviews.push(...overflow);
       
       return sortedReviews;
     } catch (err) {
