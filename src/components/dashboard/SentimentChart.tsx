@@ -58,10 +58,7 @@ const SentimentChart = ({ sentimentData, filterSentiment, onFilterChange }: Sent
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-display font-bold text-foreground">Sentiment Distribution</h3>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-muted/50 text-xs text-muted-foreground">
-            <Calendar className="w-3.5 h-3.5" />
-            <span>DATE RANGE: {formatDate(thirtyDaysAgo)} - {formatDate(now)}</span>
-          </div>
+          <span className="text-xs text-muted-foreground font-semibold px-3 py-1.5 rounded-full border border-border bg-muted/50">ALL TIME</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
