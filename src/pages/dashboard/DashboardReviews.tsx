@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { MessageSquare, Search, Filter, Sparkles, Loader2, Star } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import ReviewCard from "@/components/dashboard/ReviewCard";
@@ -20,6 +20,7 @@ const DashboardReviews = () => {
   const [sortedReviews, setSortedReviews] = useState<Review[]>([]);
   const [isAISorted, setIsAISorted] = useState(false);
   const [page, setPage] = useState(1);
+  const reviewsContainerRef = useRef<HTMLDivElement>(null);
   const [sentimentView, setSentimentView] = useState<Review | null>(null);
   const { data: reviews = [], refetch } = useReviews();
   const { sortReviewsByRelevance, isSorting, error: sortError } = useAIReviewSort();
@@ -92,6 +93,11 @@ const DashboardReviews = () => {
 
   // Reset page when filters change
   useEffect(() => { setPage(1); }, [searchQuery, filterSentiment, filterRating, isAISorted]);
+
+  // Scroll to top of reviews container on page change
+  useEffect(() => {
+    reviewsContainerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [page]);
 
   if (sentimentView) {
     return (
@@ -168,7 +174,7 @@ const DashboardReviews = () => {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div ref={reviewsContainerRef} className="space-y-4">
         {paginatedReviews.length > 0 ? (
           paginatedReviews.map((review) => (
             <ReviewCard key={review.id} review={review} onAnalyze={handleAnalyze} onViewSentiment={(r) => setSentimentView(r)} />
