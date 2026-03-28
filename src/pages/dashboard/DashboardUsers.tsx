@@ -35,6 +35,7 @@ const DashboardUsers = () => {
   const [newRole, setNewRole] = useState<string>("moderator");
   const [isAdding, setIsAdding] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [resetOpen, setResetOpen] = useState(false);
   const [resetUserId, setResetUserId] = useState("");
@@ -71,8 +72,9 @@ const DashboardUsers = () => {
 
   const filteredUsers = users.filter(
     (u) =>
-      u.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchQuery.toLowerCase())
+      (u.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.email.toLowerCase().includes(searchQuery.toLowerCase())) &&
+      (roleFilter === "all" || u.role === roleFilter)
   );
 
   const totalPages = Math.max(1, Math.ceil(filteredUsers.length / perPage));
@@ -237,6 +239,16 @@ const DashboardUsers = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <Select value={roleFilter} onValueChange={(v) => { setRoleFilter(v); setPage(1); }}>
+                <SelectTrigger className="w-[140px] rounded-xl h-9">
+                  <SelectValue placeholder="All Roles" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="all">All Roles</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="moderator">Staff</SelectItem>
+                </SelectContent>
+              </Select>
               <Button
                 variant="outline"
                 size="sm"
