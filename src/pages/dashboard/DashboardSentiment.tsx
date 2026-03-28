@@ -11,23 +11,13 @@ const DashboardSentiment = () => {
   const [activeTab, setActiveTab] = useState("negative");
   const { data: reviews = [] } = useReviews();
 
-  const thirtyDaysAgo = useMemo(() => {
-    const d = new Date();
-    d.setDate(d.getDate() - 30);
-    return d;
-  }, []);
-
-  const recentReviews = useMemo(() => {
-    return reviews.filter((r) => new Date(r.created_at) >= thirtyDaysAgo);
-  }, [reviews, thirtyDaysAgo]);
-
   const sentimentData = useMemo(() => {
-    const positive = recentReviews.filter((r) => r.sentiment === "positive").length;
-    const negative = recentReviews.filter((r) => r.sentiment === "negative").length;
-    const neutral = recentReviews.filter((r) => r.sentiment === "neutral").length;
-    const unanalyzed = recentReviews.filter((r) => !r.sentiment).length;
-    return { positive, negative, neutral, unanalyzed, total: recentReviews.length };
-  }, [recentReviews]);
+    const positive = reviews.filter((r) => r.sentiment === "positive").length;
+    const negative = reviews.filter((r) => r.sentiment === "negative").length;
+    const neutral = reviews.filter((r) => r.sentiment === "neutral").length;
+    const unanalyzed = reviews.filter((r) => !r.sentiment).length;
+    return { positive, negative, neutral, unanalyzed, total: reviews.length };
+  }, [reviews]);
 
   const groupedReviews = useMemo(() => {
     const groups = {
