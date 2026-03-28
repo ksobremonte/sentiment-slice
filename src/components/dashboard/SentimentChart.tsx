@@ -1,5 +1,5 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
-import { CheckCircle2, AlertCircle, XCircle, TrendingUp, Download, Calendar } from "lucide-react";
+import { CheckCircle2, AlertCircle, XCircle, TrendingUp, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCallback, useRef } from "react";
 import html2canvas from "html2canvas";
@@ -51,10 +51,6 @@ const SentimentChart = ({ sentimentData, filterSentiment, onFilterChange }: Sent
     link.click();
   }, []);
 
-  // Date range (last 30 days)
-  const now = new Date();
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-  const formatDate = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
   return (
     <section className="mb-10">
@@ -62,10 +58,7 @@ const SentimentChart = ({ sentimentData, filterSentiment, onFilterChange }: Sent
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-display font-bold text-foreground">Sentiment Distribution</h3>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-muted/50 text-xs text-muted-foreground">
-            <Calendar className="w-3.5 h-3.5" />
-            <span>DATE RANGE: {formatDate(thirtyDaysAgo)} - {formatDate(now)}</span>
-          </div>
+          <span className="text-xs text-muted-foreground font-semibold px-3 py-1.5 rounded-full border border-border bg-muted/50">ALL TIME</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -111,7 +104,7 @@ const SentimentChart = ({ sentimentData, filterSentiment, onFilterChange }: Sent
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                   <span className="text-3xl font-display font-bold text-foreground">{total}</span>
                   <span className="text-[11px] text-muted-foreground font-semibold">Total Reviews</span>
-                  <span className="text-[9px] text-muted-foreground uppercase tracking-wider">Last 30 Days</span>
+                  <span className="text-[9px] text-muted-foreground uppercase tracking-wider">All Time</span>
                 </div>
               </div>
             ) : (
