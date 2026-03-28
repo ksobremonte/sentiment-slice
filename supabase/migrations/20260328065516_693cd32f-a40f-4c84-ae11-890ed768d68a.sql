@@ -1,0 +1,3 @@
+UPDATE public.reviews SET sentiment = 'neutral', sentiment_reason = 'The review text appears balanced or lacks strong sentiment signals.', sentiment_keywords = ARRAY['okay', 'medyo', 'masikip'], language = 'tl' WHERE id = '4464a42b-7200-4bda-a11e-09f7631c1883';
+
+UPDATE public.reviews SET sentiment = 'neutral', sentiment_reason = 'The review text appears balanced or lacks strong sentiment signals.', sentiment_keywords = ARRAY['okay', 'pesto'], language = 'tl' WHERE id = 'ee479cbd-47c1-411f-b22b-4b5d47722016';
