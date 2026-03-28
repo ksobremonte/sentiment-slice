@@ -21,12 +21,12 @@ const DashboardSentiment = () => {
 
   const groupedReviews = useMemo(() => {
     const groups = {
-      negative: recentReviews.filter((r) => r.sentiment === "negative"),
-      neutral: recentReviews.filter((r) => r.sentiment === "neutral"),
-      positive: recentReviews.filter((r) => r.sentiment === "positive"),
+      negative: reviews.filter((r) => r.sentiment === "negative"),
+      neutral: reviews.filter((r) => r.sentiment === "neutral"),
+      positive: reviews.filter((r) => r.sentiment === "positive"),
     };
     return groups;
-  }, [recentReviews]);
+  }, [reviews]);
 
   const sentimentConfig: Record<string, { label: string; color: string; bgClass: string; borderClass: string }> = {
     negative: { label: "Negative", color: "text-destructive", bgClass: "bg-destructive/10", borderClass: "border-destructive/30" },

@@ -56,7 +56,7 @@ const DashboardOverview = () => {
       return { pos, neg, neu, analyzed, total: list.length };
     };
 
-    const tw = calcSentiment(thisWeek);
+    const tw = calcSentiment(reviews);
     const lw = calcSentiment(lastWeek);
 
     // Overall sentiment score (0-100, 100 = all positive)
