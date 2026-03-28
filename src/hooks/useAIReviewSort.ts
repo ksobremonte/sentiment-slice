@@ -37,8 +37,8 @@ export const useAIReviewSort = () => {
 
       const { sortedIds } = await response.json();
       
-      // Reorder reviews based on AI-sorted IDs
-      const reviewMap = new Map(reviews.map(r => [r.id, r]));
+      // Reorder the batch based on AI-sorted IDs
+      const reviewMap = new Map(batch.map(r => [r.id, r]));
       const sortedReviews: Review[] = [];
       
       for (const id of sortedIds) {
