@@ -174,7 +174,7 @@ const DashboardReviews = () => {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div ref={reviewsContainerRef} className="space-y-4">
         {paginatedReviews.length > 0 ? (
           paginatedReviews.map((review) => (
             <ReviewCard key={review.id} review={review} onAnalyze={handleAnalyze} onViewSentiment={(r) => setSentimentView(r)} />
