@@ -26,7 +26,8 @@ const POSITIVE_KEYWORDS = [
 const NEGATIVE_KEYWORDS = [
   "bad", "worse", "worst", "awful", "terrible", "bland", "cold", "slow", "late", "burnt", "salty",
   "oily", "expensive", "overpriced", "rude", "dirty", "disappoint", "madi", "saan a nasayaat", "narigat",
-  "bassit", "tamnay", "walang lasa", "hindi masarap", "tab-ang", "delay", "hilaw",
+  "bassit", "tamnay", "nakaro", "nakabuteng", "naalas", "nadawel", "walang lasa", "hindi masarap",
+  "tab-ang", "delay", "hilaw",
 ];
 
 const POSITIVE_EMOJIS = ["😊", "😁", "😍", "🥰", "😋", "🤤", "👍", "👌", "🔥", "❤️", "💯", "🎉", "🥳", "⭐", "🌟", "✨", "😎", "🙌", "💪", "🤩", "💖", "👏"];
