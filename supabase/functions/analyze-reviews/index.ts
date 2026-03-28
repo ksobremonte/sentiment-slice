@@ -19,7 +19,8 @@ type SentimentLabel = "positive" | "negative" | "neutral";
 const POSITIVE_KEYWORDS = [
   "good", "great", "excellent", "amazing", "awesome", "love", "loved", "perfect", "fresh", "crispy",
   "delicious", "tasty", "friendly", "fast", "clean", "recommend", "best", "masarap", "sarap", "ang sarap",
-  "nalaing", "nasayaat", "napintas", "nagpaspas", "naimas", "nagimas", "nimas", "lami", "nindot", "ganahan",
+  "nalaing", "nasayaat", "nagsayaat", "napintas", "nagpaspas", "naimas", "nagimas", "nimas", "naragsak",
+  "nakaskasdaaw", "naimbag", "nasantuan", "nagdakkel", "nalaka", "lami", "nindot", "ganahan",
 ];
 
 const NEGATIVE_KEYWORDS = [
