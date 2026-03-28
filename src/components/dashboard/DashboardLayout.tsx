@@ -194,7 +194,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-cream-warm">
+      <div className="min-h-screen flex w-full bg-background">
         <DashboardSidebar />
         <div className="flex-1 flex flex-col min-w-0">
           <header className="sticky top-0 z-40 flex items-center gap-2 border-b border-border bg-cream-warm/95 backdrop-blur-sm px-4 py-3">
