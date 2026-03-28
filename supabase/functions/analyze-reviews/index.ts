@@ -19,13 +19,15 @@ type SentimentLabel = "positive" | "negative" | "neutral";
 const POSITIVE_KEYWORDS = [
   "good", "great", "excellent", "amazing", "awesome", "love", "loved", "perfect", "fresh", "crispy",
   "delicious", "tasty", "friendly", "fast", "clean", "recommend", "best", "masarap", "sarap", "ang sarap",
-  "nalaing", "nasayaat", "napintas", "nagpaspas", "naimas", "nagimas", "nimas", "lami", "nindot", "ganahan",
+  "nalaing", "nasayaat", "nagsayaat", "napintas", "nagpaspas", "naimas", "nagimas", "nimas", "naragsak",
+  "nakaskasdaaw", "naimbag", "nasantuan", "nagdakkel", "nalaka", "lami", "nindot", "ganahan",
 ];
 
 const NEGATIVE_KEYWORDS = [
   "bad", "worse", "worst", "awful", "terrible", "bland", "cold", "slow", "late", "burnt", "salty",
   "oily", "expensive", "overpriced", "rude", "dirty", "disappoint", "madi", "saan a nasayaat", "narigat",
-  "bassit", "tamnay", "walang lasa", "hindi masarap", "tab-ang", "delay", "hilaw",
+  "bassit", "tamnay", "nakaro", "nakabuteng", "naalas", "nadawel", "walang lasa", "hindi masarap",
+  "tab-ang", "delay", "hilaw",
 ];
 
 const POSITIVE_EMOJIS = ["😊", "😁", "😍", "🥰", "😋", "🤤", "👍", "👌", "🔥", "❤️", "💯", "🎉", "🥳", "⭐", "🌟", "✨", "😎", "🙌", "💪", "🤩", "💖", "👏"];
@@ -71,7 +73,7 @@ const extractKeyPhrases = (feedback: string) => {
 
 const detectLanguage = (feedback: string) => {
   const text = feedback.toLowerCase();
-  if (["nalaing", "nasayaat", "napintas", "nagpaspas", "naimas", "nagimas", "nimas", "diyay", "daytoy", "madi", "narigat", "bassit", "tamnay"].some((word) => text.includes(word))) return "ilo";
+  if (["nalaing", "nasayaat", "nagsayaat", "napintas", "nagpaspas", "naimas", "nagimas", "nimas", "naragsak", "nakaskasdaaw", "naimbag", "nasantuan", "diyay", "daytoy", "madi", "narigat", "bassit", "tamnay", "nakaro", "naalas", "nadawel"].some((word) => text.includes(word))) return "ilo";
   if (["masarap", "hindi", "walang", "sarap", "sobrang", "pangit"].some((word) => text.includes(word))) return "tl";
   if (["lami", "nindot", "dili", "ganahan", "tab-ang"].some((word) => text.includes(word))) return "ceb";
   return "en";
