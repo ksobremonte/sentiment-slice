@@ -1,28 +1,23 @@
 project_id = "oviywityvklmftjxrnrj"
 
-[functions.verify-captcha]
-verify_jwt = false
-
-[functions.public-config]
-verify_jwt = false
-
-[functions.analyze-reviews]
-verify_jwt = false
-
-[functions.upload-review-photo]
-verify_jwt = false
-
-[functions.customer-chat]
-verify_jwt = false
-
-[functions.check-replies]
-verify_jwt = false
-
-[functions.list-users]
-verify_jwt = false
-
-[functions.analyze-image]
-verify_jwt = false
-
-[functions.process-email-queue]
-verify_jwt = true
+[functions]
+  [functions.analyze-image]
+    verify_jwt = false
+  [functions.analyze-reviews]
+    verify_jwt = false
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.check-replies]
+    verify_jwt = false
+  [functions.customer-chat]
+    verify_jwt = false
+  [functions.list-users]
+    verify_jwt = false
+  [functions.process-email-queue]
+    verify_jwt = true
+  [functions.public-config]
+    verify_jwt = false
+  [functions.upload-review-photo]
+    verify_jwt = false
+  [functions.verify-captcha]
+    verify_jwt = false
