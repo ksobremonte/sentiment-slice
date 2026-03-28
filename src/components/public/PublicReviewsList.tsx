@@ -13,6 +13,7 @@ const PublicReviewsList = () => {
   const { data: reviews = [], isLoading } = usePublicReviews();
   const [sort, setSort] = useState<SortOption>("highest");
   const [page, setPage] = useState(1);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const reviewIds = useMemo(() => reviews.map((r) => r.id), [reviews]);
   const { getCounts, getUserReaction, toggleReaction } = useReviewReactions(reviewIds);
