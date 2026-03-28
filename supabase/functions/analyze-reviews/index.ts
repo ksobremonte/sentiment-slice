@@ -71,7 +71,7 @@ const extractKeyPhrases = (feedback: string) => {
 
 const detectLanguage = (feedback: string) => {
   const text = feedback.toLowerCase();
-  if (["nalaing", "nasayaat", "napintas", "nagpaspas", "naimas", "madi", "narigat", "bassit", "tamnay"].some((word) => text.includes(word))) return "ilo";
+  if (["nalaing", "nasayaat", "napintas", "nagpaspas", "naimas", "nagimas", "nimas", "diyay", "daytoy", "madi", "narigat", "bassit", "tamnay"].some((word) => text.includes(word))) return "ilo";
   if (["masarap", "hindi", "walang", "sarap", "sobrang", "pangit"].some((word) => text.includes(word))) return "tl";
   if (["lami", "nindot", "dili", "ganahan", "tab-ang"].some((word) => text.includes(word))) return "ceb";
   return "en";
