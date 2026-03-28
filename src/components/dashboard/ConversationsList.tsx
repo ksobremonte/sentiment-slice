@@ -25,7 +25,7 @@ const ConversationsList = () => {
       case "pending_admin":
         return { icon: AlertTriangle, label: "Needs Response", variant: "destructive" as const, className: "" };
       case "resolved":
-        return { icon: CheckCircle, label: "Resolved", variant: "secondary" as const, className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100" };
+        return { icon: CheckCircle, label: "Resolved", variant: "secondary" as const, className: "bg-success/10 text-success" };
       default:
         return { icon: Clock, label: "Active", variant: "outline" as const, className: "" };
     }

@@ -166,9 +166,9 @@ const DashboardTrends = () => {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <SummaryCard icon={<BarChart3 className="h-5 w-5 text-primary" />} label="Total Reviews" value={summary.total} />
           <SummaryCard icon={<TrendingUp className="h-5 w-5 text-primary" />} label="Avg Rating" value={`${summary.avgRating}★`} />
-          <SummaryCard icon={<ThumbsUp className="h-5 w-5 text-green-500" />} label="Positive" value={`${summary.positive}%`} color="text-green-600" />
-          <SummaryCard icon={<Minus className="h-5 w-5 text-yellow-500" />} label="Neutral" value={`${summary.neutral}%`} color="text-yellow-600" />
-          <SummaryCard icon={<ThumbsDown className="h-5 w-5 text-red-500" />} label="Negative" value={`${summary.negative}%`} color="text-red-600" />
+          <SummaryCard icon={<ThumbsUp className="h-5 w-5 text-success" />} label="Positive" value={`${summary.positive}%`} color="text-success" />
+          <SummaryCard icon={<Minus className="h-5 w-5 text-warning" />} label="Neutral" value={`${summary.neutral}%`} color="text-warning" />
+          <SummaryCard icon={<ThumbsDown className="h-5 w-5 text-destructive" />} label="Negative" value={`${summary.negative}%`} color="text-destructive" />
         </div>
       </div>
     </DashboardLayout>
