@@ -72,8 +72,9 @@ const DashboardUsers = () => {
 
   const filteredUsers = users.filter(
     (u) =>
-      u.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchQuery.toLowerCase())
+      (u.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.email.toLowerCase().includes(searchQuery.toLowerCase())) &&
+      (roleFilter === "all" || u.role === roleFilter)
   );
 
   const totalPages = Math.max(1, Math.ceil(filteredUsers.length / perPage));
