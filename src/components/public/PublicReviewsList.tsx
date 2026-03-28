@@ -67,7 +67,7 @@ const PublicReviewsList = () => {
   const avgRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Summary */}
       <div className="bg-card border-2 border-border rounded-2xl p-6 shadow-subtle text-center">
         <div className="flex items-center justify-center gap-2 mb-2">
