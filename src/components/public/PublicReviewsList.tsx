@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Star, MessageSquare, Loader2, ArrowUpDown } from "lucide-react";
 import { usePublicReviews } from "@/hooks/usePublicReviews";
 import { useReviewReactions } from "@/hooks/useReviewReactions";
@@ -13,6 +13,7 @@ const PublicReviewsList = () => {
   const { data: reviews = [], isLoading } = usePublicReviews();
   const [sort, setSort] = useState<SortOption>("highest");
   const [page, setPage] = useState(1);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const reviewIds = useMemo(() => reviews.map((r) => r.id), [reviews]);
   const { getCounts, getUserReaction, toggleReaction } = useReviewReactions(reviewIds);
@@ -41,6 +42,11 @@ const PublicReviewsList = () => {
   // Reset page when sort changes
   useEffect(() => { setPage(1); }, [sort]);
 
+  // Scroll to top of reviews container on page change
+  useEffect(() => {
+    containerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [page]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -61,7 +67,7 @@ const PublicReviewsList = () => {
   const avgRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Summary */}
       <div className="bg-card border-2 border-border rounded-2xl p-6 shadow-subtle text-center">
         <div className="flex items-center justify-center gap-2 mb-2">
