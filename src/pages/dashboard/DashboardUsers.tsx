@@ -35,6 +35,7 @@ const DashboardUsers = () => {
   const [newRole, setNewRole] = useState<string>("moderator");
   const [isAdding, setIsAdding] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [resetOpen, setResetOpen] = useState(false);
   const [resetUserId, setResetUserId] = useState("");
