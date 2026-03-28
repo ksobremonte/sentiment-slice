@@ -20,6 +20,7 @@ const DashboardReviews = () => {
   const [sortedReviews, setSortedReviews] = useState<Review[]>([]);
   const [isAISorted, setIsAISorted] = useState(false);
   const [page, setPage] = useState(1);
+  const reviewsContainerRef = useRef<HTMLDivElement>(null);
   const [sentimentView, setSentimentView] = useState<Review | null>(null);
   const { data: reviews = [], refetch } = useReviews();
   const { sortReviewsByRelevance, isSorting, error: sortError } = useAIReviewSort();
