@@ -11,22 +11,32 @@ const DashboardSentiment = () => {
   const [activeTab, setActiveTab] = useState("negative");
   const { data: reviews = [] } = useReviews();
 
+  const thirtyDaysAgo = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 30);
+    return d;
+  }, []);
+
+  const recentReviews = useMemo(() => {
+    return reviews.filter((r) => new Date(r.created_at) >= thirtyDaysAgo);
+  }, [reviews, thirtyDaysAgo]);
+
   const sentimentData = useMemo(() => {
-    const positive = reviews.filter((r) => r.sentiment === "positive").length;
-    const negative = reviews.filter((r) => r.sentiment === "negative").length;
-    const neutral = reviews.filter((r) => r.sentiment === "neutral").length;
-    const unanalyzed = reviews.filter((r) => !r.sentiment).length;
-    return { positive, negative, neutral, unanalyzed, total: reviews.length };
-  }, [reviews]);
+    const positive = recentReviews.filter((r) => r.sentiment === "positive").length;
+    const negative = recentReviews.filter((r) => r.sentiment === "negative").length;
+    const neutral = recentReviews.filter((r) => r.sentiment === "neutral").length;
+    const unanalyzed = recentReviews.filter((r) => !r.sentiment).length;
+    return { positive, negative, neutral, unanalyzed, total: recentReviews.length };
+  }, [recentReviews]);
 
   const groupedReviews = useMemo(() => {
     const groups = {
-      negative: reviews.filter((r) => r.sentiment === "negative"),
-      neutral: reviews.filter((r) => r.sentiment === "neutral"),
-      positive: reviews.filter((r) => r.sentiment === "positive"),
+      negative: recentReviews.filter((r) => r.sentiment === "negative"),
+      neutral: recentReviews.filter((r) => r.sentiment === "neutral"),
+      positive: recentReviews.filter((r) => r.sentiment === "positive"),
     };
     return groups;
-  }, [reviews]);
+  }, [recentReviews]);
 
   const sentimentConfig: Record<string, { label: string; color: string; bgClass: string; borderClass: string }> = {
     negative: { label: "Negative", color: "text-destructive", bgClass: "bg-destructive/10", borderClass: "border-destructive/30" },
