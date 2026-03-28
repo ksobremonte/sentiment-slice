@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Star, MessageSquare, Loader2, ArrowUpDown } from "lucide-react";
 import { usePublicReviews } from "@/hooks/usePublicReviews";
 import { useReviewReactions } from "@/hooks/useReviewReactions";
