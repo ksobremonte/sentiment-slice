@@ -14,6 +14,10 @@ export const useAIReviewSort = () => {
     setError(null);
 
     try {
+      // Limit to first 100 reviews for AI sorting, keep the rest appended at the end
+      const batch = reviews.slice(0, 100);
+      const overflow = reviews.slice(100);
+
       const response = await fetch(FUNCTION_URL, {
         method: "POST",
         headers: {
@@ -21,7 +25,7 @@ export const useAIReviewSort = () => {
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
-          reviews,
+          reviews: batch,
           action: "sort",
         }),
       });
