@@ -42,6 +42,11 @@ const PublicReviewsList = () => {
   // Reset page when sort changes
   useEffect(() => { setPage(1); }, [sort]);
 
+  // Scroll to top of reviews container on page change
+  useEffect(() => {
+    containerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [page]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
