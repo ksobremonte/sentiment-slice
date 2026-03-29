@@ -1,10 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { TrendingUp, ThumbsUp, Minus, ThumbsDown, BarChart3 } from "lucide-react";
 import { subDays, subMonths, format, startOfDay, startOfWeek, startOfMonth, isAfter } from "date-fns";
 
@@ -29,7 +29,18 @@ const fetchReviews = async () => {
 };
 
 const DashboardTrends = () => {
+  const queryClient = useQueryClient();
   const [timeRange, setTimeRange] = useState<TimeRange>("30d");
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('trends-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, () => {
+        queryClient.invalidateQueries({ queryKey: ["reviews-trends"] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [queryClient]);
 
   const { data: reviews = [], isLoading } = useQuery({
     queryKey: ["reviews-trends"],
