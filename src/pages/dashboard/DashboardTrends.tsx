@@ -93,9 +93,10 @@ const DashboardTrends = () => {
       };
     });
 
-    const totalReviews = filtered.length;
-    const pos = filtered.filter((r) => (r.sentiment || "").toLowerCase() === "positive").length;
-    const neg = filtered.filter((r) => (r.sentiment || "").toLowerCase() === "negative").length;
+    // Summary uses ALL reviews (not filtered by time range)
+    const totalReviews = reviews.length;
+    const pos = reviews.filter((r) => (r.sentiment || "").toLowerCase() === "positive").length;
+    const neg = reviews.filter((r) => (r.sentiment || "").toLowerCase() === "negative").length;
     const neu = totalReviews - pos - neg;
 
     return {
@@ -105,7 +106,7 @@ const DashboardTrends = () => {
         positive: totalReviews > 0 ? Math.round((pos / totalReviews) * 100) : 0,
         neutral: totalReviews > 0 ? Math.round((neu / totalReviews) * 100) : 0,
         negative: totalReviews > 0 ? Math.round((neg / totalReviews) * 100) : 0,
-        avgRating: totalReviews > 0 ? (filtered.reduce((s, r) => s + r.rating, 0) / totalReviews).toFixed(1) : "N/A",
+        avgRating: totalReviews > 0 ? (reviews.reduce((s, r) => s + r.rating, 0) / totalReviews).toFixed(1) : "N/A",
       },
     };
   }, [reviews, timeRange]);
