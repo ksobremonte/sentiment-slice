@@ -29,7 +29,18 @@ const fetchReviews = async () => {
 };
 
 const DashboardTrends = () => {
+  const queryClient = useQueryClient();
   const [timeRange, setTimeRange] = useState<TimeRange>("30d");
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('trends-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, () => {
+        queryClient.invalidateQueries({ queryKey: ["reviews-trends"] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [queryClient]);
 
   const { data: reviews = [], isLoading } = useQuery({
     queryKey: ["reviews-trends"],
