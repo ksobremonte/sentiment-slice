@@ -1,0 +1,1 @@
+UPDATE reviews SET sentiment = 'positive', sentiment_reason = 'The Ilocano word "nagimas" means "it was delicious" — a strong positive expression about the food at CVA.', sentiment_keywords = ARRAY['nagimas', 'diyay', 'CVA'] WHERE id = '93d6dc93-a264-4593-a7e4-c9ee491af22d';
