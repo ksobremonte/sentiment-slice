@@ -416,8 +416,8 @@ When a review consists primarily of emojis with little or no text, classify sent
           keyPhrases = parsed.key_phrases || [];
           reasoning = parsed.reasoning || "";
           
-          // All reviews are auto-approved immediately
-          approved = true;
+           // Auto-approve only 4-5 star reviews; lower ratings need manual approval
+           approved = (review.rating >= 4);
         }
       } catch (parseError) {
         console.error("Failed to parse tool call response:", parseError);
