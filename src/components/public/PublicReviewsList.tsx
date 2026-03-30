@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 
 type SortOption = "latest" | "highest" | "lowest";
-const REVIEWS_PER_PAGE = 8;
+const REVIEWS_PER_PAGE = 15;
 
 const PublicReviewsList = () => {
   const { data: reviews = [], isLoading } = usePublicReviews();
