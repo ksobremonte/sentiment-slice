@@ -164,7 +164,7 @@ const Reviews = () => {
       const photoUrls = relevantPhotos.map(p => p.url!);
       let sentiment: string | null = null;
       let language: string | null = null;
-      let approved: boolean = true;
+      let approved: boolean = (validation.data.rating >= 4);
       let sentimentReason: string | null = null;
       let sentimentKeywords: string[] | null = null;
 
