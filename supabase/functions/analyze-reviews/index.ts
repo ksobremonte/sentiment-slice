@@ -420,9 +420,9 @@ When a review consists primarily of emojis with little or no text, classify sent
            approved = (review.rating >= 4);
         }
       } catch (parseError) {
-        console.error("Failed to parse tool call response:", parseError);
+       console.error("Failed to parse tool call response:", parseError);
         sentiment = "neutral";
-        approved = true;
+        approved = (review.rating >= 4);
       }
 
       return new Response(JSON.stringify({ 
