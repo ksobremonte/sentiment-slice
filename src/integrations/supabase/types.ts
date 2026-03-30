@@ -422,6 +422,7 @@ export type Database = {
           email: string
           feedback: string
           id: string
+          is_generated: boolean
           language: string | null
           name: string
           photo_url: string | null
@@ -441,6 +442,7 @@ export type Database = {
           email: string
           feedback: string
           id?: string
+          is_generated?: boolean
           language?: string | null
           name: string
           photo_url?: string | null
@@ -460,6 +462,7 @@ export type Database = {
           email?: string
           feedback?: string
           id?: string
+          is_generated?: boolean
           language?: string | null
           name?: string
           photo_url?: string | null
@@ -533,6 +536,7 @@ export type Database = {
           created_at: string | null
           feedback: string | null
           id: string | null
+          is_generated: boolean | null
           language: string | null
           name: string | null
           photo_url: string | null
@@ -545,6 +549,7 @@ export type Database = {
           created_at?: string | null
           feedback?: string | null
           id?: string | null
+          is_generated?: boolean | null
           language?: string | null
           name?: string | null
           photo_url?: string | null
@@ -557,6 +562,7 @@ export type Database = {
           created_at?: string | null
           feedback?: string | null
           id?: string | null
+          is_generated?: boolean | null
           language?: string | null
           name?: string | null
           photo_url?: string | null

@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 
 type SortOption = "latest" | "highest" | "lowest";
-const REVIEWS_PER_PAGE = 8;
+const REVIEWS_PER_PAGE = 15;
 
 const PublicReviewsList = () => {
   const { data: reviews = [], isLoading } = usePublicReviews();
@@ -26,13 +26,18 @@ const PublicReviewsList = () => {
     const sorted = [...reviews];
     const byDate = (a: typeof reviews[0], b: typeof reviews[0]) =>
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    
+    // Always keep real reviews before generated ones
+    const byGenerated = (a: typeof reviews[0], b: typeof reviews[0]) =>
+      (a.is_generated ? 1 : 0) - (b.is_generated ? 1 : 0);
+
     switch (sort) {
       case "highest":
-        return sorted.sort((a, b) => b.rating - a.rating || byDate(a, b));
+        return sorted.sort((a, b) => byGenerated(a, b) || b.rating - a.rating || byDate(a, b));
       case "lowest":
-        return sorted.sort((a, b) => a.rating - b.rating || byDate(a, b));
+        return sorted.sort((a, b) => byGenerated(a, b) || a.rating - b.rating || byDate(a, b));
       default:
-        return sorted.sort(byDate);
+        return sorted.sort((a, b) => byGenerated(a, b) || byDate(a, b));
     }
   }, [reviews, sort]);
 
