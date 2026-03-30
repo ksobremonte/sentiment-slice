@@ -114,7 +114,7 @@ const getFallbackSentiment = (review: Review) => {
   return {
     sentiment,
     language,
-    approved: true,
+    approved: (review.rating >= 4),
     confidence,
     aspects: {},
     keyPhrases,
