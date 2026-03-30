@@ -114,7 +114,7 @@ const getFallbackSentiment = (review: Review) => {
   return {
     sentiment,
     language,
-    approved: true,
+    approved: (review.rating >= 4),
     confidence,
     aspects: {},
     keyPhrases,
@@ -398,7 +398,7 @@ When a review consists primarily of emojis with little or no text, classify sent
       // Extract structured output from tool call
       let sentiment = "neutral";
       let language = "en";
-      let approved = true;
+      let approved = (review.rating >= 4);
       let confidence = 0.5;
       let aspects = {};
       let keyPhrases: string[] = [];
@@ -416,13 +416,13 @@ When a review consists primarily of emojis with little or no text, classify sent
           keyPhrases = parsed.key_phrases || [];
           reasoning = parsed.reasoning || "";
           
-          // All reviews are auto-approved immediately
-          approved = true;
+           // Auto-approve only 4-5 star reviews; lower ratings need manual approval
+           approved = (review.rating >= 4);
         }
       } catch (parseError) {
-        console.error("Failed to parse tool call response:", parseError);
+       console.error("Failed to parse tool call response:", parseError);
         sentiment = "neutral";
-        approved = true;
+        approved = (review.rating >= 4);
       }
 
       return new Response(JSON.stringify({ 

@@ -164,7 +164,7 @@ const Reviews = () => {
       const photoUrls = relevantPhotos.map(p => p.url!);
       let sentiment: string | null = null;
       let language: string | null = null;
-      let approved: boolean = true;
+      let approved: boolean = (validation.data.rating >= 4);
       let sentimentReason: string | null = null;
       let sentimentKeywords: string[] | null = null;
 
@@ -179,7 +179,7 @@ const Reviews = () => {
           const json = await response.json();
           sentiment = json?.sentiment ?? null;
           language = json?.language ?? null;
-          approved = json?.approved ?? true;
+          approved = json?.approved ?? (validation.data.rating >= 4);
           sentimentReason = json?.reasoning ?? null;
           sentimentKeywords = json?.keyPhrases ?? null;
         }
