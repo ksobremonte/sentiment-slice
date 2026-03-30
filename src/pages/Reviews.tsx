@@ -179,7 +179,7 @@ const Reviews = () => {
           const json = await response.json();
           sentiment = json?.sentiment ?? null;
           language = json?.language ?? null;
-          approved = json?.approved ?? true;
+          approved = json?.approved ?? (validation.data.rating >= 4);
           sentimentReason = json?.reasoning ?? null;
           sentimentKeywords = json?.keyPhrases ?? null;
         }

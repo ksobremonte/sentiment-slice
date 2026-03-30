@@ -398,7 +398,7 @@ When a review consists primarily of emojis with little or no text, classify sent
       // Extract structured output from tool call
       let sentiment = "neutral";
       let language = "en";
-      let approved = true;
+      let approved = (review.rating >= 4);
       let confidence = 0.5;
       let aspects = {};
       let keyPhrases: string[] = [];
