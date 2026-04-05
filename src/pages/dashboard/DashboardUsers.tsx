@@ -48,6 +48,8 @@ const DashboardUsers = () => {
   const [newPassword, setNewPassword] = useState("");
   const [isResetting, setIsResetting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [roleConfirmOpen, setRoleConfirmOpen] = useState(false);
+  const [roleConfirmUser, setRoleConfirmUser] = useState<{ userId: string; name: string; newRole: string } | null>(null);
   const perPage = 10;
 
   const getValidToken = async () => {
