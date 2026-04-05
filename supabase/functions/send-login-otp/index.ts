@@ -75,6 +75,7 @@ Deno.serve(async (req) => {
     `
 
     // Enqueue to transactional email queue
+    const messageId = crypto.randomUUID()
     const { error: enqueueError } = await supabase.rpc('enqueue_email', {
       queue_name: 'transactional_emails',
       payload: {
@@ -82,6 +83,12 @@ Deno.serve(async (req) => {
         subject: 'Your Pizza Volante Login Code',
         html: emailHtml,
         from: 'Pizza Volante <noreply@notify.pizzavolante-dashboard.com>',
+        sender_domain: 'notify.pizzavolante-dashboard.com',
+        purpose: 'transactional',
+        idempotency_key: `otp-${userId}-${Date.now()}`,
+        message_id: messageId,
+        label: 'login-otp',
+        queued_at: new Date().toISOString(),
       },
     })
 
