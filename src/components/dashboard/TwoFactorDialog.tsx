@@ -31,15 +31,21 @@ const TwoFactorDialog = ({ open, onOpenChange, isEnrolled, onComplete }: Props) 
   const handleEnroll = async () => {
     setLoading(true);
     try {
+      console.log("[2FA] Starting enrollment...");
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: "totp",
         friendlyName: "Authenticator App",
       });
+      console.log("[2FA] Enroll response:", JSON.stringify({ data, error }));
       if (error) throw error;
+      if (!data?.totp?.qr_code) {
+        throw new Error("No QR code received from server. MFA may not be enabled.");
+      }
       setQrUri(data.totp.qr_code);
       setFactorId(data.id);
       setStep("qr");
     } catch (err: any) {
+      console.error("[2FA] Enrollment error:", err);
       toast.error(err?.message || "Failed to start 2FA enrollment.");
     } finally {
       setLoading(false);
