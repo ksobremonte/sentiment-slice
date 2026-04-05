@@ -34,19 +34,26 @@ const getSessionId = () => {
   return sessionId;
 };
 
+const getStoredConversationId = (): string | null => {
+  return localStorage.getItem("pv-chat-conversation-id");
+};
+
+const storeConversationId = (id: string) => {
+  localStorage.setItem("pv-chat-conversation-id", id);
+};
+
 // Extract [SUGGESTIONS]...[/SUGGESTIONS] from message content
 function parseSuggestions(content: string): { cleanContent: string; suggestions: string[] } {
   const regex = /\[SUGGESTIONS\]\s*([\s\S]*?)\s*\[\/SUGGESTIONS\]/i;
   const match = content.match(regex);
   if (!match) {
-    // Also strip markdown-style "Suggested Questions:" sections as fallback
     const fallbackRegex = /(\*{0,2}Suggested\s+(?:Follow-Up\s+)?Questions:?\*{0,2}[\s\S]*$)/i;
     const fallbackMatch = content.match(fallbackRegex);
     if (fallbackMatch) {
       const suggestionsText = fallbackMatch[1];
       const lines = suggestionsText.split("\n").filter(l => l.trim());
       const questions = lines
-        .slice(1) // skip header
+        .slice(1)
         .map(l => l.replace(/^[-•❓*\s]+/, "").replace(/\*+/g, "").trim())
         .filter(l => l.length > 5 && l.endsWith("?"));
       return {
@@ -78,15 +85,65 @@ const CustomerChatWidget = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId] = useState(getSessionId);
-  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [conversationId, setConversationId] = useState<string | null>(getStoredConversationId);
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Persist conversationId whenever it changes
+  useEffect(() => {
+    if (conversationId) {
+      storeConversationId(conversationId);
+    }
+  }, [conversationId]);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, suggestions]);
+
+  // Load conversation history on mount if we have a stored conversationId
+  useEffect(() => {
+    if (!conversationId || historyLoaded) return;
+
+    const loadHistory = async () => {
+      try {
+        const response = await fetch(CHECK_REPLIES_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            conversationId,
+            loadAll: true,
+          }),
+        });
+
+        if (!response.ok) return;
+        const { messages: allMessages } = await response.json();
+
+        if (allMessages && allMessages.length > 0) {
+          const restored: Message[] = allMessages.map((m: any) => ({
+            role: m.role as Message["role"],
+            content: m.content,
+          }));
+          // Prepend the welcome message
+          setMessages([
+            { role: "assistant", content: `Welcome to ${STORE_INFO.name}! 🍕 How can I help you today?` },
+            ...restored,
+          ]);
+        }
+      } catch (err) {
+        console.error("Error loading chat history:", err);
+      } finally {
+        setHistoryLoaded(true);
+      }
+    };
+
+    loadHistory();
+  }, [conversationId, historyLoaded]);
 
   // Poll for admin replies
   const lastSeenTimestampRef = useRef<string | null>(null);
@@ -131,7 +188,7 @@ const CustomerChatWidget = () => {
       }
     };
 
-    const interval = setInterval(pollReplies, 5000);
+    const interval = setInterval(pollReplies, 3000);
     pollReplies();
 
     return () => clearInterval(interval);
@@ -165,7 +222,7 @@ const CustomerChatWidget = () => {
       });
 
       const newConversationId = response.headers.get("X-Conversation-Id");
-      if (newConversationId && !conversationId) {
+      if (newConversationId) {
         setConversationId(newConversationId);
       }
 
@@ -219,7 +276,6 @@ const CustomerChatWidget = () => {
             const content = parsed.choices?.[0]?.delta?.content as string | undefined;
             if (content) {
               assistantContent += content;
-              // Parse out suggestions and show clean content during streaming
               const { cleanContent } = parseSuggestions(assistantContent);
               setMessages((prev) => {
                 const newMessages = [...prev];

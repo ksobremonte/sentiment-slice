@@ -11,9 +11,10 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { conversationId, lastSeenTimestamp } = await req.json() as {
+    const { conversationId, lastSeenTimestamp, loadAll } = await req.json() as {
       conversationId: string;
       lastSeenTimestamp?: string;
+      loadAll?: boolean;
     };
 
     if (!conversationId) {
@@ -26,6 +27,21 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // If loadAll is true, return all messages (for history restore)
+    if (loadAll) {
+      const { data, error } = await supabase
+        .from("chat_messages")
+        .select("id, role, content, created_at")
+        .eq("conversation_id", conversationId)
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+      return new Response(JSON.stringify({ messages: data || [] }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Otherwise, return only admin messages (for polling)
     let query = supabase
       .from("chat_messages")
       .select("id, role, content, created_at")
