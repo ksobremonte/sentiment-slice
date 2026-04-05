@@ -186,7 +186,7 @@ const ConversationThread = ({ conversation, onClose }: ConversationThreadProps) 
         <div className="p-4 border-t-2 border-border space-y-3">
           <Textarea
             value={replyText}
-            onChange={(e) => setReplyText(e.target.value)}
+            onChange={(e) => { setReplyText(e.target.value); broadcastTyping(); }}
             placeholder="Type your reply to the customer..."
             className="min-h-[80px] resize-none rounded-xl border-2"
           />
