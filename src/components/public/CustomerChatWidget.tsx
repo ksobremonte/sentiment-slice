@@ -102,7 +102,7 @@ const CustomerChatWidget = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, suggestions]);
+  }, [messages, suggestions, adminTyping]);
 
   // Load conversation history on mount if we have a stored conversationId
   useEffect(() => {
