@@ -18,7 +18,12 @@ export interface ChatConversation {
   created_at: string;
   updated_at: string;
   status: "active" | "resolved" | "pending_admin";
+  has_admin_replied?: boolean;
+  ai_auto_enabled?: boolean;
   messages?: ChatMessage[];
+  last_message?: string;
+  last_message_role?: string;
+  message_count?: number;
 }
 
 export const useConversations = () => {
