@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { z } from "zod";
 import { useHcaptchaSiteKey } from "@/hooks/useHcaptchaSiteKey";
-import { logLoginActivity } from "@/lib/logLoginActivity";
 
 const loginSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }),
@@ -49,13 +49,20 @@ const Login = () => {
       toast.error(error.message);
       captchaRef.current?.resetCaptcha();
       setCaptchaToken(null);
-    } else {
-      // Log login activity
-      if (data?.user?.id) {
-        logLoginActivity(data.user.id);
+    } else if (data?.user) {
+      // Send OTP before granting access
+      try {
+        await supabase.functions.invoke("send-login-otp", {
+          body: { userId: data.user.id, email: data.user.email },
+        });
+        toast.info("A verification code has been sent to your email.");
+        navigate("/verify-otp", {
+          state: { userId: data.user.id, email: data.user.email },
+          replace: true,
+        });
+      } catch {
+        toast.error("Failed to send verification code.");
       }
-      toast.success("Welcome back!");
-      navigate("/pv-dashboard");
     }
   };
 
