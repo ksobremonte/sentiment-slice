@@ -247,11 +247,12 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { messages, storeInfo, sessionId, messageCount } = await req.json() as { 
+    const { messages, storeInfo, sessionId, messageCount, generateOnly } = await req.json() as { 
       messages: Message[]; 
       storeInfo: StoreInfo;
       sessionId?: string;
       messageCount?: number;
+      generateOnly?: boolean;
     };
 
     // Input validation
