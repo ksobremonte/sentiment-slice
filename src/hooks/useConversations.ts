@@ -73,11 +73,25 @@ export const useConversations = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("chat_conversations")
-        .select("*")
+        .select("*, chat_messages(content, role, created_at)")
         .order("updated_at", { ascending: false });
 
       if (error) throw error;
-      return data as ChatConversation[];
+      
+      return (data || []).map((conv: any) => {
+        const msgs = conv.chat_messages || [];
+        const sorted = [...msgs].sort((a: any, b: any) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        const last = sorted[0];
+        return {
+          ...conv,
+          chat_messages: undefined,
+          last_message: last?.content?.substring(0, 100) || undefined,
+          last_message_role: last?.role || undefined,
+          message_count: msgs.length,
+        } as ChatConversation;
+      });
     },
   });
 };
