@@ -368,8 +368,8 @@ Deno.serve(async (req) => {
       }
     }
 
-    // If AI auto-reply is disabled, skip AI response — just return empty
-    if (!aiAutoEnabled) {
+    // If AI auto-reply is disabled AND this is NOT a manual generateOnly request, skip AI
+    if (!aiAutoEnabled && !generateOnly) {
       return new Response(JSON.stringify({ 
         reply: null, 
         adminReplies,
