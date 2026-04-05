@@ -1,8 +1,13 @@
+import { sendLovableEmail } from 'npm:@lovable.dev/email-js'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1'
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1'
+
+const SENDER_DOMAIN = 'notify.pizzavolante-dashboard.com'
+const FROM_DOMAIN = 'pizzavolante-dashboard.com'
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -21,6 +26,7 @@ Deno.serve(async (req) => {
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const apiKey = Deno.env.get('LOVABLE_API_KEY')!
     const supabase = createClient(supabaseUrl, serviceRoleKey)
 
     // Generate 6-digit OTP
@@ -49,7 +55,6 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Send OTP via email using the transactional email queue
     const emailHtml = `
       <div style="font-family: 'Playfair Display', Georgia, serif; max-width: 480px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e5e7eb;">
         <div style="background: linear-gradient(135deg, #8B2500 0%, #A0522D 100%); padding: 32px; text-align: center;">
@@ -74,28 +79,41 @@ Deno.serve(async (req) => {
       </div>
     `
 
-    // Enqueue to transactional email queue
+    const emailText = `Your Pizza Volante verification code is: ${code}. This code expires in 5 minutes.`
     const messageId = crypto.randomUUID()
-    const { error: enqueueError } = await supabase.rpc('enqueue_email', {
-      queue_name: 'transactional_emails',
-      payload: {
-        to: email,
-        subject: 'Your Pizza Volante Login Code',
-        html: emailHtml,
-        text: `Your Pizza Volante verification code is: ${code}. This code expires in 5 minutes.`,
-        from: 'Pizza Volante <noreply@notify.pizzavolante-dashboard.com>',
-        sender_domain: 'notify.pizzavolante-dashboard.com',
-        purpose: 'transactional',
-        idempotency_key: `otp-${userId}-${Date.now()}`,
-        message_id: messageId,
-        label: 'login-otp',
-        queued_at: new Date().toISOString(),
-      },
-    })
 
-    if (enqueueError) {
-      console.error('Email enqueue error:', enqueueError)
-      // OTP is still valid even if email fails to enqueue
+    try {
+      await sendLovableEmail(
+        {
+          to: email,
+          from: `Pizza Volante <noreply@${FROM_DOMAIN}>`,
+          sender_domain: SENDER_DOMAIN,
+          subject: 'Your Pizza Volante Login Code',
+          html: emailHtml,
+          text: emailText,
+          purpose: 'transactional',
+          idempotency_key: `otp-${userId}-${Date.now()}`,
+          message_id: messageId,
+        },
+        { apiKey, sendUrl: Deno.env.get('LOVABLE_SEND_URL') }
+      )
+
+      // Log success
+      await supabase.from('email_send_log').insert({
+        message_id: messageId,
+        template_name: 'login-otp',
+        recipient_email: email,
+        status: 'sent',
+      })
+    } catch (emailErr: any) {
+      console.error('Email send error:', emailErr?.message || emailErr)
+      await supabase.from('email_send_log').insert({
+        message_id: messageId,
+        template_name: 'login-otp',
+        recipient_email: email,
+        status: 'failed',
+        error_message: emailErr?.message || String(emailErr),
+      })
     }
 
     return new Response(JSON.stringify({ success: true }), {
