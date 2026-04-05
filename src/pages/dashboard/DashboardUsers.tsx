@@ -348,9 +348,15 @@ const DashboardUsers = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="rounded-xl">
                           <DropdownMenuItem
-                            onClick={() =>
-                              handleUpdateRole(user.user_id, user.role === "admin" ? "moderator" : "admin")
-                            }
+                            onClick={() => {
+                              const newRole = user.role === "admin" ? "moderator" : "admin";
+                              if (newRole === "admin") {
+                                setRoleConfirmUser({ userId: user.user_id, name: user.display_name, newRole });
+                                setRoleConfirmOpen(true);
+                              } else {
+                                handleUpdateRole(user.user_id, newRole);
+                              }
+                            }}
                           >
                             Change to {user.role === "admin" ? "Staff" : "Admin"}
                           </DropdownMenuItem>
