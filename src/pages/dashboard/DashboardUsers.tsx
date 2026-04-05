@@ -468,6 +468,31 @@ const DashboardUsers = () => {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Switch to Admin Confirmation */}
+      <AlertDialog open={roleConfirmOpen} onOpenChange={setRoleConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Switch to Admin?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to switch <strong>{roleConfirmUser?.name}</strong> to Admin mode? Admins have full access to manage the dashboard, users, and settings.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (roleConfirmUser) {
+                  handleUpdateRole(roleConfirmUser.userId, roleConfirmUser.newRole);
+                }
+                setRoleConfirmOpen(false);
+              }}
+            >
+              Switch to Admin
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 };
