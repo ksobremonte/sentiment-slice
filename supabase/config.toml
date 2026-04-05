@@ -19,5 +19,9 @@ project_id = "oviywityvklmftjxrnrj"
     verify_jwt = false
   [functions.upload-review-photo]
     verify_jwt = false
+  [functions.send-login-otp]
+    verify_jwt = false
   [functions.verify-captcha]
+    verify_jwt = false
+  [functions.verify-login-otp]
     verify_jwt = false

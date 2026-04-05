@@ -21,6 +21,12 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <Navigate to="/pv-admin" replace />;
   }
 
+  // Check OTP verification
+  const otpVerified = sessionStorage.getItem("otp_verified");
+  if (otpVerified !== user.id) {
+    return <Navigate to="/pv-admin" replace />;
+  }
+
   return <>{children}</>;
 };
 

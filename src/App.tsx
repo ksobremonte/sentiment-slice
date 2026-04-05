@@ -27,6 +27,7 @@ const DashboardTrends = lazy(() => import("./pages/dashboard/DashboardTrends"));
 const DashboardSettings = lazy(() => import("./pages/dashboard/DashboardSettings"));
 const DashboardHelp = lazy(() => import("./pages/dashboard/DashboardHelp"));
 const DashboardSwitchAccount = lazy(() => import("./pages/dashboard/DashboardSwitchAccount"));
+const VerifyOtp = lazy(() => import("./pages/VerifyOtp"));
 
 const DashboardNotifications = lazy(() => import("./pages/dashboard/DashboardNotifications"));
 const DashboardReviewDetail = lazy(() => import("./pages/dashboard/DashboardReviewDetail"));
@@ -60,6 +61,7 @@ const App = () => (
               <Route path="/accept-invitation" element={<AcceptInvitation />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/verify-otp" element={<VerifyOtp />} />
               <Route path="/pv-dashboard" element={<ProtectedRoute><DashboardOverview /></ProtectedRoute>} />
               <Route path="/pv-dashboard/conversations" element={<ProtectedRoute><DashboardConversations /></ProtectedRoute>} />
               <Route path="/pv-dashboard/sentiment" element={<ProtectedRoute><DashboardSentiment /></ProtectedRoute>} />
