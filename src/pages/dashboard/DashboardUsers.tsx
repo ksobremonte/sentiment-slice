@@ -50,6 +50,8 @@ const DashboardUsers = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [roleConfirmOpen, setRoleConfirmOpen] = useState(false);
   const [roleConfirmUser, setRoleConfirmUser] = useState<{ userId: string; name: string; newRole: string } | null>(null);
+  const [removeConfirmOpen, setRemoveConfirmOpen] = useState(false);
+  const [removeConfirmUser, setRemoveConfirmUser] = useState<{ userId: string; name: string } | null>(null);
   const perPage = 10;
 
   const getValidToken = async () => {
@@ -374,7 +376,10 @@ const DashboardUsers = () => {
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             className="text-destructive focus:text-destructive"
-                            onClick={() => handleRemoveUser(user.user_id)}
+                            onClick={() => {
+                              setRemoveConfirmUser({ userId: user.user_id, name: user.display_name });
+                              setRemoveConfirmOpen(true);
+                            }}
                           >
                             Remove Access
                           </DropdownMenuItem>
@@ -489,6 +494,32 @@ const DashboardUsers = () => {
               }}
             >
               Switch to Admin
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Remove Access Confirmation */}
+      <AlertDialog open={removeConfirmOpen} onOpenChange={setRemoveConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Access?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove <strong>{removeConfirmUser?.name}</strong>'s access? They will no longer be able to sign in to the dashboard.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (removeConfirmUser) {
+                  handleRemoveUser(removeConfirmUser.userId);
+                }
+                setRemoveConfirmOpen(false);
+              }}
+            >
+              Remove Access
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
