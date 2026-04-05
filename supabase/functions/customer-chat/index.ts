@@ -528,7 +528,7 @@ RULES: Only quote REAL reviews above. Never invent reviews. Stay polite. Never e
         }
         await writer.close();
         
-        if (conversationId && fullAssistantResponse) {
+        if (conversationId && fullAssistantResponse && !generateOnly) {
           await saveMessage(supabase, conversationId, "assistant", fullAssistantResponse);
         }
       } catch (err) {
