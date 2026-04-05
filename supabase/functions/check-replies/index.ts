@@ -41,6 +41,17 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Check if admin is currently typing
+    const { data: convo } = await supabase
+      .from("chat_conversations")
+      .select("admin_typing_at")
+      .eq("id", conversationId)
+      .single();
+
+    const adminTyping = convo?.admin_typing_at
+      ? (Date.now() - new Date(convo.admin_typing_at).getTime()) < 5000
+      : false;
+
     // Otherwise, return only admin messages (for polling)
     let query = supabase
       .from("chat_messages")
@@ -56,7 +67,7 @@ Deno.serve(async (req) => {
     const { data, error } = await query;
     if (error) throw error;
 
-    return new Response(JSON.stringify({ messages: data || [] }), {
+    return new Response(JSON.stringify({ messages: data || [], adminTyping }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
