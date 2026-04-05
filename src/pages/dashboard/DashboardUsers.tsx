@@ -12,6 +12,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel,
+  AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+  AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -43,6 +48,8 @@ const DashboardUsers = () => {
   const [newPassword, setNewPassword] = useState("");
   const [isResetting, setIsResetting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [roleConfirmOpen, setRoleConfirmOpen] = useState(false);
+  const [roleConfirmUser, setRoleConfirmUser] = useState<{ userId: string; name: string; newRole: string } | null>(null);
   const perPage = 10;
 
   const getValidToken = async () => {
@@ -341,9 +348,15 @@ const DashboardUsers = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="rounded-xl">
                           <DropdownMenuItem
-                            onClick={() =>
-                              handleUpdateRole(user.user_id, user.role === "admin" ? "moderator" : "admin")
-                            }
+                            onClick={() => {
+                              const newRole = user.role === "admin" ? "moderator" : "admin";
+                              if (newRole === "admin") {
+                                setRoleConfirmUser({ userId: user.user_id, name: user.display_name, newRole });
+                                setRoleConfirmOpen(true);
+                              } else {
+                                handleUpdateRole(user.user_id, newRole);
+                              }
+                            }}
                           >
                             Change to {user.role === "admin" ? "Staff" : "Admin"}
                           </DropdownMenuItem>
@@ -455,6 +468,31 @@ const DashboardUsers = () => {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Switch to Admin Confirmation */}
+      <AlertDialog open={roleConfirmOpen} onOpenChange={setRoleConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Switch to Admin?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to switch <strong>{roleConfirmUser?.name}</strong> to Admin mode? Admins have full access to manage the dashboard, users, and settings.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (roleConfirmUser) {
+                  handleUpdateRole(roleConfirmUser.userId, roleConfirmUser.newRole);
+                }
+                setRoleConfirmOpen(false);
+              }}
+            >
+              Switch to Admin
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 };
