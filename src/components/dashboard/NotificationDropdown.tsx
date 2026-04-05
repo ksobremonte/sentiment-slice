@@ -186,7 +186,7 @@ const NotificationDropdown = () => {
         </div>
 
         {/* Notification list */}
-        <ScrollArea className="max-h-[400px]">
+        <div className="overflow-y-auto max-h-[380px] overscroll-contain">
           {notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center px-4">
               <Bell className="h-8 w-8 text-muted-foreground/30 mb-2" />
@@ -202,7 +202,7 @@ const NotificationDropdown = () => {
               {renderGroup("Earlier", olderItems)}
             </div>
           )}
-        </ScrollArea>
+        </div>
 
         {/* Footer */}
         {notifications.length > 0 && (
