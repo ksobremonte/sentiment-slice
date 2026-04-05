@@ -82,6 +82,13 @@ Deno.serve(async (req) => {
     const emailText = `Your Pizza Volante verification code is: ${code}. This code expires in 5 minutes.`
     const messageId = crypto.randomUUID()
 
+    // Generate or retrieve unsubscribe token for this email
+    const unsubscribeToken = crypto.randomUUID()
+    await supabase.from('email_unsubscribe_tokens').upsert(
+      { email, token: unsubscribeToken },
+      { onConflict: 'email' }
+    ).select().maybeSingle()
+
     try {
       await sendLovableEmail(
         {
@@ -94,6 +101,7 @@ Deno.serve(async (req) => {
           purpose: 'transactional',
           idempotency_key: `otp-${userId}-${Date.now()}`,
           message_id: messageId,
+          unsubscribe_token: unsubscribeToken,
         },
         { apiKey, sendUrl: Deno.env.get('LOVABLE_SEND_URL') }
       )
