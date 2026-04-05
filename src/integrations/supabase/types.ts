@@ -94,6 +94,7 @@ export type Database = {
       }
       chat_conversations: {
         Row: {
+          admin_typing_at: string | null
           created_at: string
           id: string
           session_id: string
@@ -101,6 +102,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          admin_typing_at?: string | null
           created_at?: string
           id?: string
           session_id: string
@@ -108,6 +110,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          admin_typing_at?: string | null
           created_at?: string
           id?: string
           session_id?: string

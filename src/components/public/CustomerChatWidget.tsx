@@ -88,6 +88,7 @@ const CustomerChatWidget = () => {
   const [conversationId, setConversationId] = useState<string | null>(getStoredConversationId);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [historyLoaded, setHistoryLoaded] = useState(false);
+  const [adminTyping, setAdminTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Persist conversationId whenever it changes
@@ -101,7 +102,7 @@ const CustomerChatWidget = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, suggestions]);
+  }, [messages, suggestions, adminTyping]);
 
   // Load conversation history on mount if we have a stored conversationId
   useEffect(() => {
@@ -167,6 +168,9 @@ const CustomerChatWidget = () => {
 
         if (!response.ok) return;
         const { messages: adminMessages } = await response.json();
+
+        const { adminTyping: typing } = await response.json();
+        setAdminTyping(!!typing);
 
         if (adminMessages && adminMessages.length > 0) {
           setMessages((prev) => {
@@ -416,6 +420,25 @@ const CustomerChatWidget = () => {
               )}
             </div>
           ))}
+
+          {/* Admin typing indicator */}
+          {adminTyping && !isLoading && (
+            <div className="flex gap-3 justify-start">
+              <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                <Shield className="h-5 w-5 text-primary" />
+              </div>
+              <div className="rounded-2xl px-4 py-3 bg-muted text-foreground">
+                <div className="flex items-center gap-1">
+                  <span className="text-xs text-muted-foreground italic">Admin is typing</span>
+                  <span className="flex gap-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Suggestion buttons */}
           {suggestions.length > 0 && !isLoading && (

@@ -1,0 +1,1 @@
+ALTER TABLE public.chat_conversations ADD COLUMN admin_typing_at TIMESTAMPTZ DEFAULT NULL;

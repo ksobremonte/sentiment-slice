@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Send, Loader2, Bot, User, Shield, CheckCircle, Clock, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-
+import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { 
   ChatConversation, 
@@ -25,6 +25,24 @@ const ConversationThread = ({ conversation, onClose }: ConversationThreadProps) 
   const { resolve } = useResolveConversation();
   const [replyText, setReplyText] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const broadcastTyping = useCallback(() => {
+    supabase
+      .from("chat_conversations")
+      .update({ admin_typing_at: new Date().toISOString() } as any)
+      .eq("id", conversation.id)
+      .then();
+
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => {
+      supabase
+        .from("chat_conversations")
+        .update({ admin_typing_at: null } as any)
+        .eq("id", conversation.id)
+        .then();
+    }, 4000);
+  }, [conversation.id]);
 
   const handleSendReply = async () => {
     if (!replyText.trim()) return;
@@ -32,6 +50,13 @@ const ConversationThread = ({ conversation, onClose }: ConversationThreadProps) 
     setIsSending(true);
     try {
       await sendReply(conversation.id, replyText.trim());
+      // Clear typing status on send
+      supabase
+        .from("chat_conversations")
+        .update({ admin_typing_at: null } as any)
+        .eq("id", conversation.id)
+        .then();
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       setReplyText("");
       toast.success("Reply sent! Customer will see it in their chat.");
     } catch (error) {
@@ -161,7 +186,7 @@ const ConversationThread = ({ conversation, onClose }: ConversationThreadProps) 
         <div className="p-4 border-t-2 border-border space-y-3">
           <Textarea
             value={replyText}
-            onChange={(e) => setReplyText(e.target.value)}
+            onChange={(e) => { setReplyText(e.target.value); broadcastTyping(); }}
             placeholder="Type your reply to the customer..."
             className="min-h-[80px] resize-none rounded-xl border-2"
           />
