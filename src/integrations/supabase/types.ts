@@ -95,7 +95,9 @@ export type Database = {
       chat_conversations: {
         Row: {
           admin_typing_at: string | null
+          ai_auto_enabled: boolean
           created_at: string
+          has_admin_replied: boolean
           id: string
           session_id: string
           status: string
@@ -103,7 +105,9 @@ export type Database = {
         }
         Insert: {
           admin_typing_at?: string | null
+          ai_auto_enabled?: boolean
           created_at?: string
+          has_admin_replied?: boolean
           id?: string
           session_id: string
           status?: string
@@ -111,7 +115,9 @@ export type Database = {
         }
         Update: {
           admin_typing_at?: string | null
+          ai_auto_enabled?: boolean
           created_at?: string
+          has_admin_replied?: boolean
           id?: string
           session_id?: string
           status?: string

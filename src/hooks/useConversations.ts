@@ -136,10 +136,14 @@ export const useSendAdminReply = () => {
 
     if (error) throw error;
 
-    // Update conversation status
+    // Update conversation status + mark admin as active, disable AI auto-reply
     await supabase
       .from("chat_conversations")
-      .update({ status: "active" })
+      .update({ 
+        status: "active",
+        has_admin_replied: true,
+        ai_auto_enabled: false,
+      } as any)
       .eq("id", conversationId);
 
     queryClient.invalidateQueries({ queryKey: ["conversation-messages", conversationId] });
@@ -147,6 +151,23 @@ export const useSendAdminReply = () => {
   };
 
   return { sendReply };
+};
+
+export const useToggleAIAutoReply = () => {
+  const queryClient = useQueryClient();
+
+  const toggleAIAutoReply = async (conversationId: string, enabled: boolean) => {
+    const { error } = await supabase
+      .from("chat_conversations")
+      .update({ ai_auto_enabled: enabled } as any)
+      .eq("id", conversationId);
+
+    if (error) throw error;
+
+    queryClient.invalidateQueries({ queryKey: ["conversations"] });
+  };
+
+  return { toggleAIAutoReply };
 };
 
 export const useResolveConversation = () => {

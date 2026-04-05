@@ -1,7 +1,8 @@
 import { useState, useRef, useCallback } from "react";
-import { Send, Loader2, Bot, User, Shield, CheckCircle, Clock, AlertTriangle } from "lucide-react";
+import { Send, Loader2, Bot, User, Shield, CheckCircle, Clock, AlertTriangle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -9,7 +10,8 @@ import {
   ChatMessage, 
   useConversationMessages, 
   useSendAdminReply,
-  useResolveConversation 
+  useResolveConversation,
+  useToggleAIAutoReply,
 } from "@/hooks/useConversations";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
@@ -23,9 +25,14 @@ const ConversationThread = ({ conversation, onClose }: ConversationThreadProps) 
   const { data: messages, isLoading } = useConversationMessages(conversation.id);
   const { sendReply } = useSendAdminReply();
   const { resolve } = useResolveConversation();
+  const { toggleAIAutoReply } = useToggleAIAutoReply();
   const [replyText, setReplyText] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const aiAutoEnabled = (conversation as any).ai_auto_enabled ?? true;
+  const hasAdminReplied = (conversation as any).has_admin_replied ?? false;
 
   const broadcastTyping = useCallback(() => {
     supabase
@@ -46,11 +53,9 @@ const ConversationThread = ({ conversation, onClose }: ConversationThreadProps) 
 
   const handleSendReply = async () => {
     if (!replyText.trim()) return;
-
     setIsSending(true);
     try {
       await sendReply(conversation.id, replyText.trim());
-      // Clear typing status on send
       supabase
         .from("chat_conversations")
         .update({ admin_typing_at: null } as any)
@@ -59,10 +64,77 @@ const ConversationThread = ({ conversation, onClose }: ConversationThreadProps) 
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       setReplyText("");
       toast.success("Reply sent! Customer will see it in their chat.");
-    } catch (error) {
+    } catch {
       toast.error("Failed to send reply");
     } finally {
       setIsSending(false);
+    }
+  };
+
+  const handleGenerateAIReply = async () => {
+    setIsGeneratingAI(true);
+    try {
+      const conversationMessages = messages?.map(m => ({
+        role: m.role === "admin" ? "assistant" : m.role,
+        content: m.content,
+      })) || [];
+
+      const response = await supabase.functions.invoke("customer-chat", {
+        body: {
+          messages: conversationMessages,
+          storeInfo: {
+            name: "Pizza Volante",
+            location: "Baguio City, Philippines",
+            hours: { weekdays: "11:00 AM - 10:00 PM", weekends: "10:00 AM - 11:00 PM" },
+            phone: "(074) 123-4567",
+            delivery: "Free delivery within Baguio City for orders above ₱500",
+          },
+          sessionId: conversation.session_id,
+          generateOnly: true,
+        },
+      });
+
+      if (response.error) throw response.error;
+
+      // Handle streaming response - read the body as text
+      let aiText = "";
+      if (response.data instanceof ReadableStream) {
+        const reader = response.data.getReader();
+        const decoder = new TextDecoder();
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          for (const line of chunk.split("\n")) {
+            if (line.startsWith("data: ") && !line.includes("[DONE]")) {
+              try {
+                const json = JSON.parse(line.slice(6));
+                const content = json.choices?.[0]?.delta?.content;
+                if (content) aiText += content;
+              } catch { /* ignore */ }
+            }
+          }
+        }
+      } else if (typeof response.data === "object" && response.data?.reply) {
+        aiText = response.data.reply;
+      } else if (typeof response.data === "string") {
+        aiText = response.data;
+      }
+
+      // Strip [SUGGESTIONS] tags
+      aiText = aiText.replace(/\[SUGGESTIONS\][\s\S]*?\[\/SUGGESTIONS\]/gi, "").trim();
+
+      if (aiText) {
+        setReplyText(aiText);
+        toast.success("AI draft generated — review and send or edit.");
+      } else {
+        toast.error("AI could not generate a reply");
+      }
+    } catch (err) {
+      console.error("AI reply error:", err);
+      toast.error("Failed to generate AI reply");
+    } finally {
+      setIsGeneratingAI(false);
     }
   };
 
@@ -71,8 +143,17 @@ const ConversationThread = ({ conversation, onClose }: ConversationThreadProps) 
       await resolve(conversation.id);
       toast.success("Conversation marked as resolved");
       onClose();
-    } catch (error) {
+    } catch {
       toast.error("Failed to resolve conversation");
+    }
+  };
+
+  const handleToggleAI = async (checked: boolean) => {
+    try {
+      await toggleAIAutoReply(conversation.id, checked);
+      toast.success(checked ? "AI auto-reply enabled" : "AI auto-reply disabled");
+    } catch {
+      toast.error("Failed to toggle AI mode");
     }
   };
 
@@ -87,25 +168,29 @@ const ConversationThread = ({ conversation, onClose }: ConversationThreadProps) 
     }
   };
 
+  const getAIStatusBadge = () => {
+    if (aiAutoEnabled && !hasAdminReplied) {
+      return <Badge className="gap-1 bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-100"><Bot className="h-3 w-3" />AI Active</Badge>;
+    }
+    if (hasAdminReplied) {
+      return <Badge className="gap-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100"><Shield className="h-3 w-3" />Admin Handling</Badge>;
+    }
+    return null;
+  };
+
   const getRoleIcon = (role: string) => {
     switch (role) {
-      case "admin":
-        return <Shield className="h-4 w-4 text-primary" />;
-      case "assistant":
-        return <Bot className="h-4 w-4 text-muted-foreground" />;
-      default:
-        return <User className="h-4 w-4 text-secondary-foreground" />;
+      case "admin": return <Shield className="h-4 w-4 text-primary" />;
+      case "assistant": return <Bot className="h-4 w-4 text-muted-foreground" />;
+      default: return <User className="h-4 w-4 text-secondary-foreground" />;
     }
   };
 
   const getRoleBubbleClass = (role: string) => {
     switch (role) {
-      case "admin":
-        return "bg-primary text-primary-foreground";
-      case "assistant":
-        return "bg-muted text-foreground";
-      default:
-        return "bg-secondary text-secondary-foreground";
+      case "admin": return "bg-primary text-primary-foreground";
+      case "assistant": return "bg-muted text-foreground";
+      default: return "bg-secondary text-secondary-foreground";
     }
   };
 
@@ -114,15 +199,25 @@ const ConversationThread = ({ conversation, onClose }: ConversationThreadProps) 
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b-2 border-border">
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <h3 className="font-display font-semibold">Conversation</h3>
             {getStatusBadge(conversation.status)}
+            {getAIStatusBadge()}
           </div>
           <p className="text-sm text-muted-foreground">
             Started {formatDistanceToNow(new Date(conversation.created_at), { addSuffix: true })}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          {conversation.status !== "resolved" && (
+            <div className="flex items-center gap-2 mr-2">
+              <span className="text-xs text-muted-foreground whitespace-nowrap">AI Auto</span>
+              <Switch
+                checked={aiAutoEnabled}
+                onCheckedChange={handleToggleAI}
+              />
+            </div>
+          )}
           {conversation.status !== "resolved" && (
             <Button variant="outline" size="sm" onClick={handleResolve} className="rounded-xl">
               <CheckCircle className="h-4 w-4 mr-2" />
@@ -191,9 +286,25 @@ const ConversationThread = ({ conversation, onClose }: ConversationThreadProps) 
             className="min-h-[80px] resize-none rounded-xl border-2"
           />
           <div className="flex justify-between items-center">
-            <p className="text-xs text-muted-foreground">
-              Your reply will appear in the customer's chat window
-            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleGenerateAIReply}
+                disabled={isGeneratingAI}
+                className="rounded-full px-4"
+              >
+                {isGeneratingAI ? (
+                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                ) : (
+                  <Sparkles className="h-4 w-4 mr-1" />
+                )}
+                AI Reply
+              </Button>
+              <p className="text-xs text-muted-foreground hidden sm:block">
+                Generate AI draft or type your own
+              </p>
+            </div>
             <Button 
               onClick={handleSendReply} 
               disabled={isSending || !replyText.trim()}

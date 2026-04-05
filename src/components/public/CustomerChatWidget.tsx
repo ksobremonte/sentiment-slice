@@ -239,6 +239,11 @@ const CustomerChatWidget = () => {
       const contentType = response.headers.get("content-type") || "";
       if (contentType.includes("application/json")) {
         const data = await response.json();
+        if (data.aiDisabled) {
+          // AI auto-reply disabled — admin is handling this conversation
+          setIsLoading(false);
+          return;
+        }
         if (data.reply) {
           assistantContent = data.reply;
           const { cleanContent, suggestions: parsed } = parseSuggestions(assistantContent);

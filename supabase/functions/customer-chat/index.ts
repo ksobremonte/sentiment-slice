@@ -247,11 +247,12 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { messages, storeInfo, sessionId, messageCount } = await req.json() as { 
+    const { messages, storeInfo, sessionId, messageCount, generateOnly } = await req.json() as { 
       messages: Message[]; 
       storeInfo: StoreInfo;
       sessionId?: string;
       messageCount?: number;
+      generateOnly?: boolean;
     };
 
     // Input validation
@@ -352,6 +353,35 @@ Deno.serve(async (req) => {
     } else if (latestUserMessage && conversationId) {
       // Fallback: save without classification
       await saveMessage(supabase, conversationId, "user", latestUserMessage.content);
+    }
+
+    // Check if AI auto-reply is disabled for this conversation
+    let aiAutoEnabled = true;
+    if (conversationId) {
+      const { data: convoData } = await supabase
+        .from("chat_conversations")
+        .select("ai_auto_enabled, has_admin_replied")
+        .eq("id", conversationId)
+        .single();
+      if (convoData) {
+        aiAutoEnabled = convoData.ai_auto_enabled ?? true;
+      }
+    }
+
+    // If AI auto-reply is disabled AND this is NOT a manual generateOnly request, skip AI
+    if (!aiAutoEnabled && !generateOnly) {
+      return new Response(JSON.stringify({ 
+        reply: null, 
+        adminReplies,
+        aiDisabled: true 
+      }), {
+        status: 200, 
+        headers: { 
+          ...corsHeaders, 
+          "Content-Type": "application/json",
+          "X-Conversation-Id": conversationId || "",
+        },
+      });
     }
 
     // Fetch approved reviews
@@ -498,7 +528,7 @@ RULES: Only quote REAL reviews above. Never invent reviews. Stay polite. Never e
         }
         await writer.close();
         
-        if (conversationId && fullAssistantResponse) {
+        if (conversationId && fullAssistantResponse && !generateOnly) {
           await saveMessage(supabase, conversationId, "assistant", fullAssistantResponse);
         }
       } catch (err) {
