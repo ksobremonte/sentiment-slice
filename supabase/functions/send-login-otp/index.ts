@@ -82,6 +82,7 @@ Deno.serve(async (req) => {
         to: email,
         subject: 'Your Pizza Volante Login Code',
         html: emailHtml,
+        text: `Your Pizza Volante verification code is: ${code}. This code expires in 5 minutes.`,
         from: 'Pizza Volante <noreply@notify.pizzavolante-dashboard.com>',
         sender_domain: 'notify.pizzavolante-dashboard.com',
         purpose: 'transactional',
