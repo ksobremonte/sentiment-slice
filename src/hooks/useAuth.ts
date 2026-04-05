@@ -69,6 +69,7 @@ export const useAuth = () => {
   };
 
   const signOut = async () => {
+    sessionStorage.removeItem("otp_verified");
     const { error } = await supabase.auth.signOut();
     return { error };
   };
