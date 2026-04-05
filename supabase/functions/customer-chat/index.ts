@@ -354,6 +354,35 @@ Deno.serve(async (req) => {
       await saveMessage(supabase, conversationId, "user", latestUserMessage.content);
     }
 
+    // Check if AI auto-reply is disabled for this conversation
+    let aiAutoEnabled = true;
+    if (conversationId) {
+      const { data: convoData } = await supabase
+        .from("chat_conversations")
+        .select("ai_auto_enabled, has_admin_replied")
+        .eq("id", conversationId)
+        .single();
+      if (convoData) {
+        aiAutoEnabled = convoData.ai_auto_enabled ?? true;
+      }
+    }
+
+    // If AI auto-reply is disabled, skip AI response — just return empty
+    if (!aiAutoEnabled) {
+      return new Response(JSON.stringify({ 
+        reply: null, 
+        adminReplies,
+        aiDisabled: true 
+      }), {
+        status: 200, 
+        headers: { 
+          ...corsHeaders, 
+          "Content-Type": "application/json",
+          "X-Conversation-Id": conversationId || "",
+        },
+      });
+    }
+
     // Fetch approved reviews
     const { data: reviews, error: reviewsError } = await supabase
       .from("reviews_public")
