@@ -53,7 +53,6 @@ const DashboardSwitchAccount = () => {
       saveSavedAccounts(updated);
       setAccounts(updated);
     } else {
-      // Update lastActive
       const updated = existing.map((a) =>
         a.email === user.email ? { ...a, lastActive: new Date().toISOString() } : a
       );
@@ -124,16 +123,8 @@ const DashboardSwitchAccount = () => {
                       className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
                         isCurrent
                           ? "bg-primary/5 border border-primary/20"
-                          : "hover:bg-accent/50 cursor-pointer"
+                          : "hover:bg-accent/50"
                       }`}
-                      onClick={() => !isCurrent && handleSwitchTo(account.email)}
-                      role={isCurrent ? undefined : "button"}
-                      tabIndex={isCurrent ? undefined : 0}
-                      onKeyDown={(e) => {
-                        if (!isCurrent && (e.key === "Enter" || e.key === " ")) {
-                          handleSwitchTo(account.email);
-                        }
-                      }}
                     >
                       <div className="flex items-center gap-3">
                         <Avatar className="h-10 w-10">
@@ -161,25 +152,40 @@ const DashboardSwitchAccount = () => {
                       <div className="flex items-center gap-2">
                         {!isCurrent && (
                           <>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="gap-1.5"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleSwitchTo(account.email);
-                              }}
-                            >
-                              <LogIn className="h-3.5 w-3.5" />
-                              Switch
-                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="gap-1.5"
+                                >
+                                  <LogIn className="h-3.5 w-3.5" />
+                                  Switch
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Switch Account?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Are you sure you want to switch to <strong>{account.email}</strong>? You will be signed out of your current session.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleSwitchTo(account.email)}
+                                  >
+                                    Switch Account
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
                                 <Button
                                   variant="ghost"
                                   size="icon"
                                   className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                                  onClick={(e) => e.stopPropagation()}
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
