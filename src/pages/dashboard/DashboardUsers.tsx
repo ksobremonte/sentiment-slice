@@ -376,7 +376,10 @@ const DashboardUsers = () => {
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             className="text-destructive focus:text-destructive"
-                            onClick={() => handleRemoveUser(user.user_id)}
+                            onClick={() => {
+                              setRemoveConfirmUser({ userId: user.user_id, name: user.display_name });
+                              setRemoveConfirmOpen(true);
+                            }}
                           >
                             Remove Access
                           </DropdownMenuItem>
