@@ -79,8 +79,15 @@ const ConversationThread = ({ conversation, onClose }: ConversationThreadProps) 
         content: m.content,
       })) || [];
 
-      const response = await supabase.functions.invoke("customer-chat", {
-        body: {
+      let aiText = "";
+      const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/customer-chat`;
+      const response = await fetch(FUNCTION_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
           messages: conversationMessages,
           storeInfo: {
             name: "Pizza Volante",
@@ -91,15 +98,19 @@ const ConversationThread = ({ conversation, onClose }: ConversationThreadProps) 
           },
           sessionId: conversation.session_id,
           generateOnly: true,
-        },
+        }),
       });
 
-      if (response.error) throw response.error;
+      if (!response.ok) throw new Error("AI request failed");
 
-      // Handle streaming response - read the body as text
-      let aiText = "";
-      if (response.data instanceof ReadableStream) {
-        const reader = response.data.getReader();
+      // Check if JSON fallback
+      const contentType = response.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        const data = await response.json();
+        if (data.reply) aiText = data.reply;
+      } else if (response.body) {
+        // Handle SSE stream
+        const reader = response.body.getReader();
         const decoder = new TextDecoder();
         while (true) {
           const { done, value } = await reader.read();
@@ -115,10 +126,6 @@ const ConversationThread = ({ conversation, onClose }: ConversationThreadProps) 
             }
           }
         }
-      } else if (typeof response.data === "object" && response.data?.reply) {
-        aiText = response.data.reply;
-      } else if (typeof response.data === "string") {
-        aiText = response.data;
       }
 
       // Strip [SUGGESTIONS] tags
