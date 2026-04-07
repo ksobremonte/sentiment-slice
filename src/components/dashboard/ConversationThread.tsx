@@ -79,6 +79,7 @@ const ConversationThread = ({ conversation, onClose }: ConversationThreadProps) 
         content: m.content,
       })) || [];
 
+      let aiText = "";
       const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/customer-chat`;
       const response = await fetch(FUNCTION_URL, {
         method: "POST",
