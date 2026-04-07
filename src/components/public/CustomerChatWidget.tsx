@@ -167,10 +167,9 @@ const CustomerChatWidget = () => {
         });
 
         if (!response.ok) return;
-        const { messages: adminMessages } = await response.json();
-
-        const { adminTyping: typing } = await response.json();
-        setAdminTyping(!!typing);
+        const data = await response.json();
+        const adminMessages = data.messages;
+        setAdminTyping(!!data.adminTyping);
 
         if (adminMessages && adminMessages.length > 0) {
           setMessages((prev) => {
