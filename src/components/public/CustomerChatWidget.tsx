@@ -147,55 +147,57 @@ const CustomerChatWidget = () => {
     loadHistory();
   }, [conversationId, historyLoaded]);
 
-  // Poll for admin replies
-  const lastSeenTimestampRef = useRef<string | null>(null);
-
+  // Realtime subscription for admin replies
   useEffect(() => {
     if (!conversationId || !isOpen) return;
 
-    const pollReplies = async () => {
-      try {
-        const response = await fetch(CHECK_REPLIES_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({
-            conversationId,
-            lastSeenTimestamp: lastSeenTimestampRef.current,
-          }),
-        });
-
-        if (!response.ok) return;
-        const data = await response.json();
-        const adminMessages = data.messages;
-        setAdminTyping(!!data.adminTyping);
-
-        if (adminMessages && adminMessages.length > 0) {
-          setMessages((prev) => {
-            let updated = [...prev];
-            for (const msg of adminMessages) {
-              const isDuplicate = updated.some(
+    const channel = supabase
+      .channel(`chat-${conversationId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'chat_messages',
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        (payload) => {
+          const msg = payload.new as any;
+          if (msg.role === 'admin') {
+            setMessages((prev) => {
+              const isDuplicate = prev.some(
                 (m) => m.role === "admin" && m.content === msg.content
               );
-              if (!isDuplicate) {
-                updated = [...updated, { role: "admin", content: msg.content }];
-              }
-            }
-            return updated;
-          });
-          lastSeenTimestampRef.current = adminMessages[adminMessages.length - 1].created_at;
+              if (isDuplicate) return prev;
+              return [...prev, { role: "admin", content: msg.content }];
+            });
+          }
         }
-      } catch (err) {
-        console.error("Error polling admin replies:", err);
-      }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'chat_conversations',
+          filter: `id=eq.${conversationId}`,
+        },
+        (payload) => {
+          const conv = payload.new as any;
+          const typingAt = conv.admin_typing_at;
+          if (typingAt) {
+            const diff = Date.now() - new Date(typingAt).getTime();
+            setAdminTyping(diff < 10000);
+          } else {
+            setAdminTyping(false);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
     };
-
-    const interval = setInterval(pollReplies, 3000);
-    pollReplies();
-
-    return () => clearInterval(interval);
   }, [conversationId, isOpen]);
 
   const sendMessageWithText = useCallback(async (text: string) => {
