@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, MessageSquare, PieChart, Star, TrendingUp,
@@ -17,6 +17,8 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/useProfile";
 import { useReviews } from "@/hooks/useReviews";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 import RealtimeNotificationPopup from "@/components/dashboard/RealtimeNotificationPopup";
@@ -56,6 +58,27 @@ const DashboardSidebar = () => {
   const collapsed = state === "collapsed";
   const displayName = profile?.display_name || "You";
   const avatarUrl = profile?.avatar_url;
+
+  const { data: userRole } = useQuery({
+    queryKey: ["current-user-role", user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      return data?.role || null;
+    },
+    enabled: !!user,
+  });
+
+  const isAdmin = userRole === "admin";
+
+  const visibleMainNav = useMemo(
+    () => isAdmin ? mainNavKeys : mainNavKeys.filter((item) => item.path !== "/pv-dashboard/conversations"),
+    [isAdmin]
+  );
 
   const handleLogout = async () => {
     const { error } = await signOut();
@@ -106,7 +129,7 @@ const DashboardSidebar = () => {
           <SidebarGroupLabel>{t("nav.main")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainNavKeys.map((item) => <NavItem key={item.path} item={item} />)}
+              {visibleMainNav.map((item) => <NavItem key={item.path} item={item} />)}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -187,9 +210,25 @@ const DashboardSidebar = () => {
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { t } = useLanguage();
+  const { user } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
 
+  const { data: layoutRole } = useQuery({
+    queryKey: ["current-user-role", user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      return data?.role || null;
+    },
+    enabled: !!user,
+  });
+
+  const isAdmin = layoutRole === "admin";
   const isOnConversations = location.pathname === "/pv-dashboard/conversations";
 
   return (
@@ -201,6 +240,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <SidebarTrigger />
             <div className="text-sm font-semibold text-foreground flex-1">{t("nav.sentimentDashboard")}</div>
             <div className="flex items-center gap-2">
+              {isAdmin && (
               <Button
                 variant={isOnConversations ? "default" : "outline"}
                 size="icon"
@@ -210,6 +250,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               >
                 <MessageSquare className="h-4 w-4" />
               </Button>
+              )}
               <NotificationDropdown />
             </div>
           </header>
