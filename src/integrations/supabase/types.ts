@@ -546,6 +546,39 @@ export type Database = {
         }
         Relationships: []
       }
+      system_logs: {
+        Row: {
+          created_at: string
+          details: Json | null
+          endpoint: string
+          id: string
+          level: string
+          message: string
+          method: string
+          status_code: number
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          endpoint: string
+          id?: string
+          level?: string
+          message: string
+          method?: string
+          status_code?: number
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          endpoint?: string
+          id?: string
+          level?: string
+          message?: string
+          method?: string
+          status_code?: number
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
