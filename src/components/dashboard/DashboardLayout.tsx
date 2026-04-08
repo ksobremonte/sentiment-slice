@@ -17,6 +17,8 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/useProfile";
 import { useReviews } from "@/hooks/useReviews";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 import RealtimeNotificationPopup from "@/components/dashboard/RealtimeNotificationPopup";
