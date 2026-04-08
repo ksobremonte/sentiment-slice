@@ -199,6 +199,7 @@ const DashboardUsers = () => {
               Invite new staff, update roles, or remove access as needed.
             </p>
           </div>
+          {isAdmin && (
           <Dialog open={addOpen} onOpenChange={setAddOpen}>
             <DialogTrigger asChild>
               <Button className="rounded-xl gap-2">
@@ -208,7 +209,6 @@ const DashboardUsers = () => {
             </DialogTrigger>
             <DialogContent className="rounded-2xl">
               <DialogHeader>
-                <DialogTitle>Invite New Staff Member</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-2">
                 <div className="space-y-2">
