@@ -349,6 +349,7 @@ const DashboardUsers = () => {
                         </span>
                       </div>
                     </TableCell>
+                    {isAdmin && (
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -394,6 +395,7 @@ const DashboardUsers = () => {
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
