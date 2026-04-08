@@ -129,7 +129,7 @@ const DashboardSidebar = () => {
           <SidebarGroupLabel>{t("nav.main")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainNavKeys.map((item) => <NavItem key={item.path} item={item} />)}
+              {visibleMainNav.map((item) => <NavItem key={item.path} item={item} />)}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
