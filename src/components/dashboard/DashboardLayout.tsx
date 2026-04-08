@@ -23,6 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import pizzaVolanteLogo from "@/assets/pizza-volante-logo.png";
 import RealtimeNotificationPopup from "@/components/dashboard/RealtimeNotificationPopup";
 import NotificationDropdown from "@/components/dashboard/NotificationDropdown";
+import { useAccessLog } from "@/hooks/useAccessLog";
 import {
   SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter,
   SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarMenu,
