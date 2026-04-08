@@ -210,9 +210,25 @@ const DashboardSidebar = () => {
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { t } = useLanguage();
+  const { user } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
 
+  const { data: layoutRole } = useQuery({
+    queryKey: ["current-user-role", user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      return data?.role || null;
+    },
+    enabled: !!user,
+  });
+
+  const isAdmin = layoutRole === "admin";
   const isOnConversations = location.pathname === "/pv-dashboard/conversations";
 
   return (
@@ -224,6 +240,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <SidebarTrigger />
             <div className="text-sm font-semibold text-foreground flex-1">{t("nav.sentimentDashboard")}</div>
             <div className="flex items-center gap-2">
+              {isAdmin && (
               <Button
                 variant={isOnConversations ? "default" : "outline"}
                 size="icon"
@@ -233,6 +250,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               >
                 <MessageSquare className="h-4 w-4" />
               </Button>
+              )}
               <NotificationDropdown />
             </div>
           </header>
