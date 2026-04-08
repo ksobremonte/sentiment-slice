@@ -35,6 +35,7 @@ interface UserWithRole {
 }
 
 const DashboardUsers = () => {
+  const { user: currentUser } = useAuthContext();
   const queryClient = useQueryClient();
   const [addOpen, setAddOpen] = useState(false);
   const [newEmail, setNewEmail] = useState("");
