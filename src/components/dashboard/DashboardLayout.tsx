@@ -59,6 +59,27 @@ const DashboardSidebar = () => {
   const displayName = profile?.display_name || "You";
   const avatarUrl = profile?.avatar_url;
 
+  const { data: userRole } = useQuery({
+    queryKey: ["current-user-role", user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      return data?.role || null;
+    },
+    enabled: !!user,
+  });
+
+  const isAdmin = userRole === "admin";
+
+  const visibleMainNav = useMemo(
+    () => isAdmin ? mainNavKeys : mainNavKeys.filter((item) => item.path !== "/pv-dashboard/conversations"),
+    [isAdmin]
+  );
+
   const handleLogout = async () => {
     const { error } = await signOut();
     if (error) {
