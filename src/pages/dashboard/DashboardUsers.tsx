@@ -236,6 +236,7 @@ const DashboardUsers = () => {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          )}
         </div>
 
         {/* Table Card */}
