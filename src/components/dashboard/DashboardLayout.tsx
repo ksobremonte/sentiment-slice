@@ -233,6 +233,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const isAdmin = layoutRole === "admin";
   const isOnConversations = location.pathname === "/pv-dashboard/conversations";
 
+  useAccessLog();
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
