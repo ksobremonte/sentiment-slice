@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, MessageSquare, PieChart, Star, TrendingUp,
