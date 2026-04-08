@@ -81,6 +81,11 @@ const DashboardUsers = () => {
     retry: 1,
   });
 
+  const isAdmin = useMemo(() => {
+    if (!currentUser) return false;
+    return users.some((u) => u.user_id === currentUser.id && u.role === "admin");
+  }, [users, currentUser]);
+
   const filteredUsers = users.filter(
     (u) =>
       (u.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
