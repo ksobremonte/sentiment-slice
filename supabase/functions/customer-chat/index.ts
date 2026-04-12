@@ -538,6 +538,7 @@ RULES: Only quote REAL reviews above. Never invent reviews. Stay polite. Never e
       }
     })();
 
+    await logToSystem({ endpoint: '/customer-chat', method: 'POST', status_code: 200, level: 'success', message: 'Customer chat response streamed' });
     return new Response(readable, {
       headers: {
         ...corsHeaders,

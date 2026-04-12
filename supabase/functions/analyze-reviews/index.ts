@@ -267,6 +267,7 @@ Only return the JSON array, no other text. Format: ["id1", "id2", "id3", ...]`;
         sortedIds = (reviews as Review[]).map(r => r.id);
       }
 
+      await logToSystem({ endpoint: '/analyze-reviews', method: 'POST', status_code: 200, level: 'success', message: `AI sort completed for ${reviews.length} reviews` });
       return new Response(JSON.stringify({ sortedIds }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
