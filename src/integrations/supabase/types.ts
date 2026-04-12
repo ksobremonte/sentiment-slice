@@ -746,6 +746,10 @@ export type Database = {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
       }
+      delete_own_reaction: {
+        Args: { p_id: string; p_session_id: string }
+        Returns: undefined
+      }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
@@ -774,6 +778,10 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      update_own_reaction: {
+        Args: { p_id: string; p_reaction: string; p_session_id: string }
+        Returns: undefined
       }
     }
     Enums: {
