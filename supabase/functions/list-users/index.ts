@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { logToSystem } from '../_shared/systemLog.ts'
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -264,10 +265,12 @@ Deno.serve(async (req) => {
       })
     );
 
+    await logToSystem({ endpoint: '/list-users', method: req.method, status_code: 200, level: 'success', message: `User management: ${new URL(req.url).searchParams.get("action") || "list"} completed` });
     return new Response(JSON.stringify(usersWithDetails), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
+    await logToSystem({ endpoint: '/list-users', method: req.method, status_code: 500, level: 'error', message: 'User management error' });
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
