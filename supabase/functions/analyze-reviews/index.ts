@@ -277,40 +277,53 @@ Only return the JSON array, no other text. Format: ["id1", "id2", "id3", ...]`;
       // Pure text-based NLP sentiment analysis - no star rating influence
       const review = reviews[0] as Review;
       
-      const systemPrompt = `You are a sentiment analysis assistant for a pizza restaurant dashboard.
+      const systemPrompt = `You are a highly accurate multilingual review analyzer for a restaurant website (Pizza Volante).
 
-Rules:
-- Do NOT write paragraphs.
-- Do NOT exceed 3 bullet points for main points.
-- Reason must be ONE sentence only.
-- Focus only on what affects sentiment.
-- Ignore unnecessary details.
+You MUST correctly analyze reviews written in: English, Tagalog (Filipino), Ilokano, Cebuano/Bisaya, and mixed languages (Taglish, Iloklish).
 
-LANGUAGE SUPPORT: Reviews may be in English, Filipino (Tagalog), Ilocano, or Cebuano.
-Ilocano positive: nalaing, nasayaat, napintas, nagpaspas, naimas
-Ilocano negative: madi, saan a nasayaat, narigat, bassit, tamnay (meaning "kulang sa lasa" / bland / lacks flavor)
-Cebuano/Bisaya: treat as Filipino dialect, translate before classifying.
-Translate non-English before classifying.
+STEP 1: LANGUAGE DETECTION
+Detect ALL languages used in the review (not just one).
+Examples: "ilo+tl" for Ilokano + Tagalog, "tl+en" for Tagalog + English, "en" for pure English.
 
-CLASSIFICATION (text only, ignore star ratings):
-- POSITIVE: praise, satisfaction, enthusiasm, recommendations
-- NEGATIVE: complaints, disappointment, frustration, criticism
-- NEUTRAL: factual descriptions, ambiguous, no clear emotion
+STEP 2: NORMALIZATION & TRANSLATION
+Convert the review into clear English. Understand meaning, not just direct translation.
+Handle slang, misspellings, and informal words:
+- "awan kwenta" → "useless"
+- "ang tagal" → "too slow"
+- "di masarap" → "not tasty"
+- "tamnay" → "bland / lacks flavor"
+- "madi" → "bad / not good"
+- "nalaing" / "naimas" → "delicious"
+- "nasayaat" → "good"
+- "lami" / "nindot" → "delicious" / "nice" (Cebuano)
 
-MIXED SENTIMENT RULES:
-1. Identify the Strongest Emotion: Base your primary sentiment on the most dominant feeling in the comment.
-2. Handle Conflict: If the comment contains both positive and negative elements, you must list both (e.g., "positive, negative" or "positive, neutral").
-3. Decisiveness: If one sentiment is clearly stronger, pick that one only. If it is a clear split, use two separated by comma.
-4. Output: Provide only the label(s) in the sentiment field.
+STEP 3: SENTIMENT ANALYSIS (STRICT)
+Classify sentiment:
+- Positive → praise, satisfaction, enthusiasm, recommendations
+- Negative → complaints, dissatisfaction, frustration, criticism
+- Neutral → unclear or mixed without strong emotion
+CRITICAL RULE: If ANY strong negative phrase exists → sentiment = Negative. Do NOT mark Positive if there is any complaint.
 
-Detect sarcasm and emoji sentiment. Base result on meaning, not unknown words.
+STEP 4: CONCERN DETECTION (VERY IMPORTANT)
+Set has_concern = true if the review includes: complaints, delays, bad service, wrong orders, missing items, questions, or requests.
+Even if not obvious, infer concern from context.
+
+STEP 5: ISSUE EXTRACTION
+Extract the main issue in 2-5 words only. Examples: "Slow service", "Rude staff", "Wrong order", "Food not tasty". Leave empty if no issue.
+
+STEP 6: RESPONSE GENERATION
+Generate a short, human-like reply:
+- Positive → friendly thank you
+- Negative → apologize + acknowledge the issue
+- Concern → apologize + ask for details OR offer help
+Tone: Polite, natural, not robotic.
 
 EMOJI SENTIMENT MAPPING:
-- POSITIVE emojis: 😊 😁 😍 🥰 😋 🤤 👍 👌 🔥 ❤️ 💯 🎉 🥳 ⭐ 🌟 ✨ 😎 🙌 💪 😄 😃 🤩 💖 💕 👏 🥇 🏆 ✅ 💚 💙 💛
-- NEGATIVE emojis: 😡 😤 🤮 🤢 👎 😠 😒 😞 😢 😭 💔 🚫 ❌ 😑 😩 😫 🙄 😣 😖 😵 🤬 ⚠️ 💀 ☠️ 😰 😨 😱 🤧
-- NEUTRAL emojis: 😐 🤔 😶 🫤 🤷 😑 📝 📌 ℹ️ 🔔 📢 🙂 😏 🫡
+- POSITIVE: 😊 😁 😍 🥰 😋 🤤 👍 👌 🔥 ❤️ 💯 🎉 🥳 ⭐ 🌟 ✨ 😎 🙌 💪 🤩 💖 👏
+- NEGATIVE: 😡 😤 🤮 🤢 👎 😠 😒 😞 😢 😭 💔 🚫 ❌ 😩 😫 🙄 😣 😖 🤬 ⚠️ 💀 ☠️ 😰 😨 😱
+- NEUTRAL: 😐 🤔 😶 🫤 🤷 📝 📌 ℹ️ 🔔 📢 🙂 😏 🫡
 
-When a review consists primarily of emojis with little or no text, classify sentiment based on the dominant emoji category above. When emojis accompany text, use them to reinforce or override ambiguous text sentiment.`;
+Detect sarcasm and emoji sentiment. Base result on meaning, not unknown words.`;
 
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
@@ -321,28 +334,42 @@ When a review consists primarily of emojis with little or no text, classify sent
         body: JSON.stringify({
           model: "google/gemini-2.5-flash",
           messages: [
-            { role: "user", content: `Analyze this review text (ignore any rating):\n\n"${review.feedback}"\n\nProvide: sentiment classification, one-sentence reason, and up to 3 key phrases.` }
+            { role: "system", content: systemPrompt },
+            { role: "user", content: `Analyze this review text (ignore any star rating):\n\n"${review.feedback}"` }
           ],
           tools: [
             {
               type: "function",
               function: {
                 name: "classify_sentiment",
-                description: "Classify the sentiment of a customer review based purely on text analysis",
+                description: "Classify the sentiment of a customer review with full multilingual analysis",
                 parameters: {
                   type: "object",
                   properties: {
                     sentiment: {
                       type: "string",
-                      description: "The overall sentiment. Use one label if one emotion dominates (e.g. 'positive'), or comma-separated if clearly mixed (e.g. 'positive, negative'). Allowed values: positive, negative, neutral, or combinations."
+                      enum: ["positive", "negative", "neutral"],
+                      description: "The overall sentiment. If ANY strong negative phrase exists, must be 'negative'."
                     },
                     confidence: {
                       type: "number",
-                      description: "Confidence score from 0.0 to 1.0"
+                      description: "Confidence score from 0 to 100"
                     },
                     language: {
                       type: "string",
-                      description: "ISO 639-1 language code (e.g., en, es, fr, it, de)"
+                      description: "Detected language codes, e.g. 'en', 'tl', 'ilo', 'ceb', 'tl+en', 'ilo+tl'"
+                    },
+                    translated_text: {
+                      type: "string",
+                      description: "The review translated/normalized into clear English"
+                    },
+                    has_concern: {
+                      type: "boolean",
+                      description: "true if the review contains complaints, delays, bad service, wrong orders, missing items, questions, or requests"
+                    },
+                    issue: {
+                      type: "string",
+                      description: "Main issue in 2-5 words (e.g. 'Slow service', 'Wrong order'). Empty string if no issue."
                     },
                     aspects: {
                       type: "object",
@@ -352,7 +379,7 @@ When a review consists primarily of emojis with little or no text, classify sent
                         value: { type: "string", enum: ["positive", "negative", "neutral", "not_mentioned"] },
                         experience: { type: "string", enum: ["positive", "negative", "neutral", "not_mentioned"] }
                       },
-                      description: "Sentiment for each aspect mentioned in the review text"
+                      description: "Sentiment for each aspect mentioned in the review"
                     },
                     key_phrases: {
                       type: "array",
@@ -362,9 +389,13 @@ When a review consists primarily of emojis with little or no text, classify sent
                     reasoning: {
                       type: "string",
                       description: "ONE sentence only explaining why this sentiment was chosen"
+                    },
+                    suggested_response: {
+                      type: "string",
+                      description: "A short, human-like reply to the customer. Polite and natural tone."
                     }
                   },
-                  required: ["sentiment", "confidence", "language", "aspects", "reasoning"]
+                  required: ["sentiment", "confidence", "language", "translated_text", "has_concern", "issue", "aspects", "reasoning", "suggested_response"]
                 }
               }
             }
@@ -405,6 +436,10 @@ When a review consists primarily of emojis with little or no text, classify sent
       let aspects = {};
       let keyPhrases: string[] = [];
       let reasoning = "";
+      let translatedText = "";
+      let hasConcern = false;
+      let issue = "";
+      let suggestedResponse = "";
       
       try {
         const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
@@ -412,17 +447,21 @@ When a review consists primarily of emojis with little or no text, classify sent
           const parsed = JSON.parse(toolCall.function.arguments);
           
           sentiment = parsed.sentiment || "neutral";
-          confidence = parsed.confidence || 0.5;
-          language = (parsed.language || "en").toLowerCase().substring(0, 5);
+          confidence = parsed.confidence != null ? (parsed.confidence > 1 ? parsed.confidence / 100 : parsed.confidence) : 0.5;
+          language = (parsed.language || "en").toLowerCase().substring(0, 10);
           aspects = parsed.aspects || {};
           keyPhrases = parsed.key_phrases || [];
           reasoning = parsed.reasoning || "";
+          translatedText = parsed.translated_text || "";
+          hasConcern = parsed.has_concern === true;
+          issue = parsed.issue || "";
+          suggestedResponse = parsed.suggested_response || "";
           
-           // Auto-approve only 4-5 star reviews; lower ratings need manual approval
-           approved = (review.rating >= 4);
+          // Auto-approve only 4-5 star reviews; lower ratings need manual approval
+          approved = (review.rating >= 4);
         }
       } catch (parseError) {
-       console.error("Failed to parse tool call response:", parseError);
+        console.error("Failed to parse tool call response:", parseError);
         sentiment = "neutral";
         approved = (review.rating >= 4);
       }
@@ -434,7 +473,11 @@ When a review consists primarily of emojis with little or no text, classify sent
         confidence,
         aspects,
         keyPhrases,
-        reasoning
+        reasoning,
+        translatedText,
+        hasConcern,
+        issue,
+        suggestedResponse
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
