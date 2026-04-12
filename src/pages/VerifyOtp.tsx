@@ -340,17 +340,15 @@ const VerifyOtp = () => {
               </button>
             </div>
 
-            {hasPasskeys && (
-              <div className="text-center mt-4 pt-4 border-t">
-                <button
-                  onClick={() => setMethod("choose")}
-                  className="text-sm text-primary hover:underline font-medium inline-flex items-center gap-1"
-                >
-                  <Fingerprint className="w-3.5 h-3.5" />
-                  Use passkey instead
-                </button>
-              </div>
-            )}
+            <div className="text-center mt-4 pt-4 border-t">
+              <button
+                onClick={() => setMethod("choose")}
+                className="text-sm text-muted-foreground hover:text-primary hover:underline font-medium inline-flex items-center gap-1"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                ← Back to login
+              </button>
+            </div>
 
             <p className="text-xs text-muted-foreground text-center mt-6">Code expires in 5 minutes</p>
           </div>
