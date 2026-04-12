@@ -28,12 +28,8 @@ const VerifyOtp = () => {
   const { supported: passkeySupported, hasPasskeys, loading: passkeyLoading, authenticatePasskey } =
     usePasskey(pendingLogin?.userId);
 
-  // If no passkeys, skip choose screen and go straight to OTP
-  useEffect(() => {
-    if (!passkeyLoading && !hasPasskeys) {
-      setMethod("otp");
-    }
-  }, [passkeyLoading, hasPasskeys]);
+  // Always show choose screen once passkey status is loaded
+  // (no longer auto-skips to OTP)
 
   useEffect(() => {
     if (!pendingLogin) {
@@ -108,12 +104,12 @@ const VerifyOtp = () => {
   };
 
   const handleBack = async () => {
-    if (method !== "choose" && method !== "otp") {
-      setMethod(hasPasskeys ? "choose" : "otp");
+    if (method === "passkey") {
+      setMethod("choose");
       setPasskeyError(null);
       return;
     }
-    if (method === "otp" && hasPasskeys) {
+    if (method === "otp") {
       setMethod("choose");
       return;
     }
@@ -138,7 +134,7 @@ const VerifyOtp = () => {
             className="text-sm text-primary hover:underline font-semibold inline-flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            {method === "choose" || (method === "otp" && !hasPasskeys)
+            {method === "choose"
               ? "Back to Sign In"
               : "Back to options"}
           </button>
@@ -172,27 +168,36 @@ const VerifyOtp = () => {
 
             <div className="space-y-3">
               {/* Passkey Option - Primary */}
-              {passkeySupported && hasPasskeys && (
-                <button
-                  onClick={() => {
+              <button
+                onClick={() => {
+                  if (hasPasskeys) {
                     setMethod("passkey");
-                    // Auto-trigger passkey auth
                     setTimeout(() => handlePasskeyAuth(), 300);
-                  }}
-                  className="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-primary bg-primary/5 hover:bg-primary/10 transition-all group"
-                >
-                  <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                    <Fingerprint className="h-6 w-6 text-primary" />
-                  </div>
-                  <div className="text-left flex-1">
-                    <p className="font-semibold text-foreground">Passkey / Security Key</p>
-                    <p className="text-xs text-muted-foreground">Use your registered security key</p>
-                  </div>
+                  } else {
+                    toast.error("No passkeys registered. Register one in Dashboard Settings first.");
+                  }
+                }}
+                className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all group ${
+                  hasPasskeys
+                    ? "border-primary bg-primary/5 hover:bg-primary/10"
+                    : "border-border bg-muted/30 hover:bg-muted/50"
+                }`}
+              >
+                <div className={`h-12 w-12 rounded-xl flex items-center justify-center transition-colors ${
+                  hasPasskeys ? "bg-primary/10 group-hover:bg-primary/20" : "bg-muted"
+                }`}>
+                  <Fingerprint className={`h-6 w-6 ${hasPasskeys ? "text-primary" : "text-muted-foreground"}`} />
+                </div>
+                <div className="text-left flex-1">
+                  <p className="font-semibold text-foreground">Passkey / Security Key</p>
+                  <p className="text-xs text-muted-foreground">Use your registered security key</p>
+                </div>
+                {hasPasskeys && (
                   <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full font-medium">
                     Recommended
                   </span>
-                </button>
-              )}
+                )}
+              </button>
 
               {/* Email OTP Option */}
               <button
@@ -202,10 +207,10 @@ const VerifyOtp = () => {
                 <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
                   <Mail className="h-6 w-6 text-muted-foreground group-hover:text-primary" />
                 </div>
-                <div className="text-left flex-1">
-                  <p className="font-semibold text-foreground">Email Verification Code</p>
+              <div className="text-left flex-1">
+                  <p className="font-semibold text-foreground">Email OTP</p>
                   <p className="text-xs text-muted-foreground">
-                    Send a 6-digit code to {maskedEmail}
+                    Receive a 6-digit code via email
                   </p>
                 </div>
               </button>
@@ -335,17 +340,15 @@ const VerifyOtp = () => {
               </button>
             </div>
 
-            {hasPasskeys && (
-              <div className="text-center mt-4 pt-4 border-t">
-                <button
-                  onClick={() => setMethod("choose")}
-                  className="text-sm text-primary hover:underline font-medium inline-flex items-center gap-1"
-                >
-                  <Fingerprint className="w-3.5 h-3.5" />
-                  Use passkey instead
-                </button>
-              </div>
-            )}
+            <div className="text-center mt-4 pt-4 border-t">
+              <button
+                onClick={() => setMethod("choose")}
+                className="text-sm text-muted-foreground hover:text-primary hover:underline font-medium inline-flex items-center gap-1"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                ← Back to login
+              </button>
+            </div>
 
             <p className="text-xs text-muted-foreground text-center mt-6">Code expires in 5 minutes</p>
           </div>
