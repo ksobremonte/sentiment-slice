@@ -1,4 +1,5 @@
 // Edge function for analyzing reviews with AI
+import { logToSystem } from '../_shared/systemLog.ts'
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -499,6 +500,7 @@ Be concise and helpful. Use the actual data provided.`;
 
   } catch (error) {
     console.error("Error in analyze-reviews:", error);
+    await logToSystem({ endpoint: '/analyze-reviews', method: 'POST', status_code: 500, level: 'error', message: 'Review analysis failed' });
     return new Response(JSON.stringify({ error: "An error occurred. Please try again later." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

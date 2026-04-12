@@ -1,6 +1,7 @@
 // Edge function for customer chat with persistent conversations and admin replies
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { logToSystem } from '../_shared/systemLog.ts'
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -548,6 +549,7 @@ RULES: Only quote REAL reviews above. Never invent reviews. Stay polite. Never e
     });
   } catch (error) {
     console.error("Error:", error);
+    await logToSystem({ endpoint: '/customer-chat', method: 'POST', status_code: 500, level: 'error', message: 'Customer chat error' });
     return new Response(
       JSON.stringify({ error: "An error occurred. Please try again later." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
