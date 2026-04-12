@@ -258,6 +258,9 @@ const DashboardSettings = () => {
           </CardContent>
         </Card>
 
+        {/* Passkey / Security Key */}
+        <PasskeySettings />
+
         {/* Appearance */}
         <Card>
           <SectionHeader icon={Palette} title={t("settings.appearance")} description={t("settings.appearanceDesc")} />
