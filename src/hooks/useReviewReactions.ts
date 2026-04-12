@@ -76,13 +76,14 @@ export const useReviewReactions = (reviewIds: string[]) => {
       if (existing) {
         if (existing.reaction === reaction) {
           // Remove reaction (un-react)
-          await supabase.from("review_reactions").delete().eq("id", existing.id);
+          await supabase.from("review_reactions").delete().eq("id", existing.id).eq("session_id", sessionId);
         } else {
           // Switch reaction
           await supabase
             .from("review_reactions")
             .update({ reaction })
-            .eq("id", existing.id);
+            .eq("id", existing.id)
+            .eq("session_id", sessionId);
         }
       } else {
         // New reaction
