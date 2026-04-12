@@ -87,7 +87,7 @@ const getTimeRangeDate = (range: TimeRange): Date | null => {
 const SystemLogsTab = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
-  const [timeRange, setTimeRange] = useState<TimeRange>("24h");
+const [timeRange, setTimeRange] = useState<TimeRange>("7d");
   const [levelFilter, setLevelFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [autoRefresh, setAutoRefresh] = useState(true);
@@ -298,7 +298,7 @@ const SystemLogsTab = () => {
 const AccessLogsTab = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
-  const [timeRange, setTimeRange] = useState<TimeRange>("24h");
+const [timeRange, setTimeRange] = useState<TimeRange>("7d");
   const [actionFilter, setActionFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [autoRefresh, setAutoRefresh] = useState(true);
