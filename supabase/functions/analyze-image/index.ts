@@ -1,3 +1,5 @@
+import { logToSystem } from '../_shared/systemLog.ts'
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
