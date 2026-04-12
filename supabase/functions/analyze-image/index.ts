@@ -10,6 +10,8 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const endpoint = "/analyze-image";
+
   try {
     const { imageUrl } = await req.json();
 
@@ -118,6 +120,7 @@ Deno.serve(async (req) => {
     }
 
     const result = JSON.parse(toolCall.function.arguments);
+    await logToSystem({ endpoint, method: "POST", status_code: 200, level: "success", message: `Image classified: ${result.category}` });
     return new Response(
       JSON.stringify(result),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -125,6 +128,7 @@ Deno.serve(async (req) => {
 
   } catch (error) {
     console.error("Error in analyze-image:", error);
+    await logToSystem({ endpoint, method: "POST", status_code: 500, level: "error", message: "Image analysis failed" });
     return new Response(
       JSON.stringify({ error: "An error occurred" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
