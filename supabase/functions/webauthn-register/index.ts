@@ -4,6 +4,7 @@ import {
   verifyRegistrationResponse,
 } from "https://esm.sh/@simplewebauthn/server@13.1.1";
 import { corsHeaders } from "https://esm.sh/@supabase/supabase-js@2.95.0/cors";
+import { logToSystem } from '../_shared/systemLog.ts'
 
 const RP_NAME = "Pizza Volante Dashboard";
 const RP_ID_PROD = "pizzavolante-dashboard.lovable.app";
@@ -134,6 +135,7 @@ Deno.serve(async (req) => {
         .eq("user_id", userId)
         .eq("type", "registration");
 
+      await logToSystem({ endpoint: '/webauthn-register', method: 'POST', status_code: 200, level: 'success', message: 'Passkey registered successfully' });
       return new Response(
         JSON.stringify({ verified: true }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -146,6 +148,7 @@ Deno.serve(async (req) => {
     );
   } catch (err) {
     console.error("WebAuthn register error:", err);
+    await logToSystem({ endpoint: '/webauthn-register', method: 'POST', status_code: 500, level: 'error', message: 'Passkey registration failed' });
     return new Response(
       JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }

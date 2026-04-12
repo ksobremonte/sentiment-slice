@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { logToSystem } from '../_shared/systemLog.ts'
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,6 +10,8 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const endpoint = "/check-replies";
 
   try {
     const { conversationId, lastSeenTimestamp, loadAll } = await req.json() as {
@@ -36,6 +39,7 @@ Deno.serve(async (req) => {
         .order("created_at", { ascending: true });
 
       if (error) throw error;
+      await logToSystem({ endpoint, method: "POST", status_code: 200, level: "success", message: `Loaded all messages for conversation` });
       return new Response(JSON.stringify({ messages: data || [] }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -71,8 +75,10 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
+    console.error("check-replies error:", error);
+    await logToSystem({ endpoint, method: "POST", status_code: 500, level: "error", message: "An error occurred" });
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "An error occurred" }),
+      JSON.stringify({ error: "An error occurred. Please try again." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
