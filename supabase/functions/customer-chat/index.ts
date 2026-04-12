@@ -221,10 +221,15 @@ async function saveFeedbackAsReview(
     // Determine approval: only English + not flagged + high confidence
     const approved = classification.language === "en" && !classification.is_flagged && classification.confidence >= 0.6;
 
+    // Assign rating based on sentiment: negative/complaint → 1, neutral → 3, positive → 4
+    const rating = classification.sentiment === "negative" || classification.is_complaint ? 1
+      : classification.sentiment === "positive" ? 4
+      : 3;
+
     const { error } = await supabase.from("reviews").insert({
       name: "Chat Visitor",
       email: "chat-feedback@pizzavolante.local",
-      rating: 3,
+      rating,
       feedback: feedback,
       sentiment: classification.sentiment,
       approved,
