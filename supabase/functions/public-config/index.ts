@@ -1,3 +1,5 @@
+import { logToSystem } from '../_shared/systemLog.ts'
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -18,6 +20,8 @@ Deno.serve(async (req) => {
   }
 
   const hcaptchaSiteKey = Deno.env.get("VITE_HCAPTCHA_SITE_KEY") ?? null;
+
+  await logToSystem({ endpoint: '/public-config', method: 'POST', status_code: 200, level: 'success', message: 'Public config fetched' });
 
   return new Response(JSON.stringify({ hcaptchaSiteKey }), {
     status: 200,
