@@ -192,11 +192,6 @@ const VerifyOtp = () => {
                   <p className="font-semibold text-foreground">Passkey / Security Key</p>
                   <p className="text-xs text-muted-foreground">Use your registered security key</p>
                 </div>
-                {hasPasskeys && (
-                  <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full font-medium">
-                    Recommended
-                  </span>
-                )}
               </button>
 
               {/* Email OTP Option */}
