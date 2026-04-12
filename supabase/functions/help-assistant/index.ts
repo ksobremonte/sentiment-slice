@@ -1,3 +1,5 @@
+import { logToSystem } from '../_shared/systemLog.ts'
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -145,11 +147,13 @@ Deno.serve(async (req) => {
       throw new Error(`AI gateway error: ${response.status}`);
     }
 
+    await logToSystem({ endpoint: '/help-assistant', method: 'POST', status_code: 200, level: 'success', message: 'Help assistant response streamed' });
     return new Response(response.body, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (error) {
     console.error("Help assistant error:", error);
+    await logToSystem({ endpoint: '/help-assistant', method: 'POST', status_code: 500, level: 'error', message: 'Help assistant error' });
     return new Response(JSON.stringify({ error: "An error occurred. Please try again." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
