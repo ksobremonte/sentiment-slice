@@ -134,7 +134,7 @@ const VerifyOtp = () => {
             className="text-sm text-primary hover:underline font-semibold inline-flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            {method === "choose" || (method === "otp" && !hasPasskeys)
+            {method === "choose"
               ? "Back to Sign In"
               : "Back to options"}
           </button>
@@ -207,10 +207,10 @@ const VerifyOtp = () => {
                 <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
                   <Mail className="h-6 w-6 text-muted-foreground group-hover:text-primary" />
                 </div>
-                <div className="text-left flex-1">
-                  <p className="font-semibold text-foreground">Email Verification Code</p>
+              <div className="text-left flex-1">
+                  <p className="font-semibold text-foreground">Email OTP</p>
                   <p className="text-xs text-muted-foreground">
-                    Send a 6-digit code to {maskedEmail}
+                    Receive a 6-digit code via email
                   </p>
                 </div>
               </button>
