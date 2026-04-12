@@ -24,6 +24,7 @@ import {
 import ChangePasswordDialog from "@/components/dashboard/ChangePasswordDialog";
 import TwoFactorDialog from "@/components/dashboard/TwoFactorDialog";
 import LoginActivityDialog from "@/components/dashboard/LoginActivityDialog";
+import PasskeySettings from "@/components/dashboard/PasskeySettings";
 
 const SectionHeader = ({ icon: Icon, title, description }: { icon: React.ElementType; title: string; description: string }) => (
   <CardHeader>
