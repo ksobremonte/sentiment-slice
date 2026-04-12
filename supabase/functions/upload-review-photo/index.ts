@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { logToSystem } from '../_shared/systemLog.ts'
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -139,6 +140,7 @@ Deno.serve(async (req) => {
       .from("review-photos")
       .getPublicUrl(fileName);
 
+    await logToSystem({ endpoint: '/upload-review-photo', method: 'POST', status_code: 200, level: 'success', message: 'Photo uploaded successfully' });
     return new Response(
       JSON.stringify({ url: publicUrl }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -146,6 +148,7 @@ Deno.serve(async (req) => {
 
   } catch (error) {
     console.error("Error in upload-review-photo:", error);
+    await logToSystem({ endpoint: '/upload-review-photo', method: 'POST', status_code: 500, level: 'error', message: 'Photo upload failed' });
     return new Response(
       JSON.stringify({ error: "An error occurred. Please try again later." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }

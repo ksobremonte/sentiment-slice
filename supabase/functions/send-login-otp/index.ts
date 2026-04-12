@@ -1,5 +1,6 @@
 import { sendLovableEmail } from 'npm:@lovable.dev/email-js'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1'
+import { logToSystem } from '../_shared/systemLog.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -124,11 +125,13 @@ Deno.serve(async (req) => {
       })
     }
 
+    await logToSystem({ endpoint: '/send-login-otp', method: 'POST', status_code: 200, level: 'success', message: 'Login OTP sent successfully' })
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (err) {
     console.error('send-login-otp error:', err)
+    await logToSystem({ endpoint: '/send-login-otp', method: 'POST', status_code: 500, level: 'error', message: 'Failed to send login OTP' })
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
