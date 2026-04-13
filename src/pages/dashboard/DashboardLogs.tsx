@@ -23,6 +23,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { Navigate } from "react-router-dom";
 
 const ITEMS_PER_PAGE = 20;
 
@@ -502,6 +504,35 @@ const [timeRange, setTimeRange] = useState<TimeRange>("7d");
 
 /* ─── Main Page ─── */
 const DashboardLogs = () => {
+  const { user } = useAuthContext();
+  const { data: userRole, isLoading: roleLoading } = useQuery({
+    queryKey: ["current-user-role", user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      return data?.role || null;
+    },
+    enabled: !!user,
+  });
+
+  if (roleLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (userRole !== "admin") {
+    return <Navigate to="/pv-dashboard" replace />;
+  }
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
