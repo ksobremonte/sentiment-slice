@@ -19,26 +19,7 @@ export interface PublicReview {
 export const usePublicReviews = () => {
   const queryClient = useQueryClient();
 
-  // Subscribe to realtime changes on the reviews table
-  useEffect(() => {
-    const channel = supabase
-      .channel("public-reviews-realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "reviews" },
-        () => {
-          // Invalidate to refetch — the query already filters for 4-5 star approved
-          queryClient.invalidateQueries({ queryKey: ["public-reviews"] });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
-
-  return useQuery({
+  const query = useQuery({
     queryKey: ["public-reviews"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -55,7 +36,27 @@ export const usePublicReviews = () => {
 
       return data as PublicReview[];
     },
-    staleTime: 30 * 1000, // reduced from 5min to 30s for near-realtime freshness
+    staleTime: 30 * 1000,
     refetchOnWindowFocus: false,
   });
+
+  // Subscribe to realtime changes on the reviews table
+  useEffect(() => {
+    const channel = supabase
+      .channel("public-reviews-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "reviews" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["public-reviews"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  return query;
 };
