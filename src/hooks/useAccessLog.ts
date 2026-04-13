@@ -53,8 +53,8 @@ export const useAccessLog = () => {
             prevUserId.current = session.user.id;
           }
         }
-        if (event === "SIGNED_OUT" && prevUserId.current) {
-          insertLog(prevUserId.current, undefined, "logout");
+        if (event === "SIGNED_OUT") {
+          // Logout is now logged in useAuth before session is destroyed
           prevUserId.current = null;
         }
       }
