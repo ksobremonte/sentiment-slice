@@ -70,6 +70,30 @@ export const useAuth = () => {
 
   const signOut = async () => {
     sessionStorage.removeItem("otp_verified");
+
+    // Log logout BEFORE signing out (session is needed for RLS)
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    if (currentUser) {
+      let role: string | null = null;
+      try {
+        const { data } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", currentUser.id)
+          .maybeSingle();
+        role = data?.role || null;
+      } catch {}
+      await supabase.from("access_logs").insert({
+        user_id: currentUser.id,
+        email: currentUser.email || null,
+        role,
+        action: "logout",
+        page: null,
+        ip_address: null,
+        user_agent: navigator.userAgent,
+      });
+    }
+
     const { error } = await supabase.auth.signOut();
     return { error };
   };
