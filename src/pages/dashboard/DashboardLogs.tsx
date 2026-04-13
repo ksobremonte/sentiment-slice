@@ -23,6 +23,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { Navigate } from "react-router-dom";
 
 const ITEMS_PER_PAGE = 20;
 
