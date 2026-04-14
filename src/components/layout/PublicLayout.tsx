@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Home, UtensilsCrossed, Star, Phone } from "lucide-react";
-import PublicHeader from "./PublicHeader";
 import PublicFooter from "./PublicFooter";
 import CustomerChatWidget from "@/components/public/CustomerChatWidget";
 import { PageTransition } from "@/components/ui/animated";
