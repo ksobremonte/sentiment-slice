@@ -2,6 +2,7 @@ import { ReactNode, useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Home, UtensilsCrossed, Star, Phone, ChevronUp } from "lucide-react";
 import PublicFooter from "./PublicFooter";
+import PublicHeader from "./PublicHeader";
 import CustomerChatWidget from "@/components/public/CustomerChatWidget";
 import { PageTransition } from "@/components/ui/animated";
 import { cn } from "@/lib/utils";
@@ -51,6 +52,9 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <div className="hidden md:block">
+        <PublicHeader />
+      </div>
       <main className="flex-1 pb-20 md:pb-0">
         <PageTransition key={location.pathname}>
           {children}
