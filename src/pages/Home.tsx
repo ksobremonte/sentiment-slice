@@ -1,6 +1,6 @@
 import { Star, Truck, ChefHat, Flame, ArrowRight, Clock, Users, Pizza, MapPin, MessageSquare, ThumbsUp } from "lucide-react";
 import { Link } from "react-router-dom";
-import { usePublicReviews } from "@/hooks/usePublicReviews";
+import { usePublicReviewStats } from "@/hooks/usePublicReviewStats";
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import PublicLayout from "@/components/layout/PublicLayout";
@@ -24,22 +24,8 @@ import foodTable from "@/assets/food-table.webp";
 import pizzaRiceMeal from "@/assets/pizza-rice-meal.webp";
 
 const Home = () => {
-  const { data: publicReviews = [] } = usePublicReviews();
-
-  const liveStats = useMemo(() => {
-    const total = publicReviews.length;
-    const positive = publicReviews.filter(r => r.sentiment === "positive").length;
-    const positivePct = total > 0 ? Math.round((positive / total) * 100) : 0;
-    const avgRating = total > 0
-      ? Math.round((publicReviews.reduce((sum, r) => sum + (r.rating ?? 0), 0) / total) * 10) / 10
-      : 0;
-    // Active users: unique names from reviews in the last 7 days
-    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    const activeUsers = new Set(
-      publicReviews.filter(r => new Date(r.created_at ?? "") > weekAgo).map(r => r.name)
-    ).size;
-    return { total, positivePct, avgRating, activeUsers };
-  }, [publicReviews]);
+  const { data: liveStats } = usePublicReviewStats();
+  const stats = liveStats ?? { total: 0, positivePct: 0, avgRating: 0, activeUsers: 0 };
 
   return (
     <PublicLayout>
