@@ -1,7 +1,7 @@
 import { Star, Truck, ChefHat, Flame, ArrowRight, Clock, Users, Pizza, MapPin, MessageSquare, ThumbsUp } from "lucide-react";
 import { Link } from "react-router-dom";
-import { usePublicReviews } from "@/hooks/usePublicReviews";
-import { useMemo } from "react";
+import { usePublicReviewStats } from "@/hooks/usePublicReviewStats";
+
 import { Button } from "@/components/ui/button";
 import PublicLayout from "@/components/layout/PublicLayout";
 import {
@@ -24,22 +24,8 @@ import foodTable from "@/assets/food-table.webp";
 import pizzaRiceMeal from "@/assets/pizza-rice-meal.webp";
 
 const Home = () => {
-  const { data: publicReviews = [] } = usePublicReviews();
-
-  const liveStats = useMemo(() => {
-    const total = publicReviews.length;
-    const positive = publicReviews.filter(r => r.sentiment === "positive").length;
-    const positivePct = total > 0 ? Math.round((positive / total) * 100) : 0;
-    const avgRating = total > 0
-      ? Math.round((publicReviews.reduce((sum, r) => sum + (r.rating ?? 0), 0) / total) * 10) / 10
-      : 0;
-    // Active users: unique names from reviews in the last 7 days
-    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    const activeUsers = new Set(
-      publicReviews.filter(r => new Date(r.created_at ?? "") > weekAgo).map(r => r.name)
-    ).size;
-    return { total, positivePct, avgRating, activeUsers };
-  }, [publicReviews]);
+  const { data: liveStats } = usePublicReviewStats();
+  const stats = liveStats ?? { total: 0, positivePct: 0, avgRating: 0, activeUsers: 0 };
 
   return (
     <PublicLayout>
@@ -143,10 +129,10 @@ const Home = () => {
         <div className="container mx-auto px-6 relative">
           <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto text-center">
             {[
-              { value: liveStats.total, suffix: "", label: "Reviews Collected", icon: MessageSquare },
-              { value: liveStats.positivePct, suffix: "%", label: "Positive Feedback", icon: ThumbsUp },
-              { value: liveStats.activeUsers, suffix: "", label: "Active Users", icon: Users },
-              { value: liveStats.avgRating, suffix: "★", label: "Average Rating", icon: Star },
+              { value: stats.total, suffix: "", label: "Reviews Collected", icon: MessageSquare },
+              { value: stats.positivePct, suffix: "%", label: "Positive Feedback", icon: ThumbsUp },
+              { value: stats.activeUsers, suffix: "", label: "Active Users", icon: Users },
+              { value: stats.avgRating, suffix: "★", label: "Average Rating", icon: Star },
             ].map((stat) => (
               <StaggerItem key={stat.label}>
                 <div className="space-y-1.5">
