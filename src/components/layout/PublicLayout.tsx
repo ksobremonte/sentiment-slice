@@ -71,10 +71,8 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
           "bg-foreground/85 text-background hover:bg-foreground md:hover:scale-110 active:scale-95",
           // Mobile: bottom-left above bottom nav
           "left-4 bottom-[6.5rem]",
-          // Tablet: bottom-right above any floating elements
-          "md:left-auto md:right-6 md:bottom-24",
-          // Desktop: bottom-right with comfortable spacing
-          "lg:bottom-8",
+          // Tablet & Desktop: bottom-right, above chat widget
+          "md:left-auto md:right-7 md:bottom-28",
           showScrollTop
             ? "opacity-100 translate-y-0 scale-100"
             : "opacity-0 translate-y-4 scale-90 pointer-events-none"
