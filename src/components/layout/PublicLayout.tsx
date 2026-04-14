@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Home, UtensilsCrossed, Star, Phone } from "lucide-react";
-import PublicHeader from "./PublicHeader";
 import PublicFooter from "./PublicFooter";
 import CustomerChatWidget from "@/components/public/CustomerChatWidget";
 import { PageTransition } from "@/components/ui/animated";
@@ -23,9 +22,9 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col pb-16 md:pb-0">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header removed — navigation via bottom nav on mobile, footer links on desktop */}
-      <main className="flex-1">
+      <main className="flex-1 pb-20 md:pb-0">
         <PageTransition key={location.pathname}>
           {children}
         </PageTransition>
@@ -35,7 +34,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
 
       {/* Mobile Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border md:hidden">
-        <div className="flex items-center justify-around py-2">
+        <div className="flex items-center justify-around py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
           {publicNavItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
