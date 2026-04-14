@@ -52,6 +52,9 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <div className="hidden md:block">
+        <PublicHeader />
+      </div>
       <main className="flex-1 pb-20 md:pb-0">
         <PageTransition key={location.pathname}>
           {children}
