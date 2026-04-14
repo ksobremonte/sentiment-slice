@@ -157,7 +157,7 @@ async function getOrCreateConversation(
   return created.id;
 }
 
-// Save a message to the database with sentiment, language, and status
+// Save a message to the database with sentiment, language, and status (with deduplication)
 async function saveMessage(
   supabase: ReturnType<typeof createClient>,
   conversationId: string,
@@ -170,6 +170,22 @@ async function saveMessage(
     status?: string;
   } = {}
 ): Promise<void> {
+  // Deduplication: check if an identical message was saved in the last 60 seconds
+  const cutoff = new Date(Date.now() - 60_000).toISOString();
+  const { data: existing } = await supabase
+    .from("chat_messages")
+    .select("id")
+    .eq("conversation_id", conversationId)
+    .eq("role", role)
+    .eq("content", content)
+    .gte("created_at", cutoff)
+    .limit(1);
+
+  if (existing && existing.length > 0) {
+    console.log("Skipping duplicate message:", content.substring(0, 50));
+    return;
+  }
+
   const { error } = await supabase.from("chat_messages").insert({
     conversation_id: conversationId,
     role,
