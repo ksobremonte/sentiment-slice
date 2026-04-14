@@ -232,8 +232,13 @@ const Reviews = () => {
                     <CheckCircle className="w-8 h-8 text-success" />
                   </div>
                   <h2 className="text-2xl font-display font-bold text-foreground mb-2">Grazie Mille!</h2>
-                  <p className="text-muted-foreground mb-8">Your feedback has been submitted successfully.</p>
-                  <Button onClick={resetForm} variant="outline" size="lg" className="rounded-xl">Submit Another Review</Button>
+                  <p className="text-muted-foreground mb-6">Your feedback has been submitted successfully.</p>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <Button asChild size="lg" className="rounded-xl">
+                      <Link to="/read-reviews">View All Reviews</Link>
+                    </Button>
+                    <Button onClick={resetForm} variant="outline" size="lg" className="rounded-xl">Submit Another Review</Button>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-8 shadow-card space-y-5">
