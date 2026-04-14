@@ -363,7 +363,20 @@ const Reviews = () => {
 
                   <div className="space-y-2">
                     <Label htmlFor="feedback" className="text-foreground font-medium text-sm">Your Feedback</Label>
-                    <Textarea id="feedback" placeholder="Tell us about your experience..." value={feedback} onChange={(e) => setFeedback(e.target.value)} rows={4} className="rounded-lg bg-background resize-none" required />
+                    <Textarea
+                      id="feedback"
+                      placeholder="Tell us about your experience..."
+                      value={feedback}
+                      onChange={(e) => setFeedback(e.target.value)}
+                      rows={4}
+                      className="rounded-lg bg-background resize-none"
+                      required
+                      onFocus={(e) => {
+                        setTimeout(() => {
+                          e.target.scrollIntoView({ behavior: "smooth", block: "center" });
+                        }, 300);
+                      }}
+                    />
                   </div>
 
                   <AnimatedButton>
