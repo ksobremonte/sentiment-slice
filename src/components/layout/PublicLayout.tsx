@@ -67,12 +67,14 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
       <button
         onClick={scrollToTop}
         className={cn(
-          "fixed z-[9998] rounded-full p-3 shadow-lg backdrop-blur-sm transition-all duration-300 ease-in-out",
-          "bg-foreground/85 text-background hover:bg-foreground hover:scale-110 active:scale-95",
-          // Mobile: bottom-left above nav bar
+          "fixed z-[9998] rounded-full p-3.5 shadow-lg backdrop-blur-sm transition-all duration-300 ease-in-out",
+          "bg-foreground/85 text-background hover:bg-foreground md:hover:scale-110 active:scale-95",
+          // Mobile: bottom-left above bottom nav
           "left-4 bottom-[6.5rem]",
+          // Tablet: bottom-right above any floating elements
+          "md:left-auto md:right-6 md:bottom-24",
           // Desktop: bottom-right with comfortable spacing
-          "md:left-auto md:right-6 md:bottom-8",
+          "lg:bottom-8",
           showScrollTop
             ? "opacity-100 translate-y-0 scale-100"
             : "opacity-0 translate-y-4 scale-90 pointer-events-none"
