@@ -88,6 +88,12 @@ const CustomerChatWidget = () => {
   const [sessionId] = useState(getSessionId);
   const [conversationId, setConversationId] = useState<string | null>(getStoredConversationId);
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const initialSuggestions = [
+    "What's on the menu?",
+    "What are your opening hours?",
+    "Do you offer delivery?",
+    "Where are you located?",
+  ];
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const [adminTyping, setAdminTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -473,20 +479,24 @@ const CustomerChatWidget = () => {
             </div>
           )}
 
-          {/* Suggestion buttons */}
-          {suggestions.length > 0 && !isLoading && (
-            <div className="flex flex-wrap gap-2 pt-1 pl-12">
-              {suggestions.map((s, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleSuggestionClick(s)}
-                  className="text-xs px-3 py-1.5 rounded-full border-2 border-primary/30 text-primary bg-primary/5 hover:bg-primary/15 hover:border-primary/50 transition-colors text-left leading-snug"
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Suggestion buttons - show initial or AI-generated */}
+          {!isLoading && (() => {
+            const hasUserMessages = messages.some(m => m.role === "user");
+            const activeSuggestions = suggestions.length > 0 ? suggestions : (!hasUserMessages ? initialSuggestions : []);
+            return activeSuggestions.length > 0 ? (
+              <div className="flex flex-wrap gap-2 pt-1 pl-12">
+                {activeSuggestions.map((s, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleSuggestionClick(s)}
+                    className="text-xs px-3 py-1.5 rounded-full border-2 border-primary/30 text-primary bg-primary/5 hover:bg-primary/15 hover:border-primary/50 transition-colors text-left leading-snug"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            ) : null;
+          })()}
         </div>
       </div>
 
