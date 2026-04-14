@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Home, UtensilsCrossed, Star, Phone } from "lucide-react";
+import { Home, UtensilsCrossed, Star, Phone, ChevronUp } from "lucide-react";
 import PublicFooter from "./PublicFooter";
 import CustomerChatWidget from "@/components/public/CustomerChatWidget";
 import { PageTransition } from "@/components/ui/animated";
@@ -20,10 +20,25 @@ const publicNavItems = [
 const PublicLayout = ({ children }: PublicLayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 400);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [location.pathname]);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header removed — navigation via bottom nav on mobile, footer links on desktop */}
       <main className="flex-1 pb-20 md:pb-0">
         <PageTransition key={location.pathname}>
           {children}
@@ -31,6 +46,21 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
       </main>
       <PublicFooter />
       <CustomerChatWidget />
+
+      {/* Scroll to Top Button - mobile/tablet only */}
+      <button
+        onClick={scrollToTop}
+        className={cn(
+          "fixed z-[9998] left-4 bg-foreground/90 text-background rounded-xl p-3 shadow-lg backdrop-blur-sm transition-all duration-300 md:hidden",
+          "bottom-[6.5rem]",
+          showScrollTop
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4 pointer-events-none"
+        )}
+        aria-label="Scroll to top"
+      >
+        <ChevronUp className="w-5 h-5" />
+      </button>
 
       {/* Mobile Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border md:hidden">
