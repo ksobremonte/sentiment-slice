@@ -1,4 +1,4 @@
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode, useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Home, UtensilsCrossed, Star, Phone, ChevronUp } from "lucide-react";
 import PublicFooter from "./PublicFooter";
@@ -17,25 +17,37 @@ const publicNavItems = [
   { label: "Contact", icon: Phone, path: "/contact" },
 ];
 
+const SCROLL_THRESHOLD = 300;
+
 const PublicLayout = ({ children }: PublicLayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const ticking = useRef(false);
+
+  const handleScroll = useCallback(() => {
+    if (!ticking.current) {
+      requestAnimationFrame(() => {
+        setShowScrollTop(window.scrollY > SCROLL_THRESHOLD);
+        ticking.current = false;
+      });
+      ticking.current = true;
+    }
+  }, []);
 
   useEffect(() => {
-    const onScroll = () => setShowScrollTop(window.scrollY > 400);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
 
   // Scroll to top on route change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [location.pathname]);
 
-  const scrollToTop = () => {
+  const scrollToTop = useCallback(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -47,19 +59,23 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
       <PublicFooter />
       <CustomerChatWidget />
 
-      {/* Scroll to Top Button - mobile/tablet only */}
+      {/* Scroll to Top Button */}
       <button
         onClick={scrollToTop}
         className={cn(
-          "fixed z-[9998] left-4 bg-foreground/90 text-background rounded-xl p-3 shadow-lg backdrop-blur-sm transition-all duration-300 md:hidden",
-          "bottom-[6.5rem]",
+          "fixed z-[9998] rounded-full p-3 shadow-lg backdrop-blur-sm transition-all duration-300 ease-in-out",
+          "bg-foreground/85 text-background hover:bg-foreground hover:scale-110 active:scale-95",
+          // Mobile: bottom-left above nav bar
+          "left-4 bottom-[6.5rem]",
+          // Desktop: bottom-right with comfortable spacing
+          "md:left-auto md:right-6 md:bottom-8",
           showScrollTop
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-4 pointer-events-none"
+            ? "opacity-100 translate-y-0 scale-100"
+            : "opacity-0 translate-y-4 scale-90 pointer-events-none"
         )}
         aria-label="Scroll to top"
       >
-        <ChevronUp className="w-5 h-5" />
+        <ChevronUp className="w-5 h-5" strokeWidth={2.5} />
       </button>
 
       {/* Mobile Bottom Navigation */}
