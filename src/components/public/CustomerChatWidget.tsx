@@ -479,20 +479,24 @@ const CustomerChatWidget = () => {
             </div>
           )}
 
-          {/* Suggestion buttons */}
-          {suggestions.length > 0 && !isLoading && (
-            <div className="flex flex-wrap gap-2 pt-1 pl-12">
-              {suggestions.map((s, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleSuggestionClick(s)}
-                  className="text-xs px-3 py-1.5 rounded-full border-2 border-primary/30 text-primary bg-primary/5 hover:bg-primary/15 hover:border-primary/50 transition-colors text-left leading-snug"
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Suggestion buttons - show initial or AI-generated */}
+          {!isLoading && (() => {
+            const hasUserMessages = messages.some(m => m.role === "user");
+            const activeSuggestions = suggestions.length > 0 ? suggestions : (!hasUserMessages ? initialSuggestions : []);
+            return activeSuggestions.length > 0 ? (
+              <div className="flex flex-wrap gap-2 pt-1 pl-12">
+                {activeSuggestions.map((s, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleSuggestionClick(s)}
+                    className="text-xs px-3 py-1.5 rounded-full border-2 border-primary/30 text-primary bg-primary/5 hover:bg-primary/15 hover:border-primary/50 transition-colors text-left leading-snug"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            ) : null;
+          })()}
         </div>
       </div>
 
