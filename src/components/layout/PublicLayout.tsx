@@ -2,6 +2,7 @@ import { ReactNode, useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Home, UtensilsCrossed, Star, Phone, ChevronUp } from "lucide-react";
 import PublicFooter from "./PublicFooter";
+import PublicHeader from "./PublicHeader";
 import CustomerChatWidget from "@/components/public/CustomerChatWidget";
 import { PageTransition } from "@/components/ui/animated";
 import { cn } from "@/lib/utils";
