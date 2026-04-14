@@ -24,7 +24,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col pb-16 md:pb-0">
-      <PublicHeader />
+      {/* Header removed — navigation via bottom nav on mobile, footer links on desktop */}
       <main className="flex-1">
         <PageTransition key={location.pathname}>
           {children}
