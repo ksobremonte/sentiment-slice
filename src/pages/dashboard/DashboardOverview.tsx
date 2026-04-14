@@ -211,7 +211,7 @@ const DashboardOverview = () => {
           trend={stats.scoreDiff >= 0 ? "up" : "down"}
           trendValue={`${stats.scoreDiff >= 0 ? "+" : ""}${stats.scoreDiff}pts`}
           description="vs last week"
-          onClick={() => setView({ type: "stats", statsType: "comments" })}
+          onClick={() => navigate("/pv-dashboard/sentiment")}
         />
         <StatsCard
           title="Negative Sentiment Rate"
@@ -220,7 +220,7 @@ const DashboardOverview = () => {
           trend={stats.negDiff <= 0 ? "up" : "down"}
           trendValue={`${stats.negDiff >= 0 ? "+" : ""}${stats.negDiff.toFixed(1)}%`}
           description="vs last week"
-          onClick={() => setView({ type: "stats", statsType: "comments" })}
+          onClick={() => navigate("/pv-dashboard/sentiment")}
         />
         <StatsCard
           title="Top Complaint Keyword"
