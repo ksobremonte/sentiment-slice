@@ -88,6 +88,12 @@ const CustomerChatWidget = () => {
   const [sessionId] = useState(getSessionId);
   const [conversationId, setConversationId] = useState<string | null>(getStoredConversationId);
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const initialSuggestions = [
+    "What's on the menu?",
+    "What are your opening hours?",
+    "Do you offer delivery?",
+    "Where are you located?",
+  ];
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const [adminTyping, setAdminTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
