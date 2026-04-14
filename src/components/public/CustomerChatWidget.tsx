@@ -376,7 +376,7 @@ const CustomerChatWidget = () => {
 
   if (!isOpen) {
     return (
-      <div className="fixed z-[9999]" style={{ bottom: '5.5rem', right: '1rem', left: 'auto' }}>
+      <div className="fixed z-[9999] bottom-[6.5rem] right-4 md:bottom-6 md:right-6">
         <Button
           onClick={() => setIsOpen(true)}
           className="h-14 w-14 md:h-16 md:w-16 rounded-full shadow-warm bg-primary hover:bg-primary/90"
@@ -389,7 +389,7 @@ const CustomerChatWidget = () => {
   }
 
   return (
-    <div className="fixed z-[9999] bg-card border-2 border-border rounded-3xl shadow-warm flex flex-col overflow-hidden right-2 left-2 bottom-[5.5rem] md:inset-auto md:bottom-6 md:right-6 md:left-auto md:top-auto md:w-96 md:h-[520px]" style={{ top: 'auto', maxHeight: 'calc(100dvh - 7rem)' }}>
+    <div className="fixed z-[9999] bg-card border-2 border-border rounded-3xl shadow-warm flex flex-col overflow-hidden right-2 left-2 bottom-[6.5rem] md:inset-auto md:bottom-6 md:right-6 md:left-auto md:top-auto md:w-96 md:h-[520px]" style={{ top: 'auto', maxHeight: 'calc(100dvh - 8rem)' }}>
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b-2 border-border bg-secondary flex-shrink-0">
         <div className="flex items-center gap-3">
