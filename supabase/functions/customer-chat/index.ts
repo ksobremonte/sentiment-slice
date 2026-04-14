@@ -242,6 +242,19 @@ async function saveFeedbackAsReview(
       : classification.sentiment === "positive" ? 4
       : 3;
 
+    // Check for existing review with same feedback in same conversation
+    const { data: existing } = await supabase
+      .from("reviews")
+      .select("id")
+      .eq("conversation_id", conversationId)
+      .eq("feedback", feedback)
+      .limit(1);
+
+    if (existing && existing.length > 0) {
+      console.log("Skipping duplicate review for conversation:", conversationId);
+      return;
+    }
+
     const { error } = await supabase.from("reviews").insert({
       name: "Chat Visitor",
       email: "chat-feedback@pizzavolante.local",
