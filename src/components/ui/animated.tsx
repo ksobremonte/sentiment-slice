@@ -188,41 +188,45 @@ export const AnimatedCounter = ({
   className?: string;
 }) => {
   const [count, setCount] = useState(0);
-  const [animatedTarget, setAnimatedTarget] = useState(0);
-  const isVisible = useRef(false);
   const ref = useRef<HTMLSpanElement>(null);
+  const prevTarget = useRef(0);
+  const isVisible = useRef(false);
 
   useEffect(() => {
-    // Re-animate when target changes and element is visible (or was already visible)
-    if (target !== animatedTarget && (target > 0 || animatedTarget > 0)) {
-      if (isVisible.current) {
-        setAnimatedTarget(target);
-        const startTime = performance.now();
-        const startCount = count;
-        const animate = (currentTime: number) => {
-          const elapsed = (currentTime - startTime) / 1000;
-          const progress = Math.min(elapsed / duration, 1);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          setCount(Math.round((startCount + (target - startCount) * eased) * 10) / 10);
-          if (progress < 1) requestAnimationFrame(animate);
-        };
-        requestAnimationFrame(animate);
-      }
+    if (target === prevTarget.current) return;
+    const from = prevTarget.current;
+    prevTarget.current = target;
+
+    if (!isVisible.current) {
+      // Will animate when scrolled into view
+      return;
     }
-  }, [target]);
+
+    const startTime = performance.now();
+    const animate = (currentTime: number) => {
+      const elapsed = (currentTime - startTime) / 1000;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const val = from + (target - from) * eased;
+      setCount(Number.isInteger(target) ? Math.floor(val) : Math.round(val * 10) / 10);
+      if (progress < 1) requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
+  }, [target, duration]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        isVisible.current = entry.isIntersecting;
-        if (entry.isIntersecting && animatedTarget !== target) {
-          setAnimatedTarget(target);
+        if (entry.isIntersecting && !isVisible.current) {
+          isVisible.current = true;
           const startTime = performance.now();
+          const t = prevTarget.current;
           const animate = (currentTime: number) => {
             const elapsed = (currentTime - startTime) / 1000;
             const progress = Math.min(elapsed / duration, 1);
             const eased = 1 - Math.pow(1 - progress, 3);
-            setCount(Math.round(eased * target * 10) / 10);
+            const val = t * eased;
+            setCount(Number.isInteger(t) ? Math.floor(val) : Math.round(val * 10) / 10);
             if (progress < 1) requestAnimationFrame(animate);
           };
           requestAnimationFrame(animate);
@@ -232,7 +236,7 @@ export const AnimatedCounter = ({
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
-  }, [target, duration]);
+  }, [duration]);
 
   return (
     <span ref={ref} className={className}>
