@@ -11,7 +11,7 @@ const REVIEWS_PER_PAGE = 15;
 
 const PublicReviewsList = () => {
   const { data: reviews = [], isLoading } = usePublicReviews();
-  const [sort, setSort] = useState<SortOption>("highest");
+  const [sort, setSort] = useState<SortOption>("latest");
   const [page, setPage] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
 
