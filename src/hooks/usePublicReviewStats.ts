@@ -15,32 +15,19 @@ export const usePublicReviewStats = () => {
   const query = useQuery({
     queryKey: ["public-review-stats"],
     queryFn: async () => {
-      // Fetch ALL approved reviews (no rating filter) for accurate stats
-      const { data, error } = await supabase
-        .from("reviews_public")
-        .select("rating, sentiment, created_at, name")
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.rpc("get_review_stats" as any);
 
       if (error) {
         console.error("[usePublicReviewStats] Error:", error);
         throw error;
       }
 
-      const reviews = data ?? [];
-      const total = reviews.length;
-      const positive = reviews.filter(r => r.sentiment === "positive").length;
+      const stats = data as any;
+      const total = stats?.total ?? 0;
+      const positive = stats?.positive ?? 0;
       const positivePct = total > 0 ? Math.round((positive / total) * 100) : 0;
-      const avgRating = total > 0
-        ? Math.round((reviews.reduce((sum, r) => sum + (r.rating ?? 0), 0) / total) * 10) / 10
-        : 0;
-
-      // Active users: unique names from the last 7 days
-      const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-      const activeUsers = new Set(
-        reviews
-          .filter(r => new Date(r.created_at ?? "") > weekAgo)
-          .map(r => r.name)
-      ).size;
+      const avgRating = Number(stats?.avg_rating ?? 0);
+      const activeUsers = stats?.active_users ?? 0;
 
       return { total, positivePct, avgRating, activeUsers } as PublicReviewStats;
     },
