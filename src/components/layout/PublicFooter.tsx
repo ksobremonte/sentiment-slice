@@ -64,7 +64,7 @@ const PublicFooter = () => {
           </div>
         </FadeIn>
 
-        <div className="border-t border-secondary-foreground/10 mt-12 pt-8 text-center">
+        <div className="border-t border-secondary-foreground/10 mt-12 pt-8 pb-16 md:pb-0 text-center">
           <p className="text-xs text-secondary-foreground/40">
             © {new Date().getFullYear()} Pizza Volante. All rights reserved.
           </p>
