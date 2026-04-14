@@ -188,21 +188,41 @@ export const AnimatedCounter = ({
   className?: string;
 }) => {
   const [count, setCount] = useState(0);
-  const [hasAnimated, setHasAnimated] = useState(false);
+  const [animatedTarget, setAnimatedTarget] = useState(0);
+  const isVisible = useRef(false);
   const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    // Re-animate when target changes and element is visible (or was already visible)
+    if (target !== animatedTarget && (target > 0 || animatedTarget > 0)) {
+      if (isVisible.current) {
+        setAnimatedTarget(target);
+        const startTime = performance.now();
+        const startCount = count;
+        const animate = (currentTime: number) => {
+          const elapsed = (currentTime - startTime) / 1000;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          setCount(Math.round((startCount + (target - startCount) * eased) * 10) / 10);
+          if (progress < 1) requestAnimationFrame(animate);
+        };
+        requestAnimationFrame(animate);
+      }
+    }
+  }, [target]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated) {
-          setHasAnimated(true);
+        isVisible.current = entry.isIntersecting;
+        if (entry.isIntersecting && animatedTarget !== target) {
+          setAnimatedTarget(target);
           const startTime = performance.now();
           const animate = (currentTime: number) => {
             const elapsed = (currentTime - startTime) / 1000;
             const progress = Math.min(elapsed / duration, 1);
-            // Ease out cubic
             const eased = 1 - Math.pow(1 - progress, 3);
-            setCount(Math.floor(eased * target));
+            setCount(Math.round(eased * target * 10) / 10);
             if (progress < 1) requestAnimationFrame(animate);
           };
           requestAnimationFrame(animate);
@@ -212,7 +232,7 @@ export const AnimatedCounter = ({
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
-  }, [target, duration, hasAnimated]);
+  }, [target, duration]);
 
   return (
     <span ref={ref} className={className}>
