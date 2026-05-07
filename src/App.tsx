@@ -28,6 +28,7 @@ const DashboardSettings = lazy(() => import("./pages/dashboard/DashboardSettings
 const DashboardHelp = lazy(() => import("./pages/dashboard/DashboardHelp"));
 const DashboardSwitchAccount = lazy(() => import("./pages/dashboard/DashboardSwitchAccount"));
 const DashboardLogs = lazy(() => import("./pages/dashboard/DashboardLogs"));
+const DashboardBackup = lazy(() => import("./pages/dashboard/DashboardBackup"));
 const VerifyOtp = lazy(() => import("./pages/VerifyOtp"));
 
 const DashboardNotifications = lazy(() => import("./pages/dashboard/DashboardNotifications"));
