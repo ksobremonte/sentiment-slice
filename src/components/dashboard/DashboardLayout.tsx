@@ -2,7 +2,7 @@ import { ReactNode, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, MessageSquare, PieChart, Star, TrendingUp,
-  LogOut, Shield, Brain, Bell, Settings, User, HelpCircle,
+  ChevronDown, Shield, Brain, Bell, Settings, User, HelpCircle,
   ChevronsUpDown, ArrowLeftRight, ScrollText,
 } from "lucide-react";
 import {
