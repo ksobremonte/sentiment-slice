@@ -2,7 +2,7 @@ import { ReactNode, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, MessageSquare, PieChart, Star, TrendingUp,
-  LogOut, Shield, Brain, Bell, Settings, User, HelpCircle,
+  ChevronDown, Shield, Brain, Bell, Settings, User, HelpCircle,
   ChevronsUpDown, ArrowLeftRight, ScrollText,
 } from "lucide-react";
 import {
@@ -200,8 +200,8 @@ const DashboardSidebar = () => {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
-              <LogOut className="h-4 w-4 mr-2" />
               {t("user.signOut")}
+              <ChevronDown className="h-3.5 w-3.5 ml-1" />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
