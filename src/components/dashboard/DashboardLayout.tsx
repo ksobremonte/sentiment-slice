@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, MessageSquare, PieChart, Star, TrendingUp,
   ChevronDown, Shield, Brain, Bell, Settings, User, HelpCircle,
-  ChevronsUpDown, ArrowLeftRight, ScrollText,
+  ChevronsUpDown, ArrowLeftRight, ScrollText, Database,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -48,6 +48,7 @@ const adminNavKeys = [
   { key: "nav.aiConfig", icon: Brain, path: "/pv-dashboard/ai" },
   { key: "nav.alerts", icon: Bell, path: "/pv-dashboard/alerts" },
   { key: "nav.logs", icon: ScrollText, path: "/pv-dashboard/logs" },
+  { key: "nav.backup", icon: Database, path: "/pv-dashboard/backup" },
 ];
 
 const DashboardSidebar = () => {
