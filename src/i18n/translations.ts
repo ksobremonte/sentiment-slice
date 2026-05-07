@@ -31,6 +31,7 @@ const en = {
   "nav.aiConfig": "AI Config",
   "nav.alerts": "Alerts",
   "nav.logs": "Logs",
+  "nav.backup": "Backup",
   "nav.main": "Main",
   "nav.admin": "Admin",
   "nav.sentimentDashboard": "Sentiment Dashboard",
