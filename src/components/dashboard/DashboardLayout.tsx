@@ -48,6 +48,7 @@ const adminNavKeys = [
   { key: "nav.aiConfig", icon: Brain, path: "/pv-dashboard/ai" },
   { key: "nav.alerts", icon: Bell, path: "/pv-dashboard/alerts" },
   { key: "nav.logs", icon: ScrollText, path: "/pv-dashboard/logs" },
+  { key: "nav.backup", icon: Database, path: "/pv-dashboard/backup" },
 ];
 
 const DashboardSidebar = () => {
