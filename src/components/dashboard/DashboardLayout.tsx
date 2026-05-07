@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, MessageSquare, PieChart, Star, TrendingUp,
   ChevronDown, Shield, Brain, Bell, Settings, User, HelpCircle,
-  ChevronsUpDown, ArrowLeftRight, ScrollText,
+  ChevronsUpDown, ArrowLeftRight, ScrollText, Database,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
