@@ -48,14 +48,18 @@ const DashboardBackupContent = () => {
       if (!user) throw new Error("Not authenticated");
       const name = backupName.trim() || `Backup ${format(new Date(), "yyyy-MM-dd HH:mm")}`;
 
-      // Estimate size by counting rows across tables
-      let totalRows = 0;
-      for (const table of BACKUP_TABLES) {
-        const { count } = await supabase
-          .from(table)
-          .select("*", { count: "exact", head: true });
-        totalRows += count || 0;
-      }
+      // Estimate size by counting rows from key tables
+      const tableCounts = await Promise.all([
+        supabase.from("reviews").select("*", { count: "exact", head: true }),
+        supabase.from("chat_conversations").select("*", { count: "exact", head: true }),
+        supabase.from("chat_messages").select("*", { count: "exact", head: true }),
+        supabase.from("profiles").select("*", { count: "exact", head: true }),
+        supabase.from("alert_history").select("*", { count: "exact", head: true }),
+        supabase.from("system_logs").select("*", { count: "exact", head: true }),
+        supabase.from("access_logs").select("*", { count: "exact", head: true }),
+        supabase.from("review_reactions").select("*", { count: "exact", head: true }),
+      ]);
+      const totalRows = tableCounts.reduce((sum, r) => sum + (r.count || 0), 0);
 
       const sizeEstimate = totalRows * 256; // rough avg bytes per row
       const restorePointId = crypto.randomUUID().slice(0, 8).toUpperCase();
