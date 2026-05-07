@@ -104,6 +104,45 @@ export type Database = {
         }
         Relationships: []
       }
+      backup_history: {
+        Row: {
+          backup_name: string
+          backup_type: string
+          created_at: string
+          created_by: string
+          id: string
+          notes: string | null
+          restore_point_id: string | null
+          size_bytes: number | null
+          status: string
+          tables_included: string[] | null
+        }
+        Insert: {
+          backup_name: string
+          backup_type?: string
+          created_at?: string
+          created_by: string
+          id?: string
+          notes?: string | null
+          restore_point_id?: string | null
+          size_bytes?: number | null
+          status?: string
+          tables_included?: string[] | null
+        }
+        Update: {
+          backup_name?: string
+          backup_type?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          notes?: string | null
+          restore_point_id?: string | null
+          size_bytes?: number | null
+          status?: string
+          tables_included?: string[] | null
+        }
+        Relationships: []
+      }
       blocked_sessions: {
         Row: {
           blocked_at: string
