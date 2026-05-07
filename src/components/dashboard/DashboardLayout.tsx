@@ -200,8 +200,8 @@ const DashboardSidebar = () => {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
-              <LogOut className="h-4 w-4 mr-2" />
               {t("user.signOut")}
+              <ChevronDown className="h-3.5 w-3.5 ml-1" />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
