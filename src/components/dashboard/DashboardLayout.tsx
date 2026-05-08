@@ -2,7 +2,7 @@ import { ReactNode, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, MessageSquare, PieChart, Star, TrendingUp,
-  ChevronDown, Shield, Brain, Bell, Settings, User, HelpCircle,
+  ChevronDown, Shield, Brain, Bell, Settings, User, HelpCircle, Archive,
   ChevronsUpDown, ArrowLeftRight, ScrollText, Database,
 } from "lucide-react";
 import {
@@ -49,6 +49,7 @@ const adminNavKeys = [
   { key: "nav.alerts", icon: Bell, path: "/pv-dashboard/alerts" },
   { key: "nav.logs", icon: ScrollText, path: "/pv-dashboard/logs" },
   { key: "nav.backup", icon: Database, path: "/pv-dashboard/backup" },
+  { key: "nav.archive", icon: Archive, path: "/pv-dashboard/archive" },
 ];
 
 const DashboardSidebar = () => {
