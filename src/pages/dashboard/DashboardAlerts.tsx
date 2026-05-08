@@ -125,12 +125,27 @@ const DashboardAlerts = () => {
   // Clear history
   const clearHistory = useMutation({
     mutationFn: async () => {
+      // Fetch all alert history records to archive them
+      const { data: alerts, error: fetchError } = await supabase.from("alert_history").select("*");
+      if (fetchError) throw fetchError;
+      if (alerts && alerts.length > 0) {
+        const userId = (await supabase.auth.getUser()).data.user?.id;
+        const archiveRows = alerts.map((a) => ({
+          source_table: "alert_history",
+          record_id: a.id,
+          record_data: a as any,
+          deleted_by: userId,
+        }));
+        const { error: archiveError } = await supabase.from("archived_records").insert(archiveRows);
+        if (archiveError) throw archiveError;
+      }
       const { error } = await supabase.from("alert_history").delete().neq("id", "00000000-0000-0000-0000-000000000000");
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Alert history cleared");
+      toast.success("Alert history archived");
       queryClient.invalidateQueries({ queryKey: ["alert-history"] });
+      queryClient.invalidateQueries({ queryKey: ["archived-records"] });
     },
   });
 

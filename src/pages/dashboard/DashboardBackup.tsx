@@ -87,12 +87,24 @@ const DashboardBackupContent = () => {
 
   const deleteBackup = useMutation({
     mutationFn: async (id: string) => {
+      // Archive before deleting
+      const { data: backup, error: fetchError } = await supabase.from("backup_history").select("*").eq("id", id).single();
+      if (fetchError) throw fetchError;
+      const userId = (await supabase.auth.getUser()).data.user?.id;
+      const { error: archiveError } = await supabase.from("archived_records").insert({
+        source_table: "backup_history",
+        record_id: id,
+        record_data: backup as any,
+        deleted_by: userId,
+      });
+      if (archiveError) throw archiveError;
       const { error } = await supabase.from("backup_history").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Backup deleted");
+      toast.success("Backup archived");
       queryClient.invalidateQueries({ queryKey: ["backup-history"] });
+      queryClient.invalidateQueries({ queryKey: ["archived-records"] });
     },
     onError: () => toast.error("Failed to delete backup"),
   });
