@@ -104,6 +104,36 @@ export type Database = {
         }
         Relationships: []
       }
+      archived_records: {
+        Row: {
+          deleted_at: string
+          deleted_by: string | null
+          id: string
+          notes: string | null
+          record_data: Json
+          record_id: string
+          source_table: string
+        }
+        Insert: {
+          deleted_at?: string
+          deleted_by?: string | null
+          id?: string
+          notes?: string | null
+          record_data: Json
+          record_id: string
+          source_table: string
+        }
+        Update: {
+          deleted_at?: string
+          deleted_by?: string | null
+          id?: string
+          notes?: string | null
+          record_data?: Json
+          record_id?: string
+          source_table?: string
+        }
+        Relationships: []
+      }
       backup_history: {
         Row: {
           backup_name: string
