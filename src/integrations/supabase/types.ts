@@ -484,6 +484,48 @@ export type Database = {
         }
         Relationships: []
       }
+      report_history: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          date_from: string | null
+          date_to: string | null
+          format: string
+          id: string
+          notes: string | null
+          report_name: string
+          report_type: string
+          row_count: number | null
+          size_bytes: number | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          date_from?: string | null
+          date_to?: string | null
+          format?: string
+          id?: string
+          notes?: string | null
+          report_name: string
+          report_type?: string
+          row_count?: number | null
+          size_bytes?: number | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          date_from?: string | null
+          date_to?: string | null
+          format?: string
+          id?: string
+          notes?: string | null
+          report_name?: string
+          report_type?: string
+          row_count?: number | null
+          size_bytes?: number | null
+        }
+        Relationships: []
+      }
       review_audit_log: {
         Row: {
           action: string
