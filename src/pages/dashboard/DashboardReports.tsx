@@ -195,26 +195,125 @@ const DashboardReports = () => {
     onError: () => toast.error("Failed to delete report"),
   });
 
-  const downloadReport = (r: any) => {
-    // Simulated download — generates a plain text receipt for the report metadata
-    const content = [
-      `Pizza Volante — ${r.report_name}`,
-      `Generated: ${format(new Date(r.created_at), "MMM d, yyyy HH:mm")}`,
-      `Type: ${r.report_type}`,
-      `Format: ${r.format}`,
-      `Range: ${r.date_from || "—"} to ${r.date_to || "—"}`,
-      `Records: ${r.row_count ?? 0}`,
-      `Size: ${formatSize(r.size_bytes)}`,
-    ].join("\n");
-    const blob = new Blob([content], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${r.report_name.replace(/\s+/g, "_")}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success("Report downloaded");
+  const downloadReport = async (r: any) => {
+    try {
+      const { jsPDF } = await import("jspdf");
+      const autoTable = (await import("jspdf-autotable")).default;
+
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+
+      // Header
+      doc.setFillColor(153, 27, 27); // brick red
+      doc.rect(0, 0, pageWidth, 28, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.text("Pizza Volante — Baguio City", 14, 12);
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(r.report_name, 14, 21);
+
+      // Meta
+      doc.setTextColor(40, 40, 40);
+      doc.setFontSize(10);
+      let y = 38;
+      const meta: [string, string][] = [
+        ["Type", r.report_type],
+        ["Format", r.format],
+        ["Range", `${r.date_from || "—"} to ${r.date_to || "—"}`],
+        ["Records", String(r.row_count ?? 0)],
+        ["Generated", format(new Date(r.created_at), "MMM d, yyyy HH:mm")],
+      ];
+      meta.forEach(([k, v]) => {
+        doc.setFont("helvetica", "bold");
+        doc.text(`${k}:`, 14, y);
+        doc.setFont("helvetica", "normal");
+        doc.text(v, 45, y);
+        y += 6;
+      });
+
+      // Fetch data based on type
+      const fromIso = r.date_from ? new Date(r.date_from).toISOString() : null;
+      const toIso = r.date_to ? new Date(`${r.date_to}T23:59:59`).toISOString() : null;
+      let head: string[][] = [];
+      let body: any[][] = [];
+
+      if (["sales", "reviews", "sentiment"].includes(r.report_type)) {
+        let q = supabase.from("reviews")
+          .select("name, rating, sentiment, feedback, created_at")
+          .order("created_at", { ascending: false })
+          .limit(500);
+        if (fromIso) q = q.gte("created_at", fromIso);
+        if (toIso) q = q.lte("created_at", toIso);
+        const { data } = await q;
+        head = [["#", "Customer", "Rating", "Sentiment", "Review", "Date"]];
+        body = (data || []).map((row: any, i: number) => [
+          i + 1, row.name || "—", row.rating ?? "—",
+          row.sentiment || "—",
+          (row.feedback || "").slice(0, 80),
+          format(new Date(row.created_at), "MMM d, yyyy"),
+        ]);
+      } else if (r.report_type === "users") {
+        const { data } = await supabase.from("profiles")
+          .select("display_name, language, created_at").limit(500);
+        head = [["#", "Display Name", "Language", "Joined"]];
+        body = (data || []).map((row: any, i: number) => [
+          i + 1, row.display_name || "—", row.language || "—",
+          row.created_at ? format(new Date(row.created_at), "MMM d, yyyy") : "—",
+        ]);
+      } else if (r.report_type === "logs") {
+        let q = supabase.from("system_logs")
+          .select("level, endpoint, method, status_code, message, created_at")
+          .order("created_at", { ascending: false }).limit(500);
+        if (fromIso) q = q.gte("created_at", fromIso);
+        if (toIso) q = q.lte("created_at", toIso);
+        const { data } = await q;
+        head = [["#", "Level", "Endpoint", "Method", "Status", "Date"]];
+        body = (data || []).map((row: any, i: number) => [
+          i + 1, row.level, row.endpoint, row.method, row.status_code,
+          format(new Date(row.created_at), "MMM d, yyyy HH:mm"),
+        ]);
+      } else {
+        const { data } = await supabase.from("report_history")
+          .select("report_name, report_type, format, row_count, created_at")
+          .order("created_at", { ascending: false }).limit(200);
+        head = [["#", "Name", "Type", "Format", "Records", "Date"]];
+        body = (data || []).map((row: any, i: number) => [
+          i + 1, row.report_name, row.report_type, row.format, row.row_count ?? 0,
+          format(new Date(row.created_at), "MMM d, yyyy"),
+        ]);
+      }
+
+      autoTable(doc, {
+        head, body, startY: y + 4,
+        styles: { fontSize: 8, cellPadding: 2 },
+        headStyles: { fillColor: [153, 27, 27], textColor: 255 },
+        alternateRowStyles: { fillColor: [248, 240, 238] },
+        margin: { left: 14, right: 14 },
+      });
+
+      // Footer
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(120);
+        doc.text(
+          `Pizza Volante · ${format(new Date(), "yyyy-MM-dd")} · Page ${i} of ${pageCount}`,
+          pageWidth / 2, doc.internal.pageSize.getHeight() - 8,
+          { align: "center" }
+        );
+      }
+
+      doc.save(`${r.report_name.replace(/\s+/g, "_")}.pdf`);
+      toast.success("Report downloaded");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to generate PDF");
+    }
   };
+
 
   const recentFive = useMemo(() => reports.slice(0, 5), [reports]);
 
