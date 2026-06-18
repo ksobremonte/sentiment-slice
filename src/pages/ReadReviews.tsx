@@ -1,8 +1,10 @@
 import { Star, MessageSquare } from "lucide-react";
 import PublicLayout from "@/components/layout/PublicLayout";
+import Seo from "@/components/Seo";
 import PublicReviewsList from "@/components/public/PublicReviewsList";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { usePublicReviewStats } from "@/hooks/usePublicReviewStats";
 
 const ReadReviews = () => {
   return (

@@ -1,6 +1,7 @@
 import { Phone, Mail, MapPin, Clock, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import PublicLayout from "@/components/layout/PublicLayout";
+import Seo from "@/components/Seo";
 import {
   FadeIn, StaggerContainer, StaggerItem, HoverCard, ParallaxImage, ZoomImage, AnimatedButton,
 } from "@/components/ui/animated";

@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import PublicLayout from "@/components/layout/PublicLayout";
+import Seo from "@/components/Seo";
 import {
   FadeIn, StaggerContainer, StaggerItem, HoverCard, ParallaxImage, AnimatedButton, ZoomImage,
 } from "@/components/ui/animated";
