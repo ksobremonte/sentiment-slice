@@ -51,9 +51,9 @@ const PublicHeader = () => {
               transition={{ duration: 0.5 }}
             />
             <div className="hidden sm:block">
-              <h1 className="font-brand text-2xl md:text-3xl text-foreground leading-tight">
+              <span className="block font-brand text-2xl md:text-3xl text-foreground leading-tight">
                 Pizza Volante
-              </h1>
+              </span>
               <p className="text-[10px] text-muted-foreground font-semibold tracking-[0.2em] uppercase">
                 Baguio City
               </p>
@@ -91,7 +91,7 @@ const PublicHeader = () => {
           {/* Mobile Navigation */}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild className="lg:hidden">
-              <Button variant="ghost" size="icon" className="text-foreground">
+              <Button variant="ghost" size="icon" className="text-foreground" aria-label="Open navigation menu">
                 <Menu className="w-6 h-6" />
               </Button>
             </SheetTrigger>

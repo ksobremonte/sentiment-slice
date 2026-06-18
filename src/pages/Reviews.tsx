@@ -292,7 +292,7 @@ const Reviews = () => {
                             photo.status === "error" && "border-destructive",
                             (photo.status === "uploading" || photo.status === "analyzing" || photo.status === "pending") && "border-primary/40",
                           )}>
-                            <img src={photo.preview} alt={`Photo ${index + 1}`} className="w-full h-full object-cover" />
+                            <img src={photo.preview} alt={`Customer review food photo ${index + 1}`} className="w-full h-full object-cover" />
 
                             {/* Status overlay */}
                             {(photo.status === "uploading" || photo.status === "analyzing") && (
@@ -321,6 +321,7 @@ const Reviews = () => {
                             <button
                               type="button"
                               onClick={() => removePhoto(index)}
+                              aria-label={`Remove photo ${index + 1}`}
                               className="absolute top-1.5 right-1.5 p-1 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90 transition-colors"
                             >
                               <X className="w-3 h-3" />
