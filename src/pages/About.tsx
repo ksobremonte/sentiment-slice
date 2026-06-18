@@ -1,5 +1,6 @@
 import { Pizza, Heart, Users, Award, Utensils, Leaf } from "lucide-react";
 import PublicLayout from "@/components/layout/PublicLayout";
+import Seo from "@/components/Seo";
 import {
   FadeIn, StaggerContainer, StaggerItem, HoverCard, ParallaxImage, ZoomImage,
 } from "@/components/ui/animated";
