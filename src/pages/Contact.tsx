@@ -1,6 +1,7 @@
 import { Phone, Mail, MapPin, Clock, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import PublicLayout from "@/components/layout/PublicLayout";
+import Seo from "@/components/Seo";
 import {
   FadeIn, StaggerContainer, StaggerItem, HoverCard, ParallaxImage, ZoomImage, AnimatedButton,
 } from "@/components/ui/animated";
@@ -11,6 +12,11 @@ import restaurantInteriorReal from "@/assets/restaurant-interior-real.webp";
 const Contact = () => {
   return (
     <PublicLayout>
+      <Seo
+        title="Contact Pizza Volante — Baguio City Pizzeria"
+        description="Visit Pizza Volante at 082 Diego Silang St, Baguio City. Call +63 (074) 445-0777 for reservations, delivery, and inquiries."
+        path="/contact"
+      />
       {/* Hero — Real exterior */}
       <section className="relative h-[35vh] md:h-[45vh] flex items-center justify-center overflow-hidden">
         <img src={restaurantExterior} alt="Pizza Volante outdoor seating" className="absolute inset-0 w-full h-full object-cover" />

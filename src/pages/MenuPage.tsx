@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import PublicLayout from "@/components/layout/PublicLayout";
+import Seo from "@/components/Seo";
 import {
   FadeIn, StaggerContainer, StaggerItem, HoverCard, ParallaxImage, AnimatedButton, ZoomImage,
 } from "@/components/ui/animated";
@@ -64,6 +65,11 @@ const menuItems = [
 const MenuPage = () => {
   return (
     <PublicLayout>
+      <Seo
+        title="Menu — Wood-Fired Pizza & Pasta in Baguio | Pizza Volante"
+        description="Browse Pizza Volante's full menu — wood-fired pizzas, handmade pasta, fresh salads, and Italian classics served in Baguio City."
+        path="/menu"
+      />
       {/* Menu Hero — Real pizza close-up */}
       <section className="relative h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden">
         <img src={pizzaSlice} alt="Pizza Volante pizza" className="absolute inset-0 w-full h-full object-cover" />

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import PublicLayout from "@/components/layout/PublicLayout";
+import Seo from "@/components/Seo";
 import { Link } from "react-router-dom";
 import { FadeIn, AnimatedButton } from "@/components/ui/animated";
 import { supabase } from "@/integrations/supabase/client";
@@ -213,6 +214,11 @@ const Reviews = () => {
 
   return (
     <PublicLayout>
+      <Seo
+        title="Leave a Review — Pizza Volante Baguio"
+        description="Share your Pizza Volante experience. Rate our wood-fired pizza, add photos, and help our Baguio pizzeria serve you better."
+        path="/reviews"
+      />
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-6">
           <FadeIn>
@@ -292,7 +298,7 @@ const Reviews = () => {
                             photo.status === "error" && "border-destructive",
                             (photo.status === "uploading" || photo.status === "analyzing" || photo.status === "pending") && "border-primary/40",
                           )}>
-                            <img src={photo.preview} alt={`Photo ${index + 1}`} className="w-full h-full object-cover" />
+                            <img src={photo.preview} alt={`Customer review food photo ${index + 1}`} className="w-full h-full object-cover" />
 
                             {/* Status overlay */}
                             {(photo.status === "uploading" || photo.status === "analyzing") && (
@@ -321,6 +327,7 @@ const Reviews = () => {
                             <button
                               type="button"
                               onClick={() => removePhoto(index)}
+                              aria-label={`Remove photo ${index + 1}`}
                               className="absolute top-1.5 right-1.5 p-1 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90 transition-colors"
                             >
                               <X className="w-3 h-3" />

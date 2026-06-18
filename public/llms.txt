@@ -1,0 +1,14 @@
+# Pizza Volante
+
+> Authentic wood-fired Italian pizza in Baguio City, Philippines — traditional recipes and fresh local ingredients since 2000.
+
+Pizza Volante is a family-run pizzeria located at 082 Diego Silang St, Baguio City. We serve Neapolitan-style wood-fired pizza, pasta, and Italian classics, with both dine-in and delivery across the City of Pines.
+
+## Pages
+
+- [Home](/): Overview of Pizza Volante, signature dishes, and live customer review stats.
+- [About](/about): Our founding story, mission, and the people behind Pizza Volante Baguio.
+- [Menu](/menu): Full menu of wood-fired pizzas, pasta, salads, and sides with photos.
+- [Read Reviews](/read-reviews): Verified customer reviews, ratings, and photos.
+- [Leave a Review](/reviews): Submit a public review with optional photos.
+- [Contact](/contact): Address, hours, phone number, and location map.

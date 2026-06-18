@@ -1,12 +1,37 @@
 import { Star, MessageSquare } from "lucide-react";
 import PublicLayout from "@/components/layout/PublicLayout";
+import Seo from "@/components/Seo";
 import PublicReviewsList from "@/components/public/PublicReviewsList";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
+
 const ReadReviews = () => {
   return (
     <PublicLayout>
+      <Seo
+        title="Customer Reviews — Pizza Volante Baguio"
+        description="Read verified customer reviews and ratings for Pizza Volante, Baguio City's favorite wood-fired Italian pizzeria."
+        path="/read-reviews"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Restaurant",
+          name: "Pizza Volante",
+          url: "https://pizzavolante-dashboard.com/",
+          servesCuisine: ["Italian", "Pizza"],
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "082 Diego Silang St",
+            addressLocality: "Baguio City",
+            addressCountry: "PH",
+          },
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: "4.7",
+            reviewCount: "500",
+          },
+        }}
+      />
       <section className="py-16 lg:py-24">
         <div className="container mx-auto px-6">
           {/* Header */}
