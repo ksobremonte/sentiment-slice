@@ -214,6 +214,11 @@ const Reviews = () => {
 
   return (
     <PublicLayout>
+      <Seo
+        title="Leave a Review — Pizza Volante Baguio"
+        description="Share your Pizza Volante experience. Rate our wood-fired pizza, add photos, and help our Baguio pizzeria serve you better."
+        path="/reviews"
+      />
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-6">
           <FadeIn>
