@@ -112,15 +112,9 @@ const [timeRange, setTimeRange] = useState<TimeRange>("7d");
     refetchInterval: autoRefresh ? 10000 : false,
   });
 
-  useEffect(() => {
-    const channel = supabase
-      .channel("system-logs-realtime")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "system_logs" }, () => {
-        queryClient.invalidateQueries({ queryKey: ["system-logs"] });
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [queryClient]);
+  // System logs are not streamed over Realtime (internal operational data);
+  // the query above polls every 10s while auto-refresh is on.
+
 
   const filtered = useMemo(() => {
     return logs.filter((log) => {
@@ -322,15 +316,9 @@ const [timeRange, setTimeRange] = useState<TimeRange>("7d");
     refetchInterval: autoRefresh ? 10000 : false,
   });
 
-  useEffect(() => {
-    const channel = supabase
-      .channel("access-logs-realtime")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "access_logs" }, () => {
-        queryClient.invalidateQueries({ queryKey: ["access-logs"] });
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [queryClient]);
+  // Access logs are not streamed over Realtime (they contain emails/IPs);
+  // the query above polls every 10s while auto-refresh is on.
+
 
   const filtered = useMemo(() => {
     return logs.filter((log) => {
