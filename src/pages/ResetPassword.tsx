@@ -161,19 +161,56 @@ const ResetPassword = () => {
         {/* Reset Card */}
         <div className="bg-card border-2 border-border rounded-3xl p-8 shadow-warm animate-fade-in">
           <h2 className="text-2xl font-display font-bold text-foreground mb-3 text-center">
-            Set a new password
+            {needsMfa ? "Two-factor verification" : "Set a new password"}
           </h2>
           <p className="text-muted-foreground text-center mb-8">
-            Enter your new password below
+            {needsMfa
+              ? "Enter the 6-digit code from your authenticator app to confirm the change"
+              : "Enter your new password below"}
           </p>
 
-          {!sessionReady ? (
+          {needsMfa ? (
+            <form onSubmit={handleMfaSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="mfa" className="text-foreground font-medium">
+                  Authentication Code
+                </Label>
+                <Input
+                  id="mfa"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  placeholder="123456"
+                  value={mfaCode}
+                  onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ""))}
+                  className="py-6 rounded-xl border-2 bg-background text-center tracking-[0.5em] text-lg"
+                  required
+                />
+              </div>
+              <Button
+                type="submit"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-6 text-lg rounded-xl shadow-warm"
+                size="lg"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Verifying…
+                  </>
+                ) : (
+                  "Verify & Reset Password"
+                )}
+              </Button>
+            </form>
+          ) : !sessionReady ? (
             <div className="flex flex-col items-center gap-4 py-8">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
               <p className="text-muted-foreground text-sm">
                 Verifying your reset link…
               </p>
             </div>
+
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
