@@ -20,6 +20,9 @@ const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [sessionReady, setSessionReady] = useState(false);
+  const [needsMfa, setNeedsMfa] = useState(false);
+  const [mfaCode, setMfaCode] = useState("");
+
   const navigate = useNavigate();
 
   useEffect(() => {
