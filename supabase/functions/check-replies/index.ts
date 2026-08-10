@@ -6,6 +6,24 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+// Simple in-memory IP throttle: max 120 requests per minute per IP
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 120;
+const WINDOW_MS = 60_000;
+
+function isRateLimited(ip: string) {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+    return false;
+  }
+  entry.count += 1;
+  return entry.count > RATE_LIMIT;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -14,15 +32,36 @@ Deno.serve(async (req) => {
   const endpoint = "/check-replies";
 
   try {
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    if (isRateLimited(ip)) {
+      return new Response(JSON.stringify({ error: "Too many requests. Please slow down." }), {
+        status: 429,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { conversationId, lastSeenTimestamp, loadAll } = await req.json() as {
       conversationId: string;
       lastSeenTimestamp?: string;
       loadAll?: boolean;
     };
 
-    if (!conversationId) {
-      throw new Error("conversationId is required");
+    if (typeof conversationId !== "string" || !UUID_REGEX.test(conversationId)) {
+      return new Response(JSON.stringify({ error: "Invalid conversation ID" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
+
+    if (lastSeenTimestamp !== undefined) {
+      if (typeof lastSeenTimestamp !== "string" || Number.isNaN(Date.parse(lastSeenTimestamp))) {
+        return new Response(JSON.stringify({ error: "Invalid timestamp" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
