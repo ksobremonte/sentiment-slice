@@ -20,6 +20,9 @@ const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [sessionReady, setSessionReady] = useState(false);
+  const [needsMfa, setNeedsMfa] = useState(false);
+  const [mfaCode, setMfaCode] = useState("");
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,6 +45,14 @@ const ResetPassword = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  const doUpdate = async () => {
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) return error;
+    setSuccess(true);
+    setTimeout(() => navigate("/pv-admin"), 3000);
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -57,16 +68,61 @@ const ResetPassword = () => {
     }
 
     setLoading(true);
-    const { error } = await supabase.auth.updateUser({ password });
-    setLoading(false);
+    try {
+      // If 2FA is enabled, the session must be elevated to AAL2 before updating the password
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (aal?.nextLevel === "aal2" && aal.currentLevel !== "aal2") {
+        setNeedsMfa(true);
+        toast.info("Enter your authenticator code to continue");
+        return;
+      }
 
-    if (error) {
-      toast.error(error.message);
-    } else {
-      setSuccess(true);
-      setTimeout(() => navigate("/pv-admin"), 3000);
+      const error = await doUpdate();
+      if (error) {
+        if ((error as any).code === "insufficient_aal") {
+          setNeedsMfa(true);
+          toast.info("Enter your authenticator code to continue");
+        } else {
+          toast.error(error.message);
+        }
+      }
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleMfaSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (mfaCode.trim().length < 6) {
+      toast.error("Enter the 6-digit code");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data: factors, error: fErr } = await supabase.auth.mfa.listFactors();
+      if (fErr) throw fErr;
+      const totp = factors?.totp?.find((f) => f.status === "verified") ?? factors?.totp?.[0];
+      if (!totp) {
+        toast.error("No authenticator found for this account");
+        return;
+      }
+      const { error: vErr } = await supabase.auth.mfa.challengeAndVerify({
+        factorId: totp.id,
+        code: mfaCode.trim(),
+      });
+      if (vErr) {
+        toast.error("Invalid code. Please try again.");
+        return;
+      }
+      const error = await doUpdate();
+      if (error) toast.error(error.message);
+    } catch (err: any) {
+      toast.error(err?.message || "Verification failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   if (success) {
     return (
@@ -105,19 +161,56 @@ const ResetPassword = () => {
         {/* Reset Card */}
         <div className="bg-card border-2 border-border rounded-3xl p-8 shadow-warm animate-fade-in">
           <h2 className="text-2xl font-display font-bold text-foreground mb-3 text-center">
-            Set a new password
+            {needsMfa ? "Two-factor verification" : "Set a new password"}
           </h2>
           <p className="text-muted-foreground text-center mb-8">
-            Enter your new password below
+            {needsMfa
+              ? "Enter the 6-digit code from your authenticator app to confirm the change"
+              : "Enter your new password below"}
           </p>
 
-          {!sessionReady ? (
+          {needsMfa ? (
+            <form onSubmit={handleMfaSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="mfa" className="text-foreground font-medium">
+                  Authentication Code
+                </Label>
+                <Input
+                  id="mfa"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  placeholder="123456"
+                  value={mfaCode}
+                  onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ""))}
+                  className="py-6 rounded-xl border-2 bg-background text-center tracking-[0.5em] text-lg"
+                  required
+                />
+              </div>
+              <Button
+                type="submit"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-6 text-lg rounded-xl shadow-warm"
+                size="lg"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Verifying…
+                  </>
+                ) : (
+                  "Verify & Reset Password"
+                )}
+              </Button>
+            </form>
+          ) : !sessionReady ? (
             <div className="flex flex-col items-center gap-4 py-8">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
               <p className="text-muted-foreground text-sm">
                 Verifying your reset link…
               </p>
             </div>
+
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
