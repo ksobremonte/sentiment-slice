@@ -42,6 +42,14 @@ const ResetPassword = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  const doUpdate = async () => {
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) return error;
+    setSuccess(true);
+    setTimeout(() => navigate("/pv-admin"), 3000);
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -57,16 +65,61 @@ const ResetPassword = () => {
     }
 
     setLoading(true);
-    const { error } = await supabase.auth.updateUser({ password });
-    setLoading(false);
+    try {
+      // If 2FA is enabled, the session must be elevated to AAL2 before updating the password
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (aal?.nextLevel === "aal2" && aal.currentLevel !== "aal2") {
+        setNeedsMfa(true);
+        toast.info("Enter your authenticator code to continue");
+        return;
+      }
 
-    if (error) {
-      toast.error(error.message);
-    } else {
-      setSuccess(true);
-      setTimeout(() => navigate("/pv-admin"), 3000);
+      const error = await doUpdate();
+      if (error) {
+        if ((error as any).code === "insufficient_aal") {
+          setNeedsMfa(true);
+          toast.info("Enter your authenticator code to continue");
+        } else {
+          toast.error(error.message);
+        }
+      }
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleMfaSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (mfaCode.trim().length < 6) {
+      toast.error("Enter the 6-digit code");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data: factors, error: fErr } = await supabase.auth.mfa.listFactors();
+      if (fErr) throw fErr;
+      const totp = factors?.totp?.find((f) => f.status === "verified") ?? factors?.totp?.[0];
+      if (!totp) {
+        toast.error("No authenticator found for this account");
+        return;
+      }
+      const { error: vErr } = await supabase.auth.mfa.challengeAndVerify({
+        factorId: totp.id,
+        code: mfaCode.trim(),
+      });
+      if (vErr) {
+        toast.error("Invalid code. Please try again.");
+        return;
+      }
+      const error = await doUpdate();
+      if (error) toast.error(error.message);
+    } catch (err: any) {
+      toast.error(err?.message || "Verification failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   if (success) {
     return (
